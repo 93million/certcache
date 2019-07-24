@@ -1,0 +1,23 @@
+{
+  "name": "certcache",
+  "version": "1.0.0",
+  "description": "Server that caches certbot keys and certificates to mitigate fair use policies",
+  "main": "index.js",
+  "scripts": {
+    "generate-access-keys": "bash src/bin/generate-access-keys.sh",
+    "getcert": "node src/client/getCert.js",
+    "start": "node src/server/serve.js",
+    "startclient": "while true; do node src/client/syncCerts.js; sleep 21600; done",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "getopts": "^2.2.5",
+    "md5": "^2.2.1",
+    "rimraf": "^2.6.3",
+    "tar": "^4.4.10",
+    "uuid": "^3.3.2",
+    "x509": "^0.3.4"
+  }
+}
