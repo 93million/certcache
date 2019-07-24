@@ -24,6 +24,8 @@ const serve = async () => {
         if (error instanceof FeedbackError) {
           result = {...result, error: error.message}
         }
+
+        console.error('Error:', error)
       }
 
       res.writeHead(
@@ -48,4 +50,4 @@ callAction = (action, payload) => {
   return actions[action](payload)
 }
 
-serve().catch((e) => {console.error('ERROR!', e)})
+serve()

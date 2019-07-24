@@ -7,10 +7,10 @@ const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
 const uuid = require('uuid')
 const generateCert = require('../../helpers/generateCert')
 const fileExists = require('../../helpers/fileExists')
+const mkdirRecursive = require('../../helpers/mkdirRecursive')
 
 const readFile = util.promisify(fs.readFile)
 const unlink = util.promisify(fs.unlink)
-const mkdir = util.promisify(fs.mkdir)
 const readdir = util.promisify(fs.readdir)
 
 const findCert = (cachedCertificates, commonName, altNames, isTest) =>
@@ -36,15 +36,17 @@ module.exports = async (payload) => {
   altNames.push(commonName)
   const letsEncryptConfigDir = process.env.CERTCACHE_LETSENCRYPT_CONFIG_DIR ||
     __dirname + '/../../../letsencrypt/config/'
+  const tmpDir = process.env.CERTCACHE_TMP_DIR || '/tmp/certcache/'
+
+  await Promise.all([letsEncryptConfigDir, tmpDir].map(async (dir) => {
+    if (await fileExists(dir) === false) {
+      await mkdirRecursive(dir)
+    }
+  }))
+
   const cachedCertificates = await getLocalCertificates(`${letsEncryptConfigDir}/live/`)
   const cachedCert = findCert(cachedCertificates, commonName, altNames, isTest)
-  const tmpDir = process.env.CERTCACHE_TMP_DIR || '/tmp/certcache/'
   const tarPath = `${tmpDir}/${uuid()}`
-
-  if (await fileExists(tmpDir) === false) {
-    await mkdir(tmpDir, {recurse: true})
-  }
-
   const certPath = (cachedCert !== undefined)
     ? cachedCert.certPath
     : (await generateCert(commonName, altNames, isTest))

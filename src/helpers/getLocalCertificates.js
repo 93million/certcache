@@ -6,7 +6,7 @@ const readdir = util.promisify(fs.readdir)
 const fileExists = require('./fileExists')
 
 module.exports = async (certDir) => {
-  const files = await readdir(certDir)
+  const files = await readdir(certDir).catch(() => [])
   const certPaths = files.map((file) => `${certDir}${file}`)
   const existsArr = await Promise
     .all(certPaths.map((path) => fileExists(`${path}/cert.pem`)))

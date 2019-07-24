@@ -17,9 +17,16 @@ module.exports = async (commonName, altNames, isTest) => {
   const certbotExec = process.env.CERTCACHE_LETSENCRYPT_EXEC || 'certbot'
   const letsEncrpytConfigDir = process.env.CERTCACHE_LETSENCRYPT_CONFIG_DIR ||
     __dirname + '/../../letsencrypt/config/'
-  const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL || ''
+  const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL
   const letsEncrpytWorkDir = __dirname + '/../../letsencrypt/work/'
   const letsEncrpytLogsDir = __dirname + '/../../letsencrypt/logs/'
+
+  if (email === undefined) {
+    throw new Error([
+      'Missing email address to obtain letsencrypt certificates.',
+      'Please provide env CERTCACHE_LETSENCRYPT_EMAIL'
+    ].join(' '))
+  }
 
   if (certsInGeneration[certName] === undefined) {
     const certbotArgs = [

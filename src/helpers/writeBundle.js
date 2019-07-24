@@ -3,8 +3,7 @@ const fs = require('fs')
 const util = require('util')
 const { Readable } = require('stream')
 const fileExists = require('./fileExists')
-
-const mkdir = util.promisify(fs.mkdir)
+const mkdirRecursive = require('./mkdirRecursive')
 
 module.exports = async (certName, data) => {
   const certcacheCertDir = process.env.CERTCACHE_CERT_DIR ||
@@ -16,7 +15,7 @@ module.exports = async (certName, data) => {
   tarStream.push(null)
 
   if (await fileExists(certPath) === false) {
-    await mkdir(certPath, {recurse: true})
+    await mkdirRecursive(certPath)
   }
 
   await tarStream.pipe(tar.x({cwd: certPath}))

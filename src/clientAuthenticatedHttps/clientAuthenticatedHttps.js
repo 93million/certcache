@@ -44,7 +44,7 @@ const clientAuthenticatedHttps = {
       '/tmp/client-authenticated-https'
     const tmpPath = `${tmpBasePath}/${uuid()}`
 
-    await mkdir(tmpPath, {recursive: true})
+    await mkdir(tmpPath)
     await tar.x({file: keyPath, cwd: tmpPath})
 
     const ca = await readFile(`${tmpPath}/ca-crt.pem`)
