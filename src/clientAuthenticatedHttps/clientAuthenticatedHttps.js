@@ -44,7 +44,16 @@ const clientAuthenticatedHttps = {
       '/tmp/client-authenticated-https'
     const tmpPath = `${tmpBasePath}/${uuid()}`
 
-    await mkdir(tmpPath)
+    await [tmpBasePath, tmpPath]
+      .reduce(
+        async (promise, path) => (
+          (await fileExists(path) === false)
+            ? promise.then(() => mkdir(path))
+            : promise
+        ),
+        Promise.resolve()
+      )
+
     await tar.x({file: keyPath, cwd: tmpPath})
 
     const ca = await readFile(`${tmpPath}/ca-crt.pem`)
