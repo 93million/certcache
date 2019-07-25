@@ -34,7 +34,7 @@ const syncCerts = async () => {
     return requestCert({host, port}, [commonName, ...altNames], isTest)
   }))
 
-  console.log('Done')
+  console.log(`${certsForRenewal.length} of ${certs.length} certificates synced`)
 }
 
 syncCerts().catch((e) => {console.error(`ERROR! ${e}`)})
