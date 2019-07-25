@@ -14,12 +14,12 @@ const certsInGeneration = {}
 
 module.exports = async (commonName, altNames, isTest) => {
   const certName = generateHash(commonName, altNames, isTest)
-  const certbotExec = process.env.CERTCACHE_LETSENCRYPT_EXEC || 'certbot'
-  const letsEncrpytConfigDir = process.env.CERTCACHE_LETSENCRYPT_CONFIG_DIR ||
+  const certbotExec = process.env.CERTCACHE_CERTBOT_EXEC || 'certbot'
+  const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
     __dirname + '/../../letsencrypt/config/'
   const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL
-  const letsEncrpytWorkDir = __dirname + '/../../letsencrypt/work/'
-  const letsEncrpytLogsDir = __dirname + '/../../letsencrypt/logs/'
+  const certbotWorkDir = __dirname + '/../../letsencrypt/work/'
+  const certbotLogsDir = __dirname + '/../../letsencrypt/logs/'
 
   if (email === undefined) {
     throw new Error([
@@ -43,11 +43,11 @@ module.exports = async (commonName, altNames, isTest) => {
       `-m`,
       email,
       `--config-dir`,
-      letsEncrpytConfigDir,
+      certbotConfigDir,
       `--logs-dir`,
-      letsEncrpytLogsDir,
+      certbotLogsDir,
       `--work-dir`,
-      letsEncrpytWorkDir
+      certbotWorkDir
     ]
 
     if (isTest) {
@@ -63,5 +63,5 @@ module.exports = async (commonName, altNames, isTest) => {
     delete certsInGeneration[certName]
   }
 
-  return `${letsEncrpytConfigDir}/live/${certName}`
+  return `${certbotConfigDir}/live/${certName}`
 }

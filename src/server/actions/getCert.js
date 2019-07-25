@@ -34,17 +34,17 @@ module.exports = async (payload) => {
   const {isTest, domains} = payload
   const [commonName, ...altNames] = domains
   altNames.push(commonName)
-  const letsEncryptConfigDir = process.env.CERTCACHE_LETSENCRYPT_CONFIG_DIR ||
+  const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
     __dirname + '/../../../letsencrypt/config/'
   const tmpDir = process.env.CERTCACHE_TMP_DIR || '/tmp/certcache/'
 
-  await Promise.all([letsEncryptConfigDir, tmpDir].map(async (dir) => {
+  await Promise.all([certbotConfigDir, tmpDir].map(async (dir) => {
     if (await fileExists(dir) === false) {
       await mkdirRecursive(dir)
     }
   }))
 
-  const cachedCertificates = await getLocalCertificates(`${letsEncryptConfigDir}/live/`)
+  const cachedCertificates = await getLocalCertificates(`${certbotConfigDir}/live/`)
   const cachedCert = findCert(cachedCertificates, commonName, altNames, isTest)
   const tarPath = `${tmpDir}/${uuid()}`
   const certPath = (cachedCert !== undefined)
