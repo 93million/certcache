@@ -20,6 +20,7 @@ module.exports = async (commonName, altNames, isTest) => {
   const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL
   const certbotWorkDir = __dirname + '/../../letsencrypt/work/'
   const certbotLogsDir = __dirname + '/../../letsencrypt/logs/'
+  const certbotHttpAuthPort = process.env.CERTCACHE_CERTBOT_HTTP_AUTH_PORT
 
   if (email === undefined) {
     throw new Error([
@@ -52,6 +53,11 @@ module.exports = async (commonName, altNames, isTest) => {
 
     if (isTest) {
       certbotArgs.push('--test-cert')
+    }
+
+    if (certbotHttpAuthPort !== undefined) {
+      certbotArgs.push('--http-01-port')
+      certbotArgs.push(certbotHttpAuthPort)
     }
 
     certsInGeneration[certName] = execFile(certbotExec, certbotArgs)
