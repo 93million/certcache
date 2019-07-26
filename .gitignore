@@ -2,5 +2,5 @@
 .vscode
 cahKeys
 certs
-letsencrypt
+certbot
 node_modules

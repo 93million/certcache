@@ -16,10 +16,10 @@ module.exports = async (commonName, altNames, isTest) => {
   const certName = generateHash(commonName, altNames, isTest)
   const certbotExec = process.env.CERTCACHE_CERTBOT_EXEC || 'certbot'
   const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
-    __dirname + '/../../letsencrypt/config/'
+    __dirname + '/../../certbot/config/'
   const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL
-  const certbotWorkDir = __dirname + '/../../letsencrypt/work/'
-  const certbotLogsDir = __dirname + '/../../letsencrypt/logs/'
+  const certbotWorkDir = __dirname + '/../../certbot/work/'
+  const certbotLogsDir = __dirname + '/../../certbot/logs/'
   const certbotHttpAuthPort = process.env.CERTCACHE_CERTBOT_HTTP_AUTH_PORT
 
   if (email === undefined) {

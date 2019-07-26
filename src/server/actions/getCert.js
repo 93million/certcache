@@ -35,7 +35,7 @@ module.exports = async (payload) => {
   const [commonName, ...altNames] = domains
   altNames.push(commonName)
   const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
-    __dirname + '/../../../letsencrypt/config/'
+    __dirname + '/../../../certbot/config/'
   const tmpDir = process.env.CERTCACHE_TMP_DIR || '/tmp/certcache/'
 
   await Promise.all([certbotConfigDir, tmpDir].map(async (dir) => {

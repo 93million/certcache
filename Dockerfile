@@ -8,9 +8,9 @@ RUN apk update
 RUN apk add bash certbot openssl python g++ make
 RUN npm i
 
-VOLUME /certcache/certs/
 VOLUME /certcache/cahKeys/
-VOLUME /certcache/letsencrypt/
+VOLUME /certcache/certbot/
+VOLUME /certcache/certs/
 
 EXPOSE 80
 EXPOSE 4433
