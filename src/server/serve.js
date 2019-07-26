@@ -1,5 +1,6 @@
 const clientAuthenticatedHttps = require('../clientAuthenticatedHttps/clientAuthenticatedHttps')
 const actions = require('./actions')
+const certbotRenew = require('../helpers/certbotRenew')
 
 const serve = async () => {
   const server = await clientAuthenticatedHttps.createServer((req, res) => {
@@ -50,4 +51,18 @@ callAction = (action, payload) => {
   return actions[action](payload)
 }
 
-serve()
+const renew = async () => {
+  try {
+    certbotRenew()
+  } catch (e) {
+    console.error('An error occurred when trying to renew certificates', e)
+  }
+}
+
+serve().then(() => {
+  console.log('certcache listening on port 4433')
+})
+
+renew()
+
+setInterval(renew, 1000 * 20)
