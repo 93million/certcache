@@ -1,6 +1,7 @@
 const getopts = require("getopts")
 const requestCert = require('../helpers/requestCert')
 const getLocalCertificates = require('../helpers/getLocalCertificates')
+const config = require('../config')
 
 const opts = getopts(process.argv.slice(2), {
   alias: {host: 'h', test: 't', daemon: 'D'},
@@ -8,8 +9,7 @@ const opts = getopts(process.argv.slice(2), {
 })
 
 const syncCerts = async () => {
-  const certcacheCertDir = process.env.CERTCACHE_CERT_DIR ||
-    __dirname + '/../../certs/'
+  const certcacheCertDir = config.certcacheCertDir
   const certs = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
 
@@ -17,8 +17,8 @@ const syncCerts = async () => {
 
   const certsForRenewal = certs
     .filter(({notAfter}) => (notAfter.getTime() < certRenewEpoch.getTime()))
-  const host = opts.host || process.env.CERTCACHE_HOST || 'localhost'
-  const port = opts.port || process.env.CERTCACHE_PORT || 4433
+  const host = opts.host || config.certcacheHost
+  const port = opts.port || config.certcachePort
 
   await Promise.all(certsForRenewal.map(({
     subject: {commonName},

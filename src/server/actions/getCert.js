@@ -8,6 +8,7 @@ const uuid = require('uuid')
 const generateCert = require('../../helpers/generateCert')
 const fileExists = require('../../helpers/fileExists')
 const mkdirRecursive = require('../../helpers/mkdirRecursive')
+const config = require('../../config')
 
 const readFile = util.promisify(fs.readFile)
 const unlink = util.promisify(fs.unlink)
@@ -34,9 +35,8 @@ module.exports = async (payload) => {
   const {isTest, domains} = payload
   const [commonName, ...altNames] = domains
   altNames.push(commonName)
-  const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
-    __dirname + '/../../../certbot/config/'
-  const tmpDir = process.env.CERTCACHE_TMP_DIR || '/tmp/certcache/'
+  const certbotConfigDir = config.certbotConfigDir
+  const tmpDir = config.certcacheTmpDir
 
   await Promise.all([certbotConfigDir, tmpDir].map(async (dir) => {
     if (await fileExists(dir) === false) {

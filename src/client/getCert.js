@@ -1,6 +1,7 @@
 const getopts = require("getopts")
 const requestCert = require('../helpers/requestCert')
 const writeBundle = require('../helpers/writeBundle')
+const config = require('../config')
 
 const opts = getopts(process.argv.slice(2), {
   alias: {host: 'h', 'test-cert': 't', domains: 'd'},
@@ -17,8 +18,8 @@ const usage = () => {
 }
 
 const getCert = async () => {
-  const host = opts.host || process.env.CERTCACHE_HOST || 'localhost'
-  const port = opts.port || process.env.CERTCACHE_PORT || 4433
+  const host = opts.host || config.certcacheHost
+  const port = opts.port || config.certcachePort
 
   if (opts.domains === undefined) {
     usage()

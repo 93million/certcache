@@ -1,6 +1,7 @@
 const child_process = require('child_process')
 const util = require('util')
 const md5 = require('md5')
+const config = require('../config')
 
 const execFile = util.promisify(child_process.execFile)
 
@@ -14,15 +15,16 @@ const certsInGeneration = {}
 
 module.exports = async (commonName, altNames, isTest) => {
   const certName = generateHash(commonName, altNames, isTest)
-  const certbotExec = process.env.CERTCACHE_CERTBOT_EXEC || 'certbot'
-  const certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
-    __dirname + '/../../certbot/config/'
-  const email = process.env.CERTCACHE_LETSENCRYPT_EMAIL
+  const {
+    certbotExec,
+    certbotConfigDir,
+    certbotHttpAuthPort,
+    letsencryptEmail
+  } = config
   const certbotWorkDir = __dirname + '/../../certbot/work/'
   const certbotLogsDir = __dirname + '/../../certbot/logs/'
-  const certbotHttpAuthPort = process.env.CERTCACHE_CERTBOT_HTTP_AUTH_PORT
 
-  if (email === undefined) {
+  if (letsencryptEmail === undefined) {
     throw new Error([
       'Missing email address to obtain letsencrypt certificates.',
       'Please provide env CERTCACHE_LETSENCRYPT_EMAIL'
@@ -42,7 +44,7 @@ module.exports = async (commonName, altNames, isTest) => {
       `--cert-name`,
       certName,
       `-m`,
-      email,
+      letsencryptEmail,
       `--config-dir`,
       certbotConfigDir,
       `--logs-dir`,
