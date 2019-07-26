@@ -2,10 +2,9 @@ FROM node:10.16.0-alpine
 
 WORKDIR /certcache/
 
-COPY . /certcache/
 
-RUN apk update
-RUN apk add bash certbot openssl python g++ make
+RUN apk update && apk add bash certbot openssl python g++ make
+COPY . /certcache/
 RUN npm i
 
 VOLUME /certcache/cahKeys/
