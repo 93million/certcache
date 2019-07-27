@@ -9,3 +9,4 @@ module.exports.letsencryptEmail = process.env.CERTCACHE_LETSENCRYPT_EMAIL
 module.exports.certcacheTmpDir = process.env.CERTCACHE_TMP_DIR ||
   '/tmp/certcache/'
 module.exports.certbotHttpAuthPort = process.env.CERTCACHE_CERTBOT_HTTP_AUTH_PORT
+module.exports.httpRedirectUrl = process.env.CERTCACHE_HTTP_REDIRECT_URL

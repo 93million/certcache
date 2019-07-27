@@ -2,6 +2,7 @@ const getopts = require("getopts")
 const requestCert = require('../helpers/requestCert')
 const getLocalCertificates = require('../helpers/getLocalCertificates')
 const config = require('../config')
+const httpRedirect = require('../helpers/httpRedirect')
 
 const opts = getopts(process.argv.slice(2), {
   alias: {host: 'h', test: 't', daemon: 'D'},
@@ -19,6 +20,11 @@ const syncCerts = async () => {
     .filter(({notAfter}) => (notAfter.getTime() < certRenewEpoch.getTime()))
   const host = opts.host || config.certcacheHost
   const port = opts.port || config.certcachePort
+  const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
+
+  if (httpRedirectUrl !== undefined) {
+    httpRedirect.start(httpRedirectUrl)
+  }
 
   await Promise.all(certsForRenewal.map(({
     subject: {commonName},
@@ -29,12 +35,20 @@ const syncCerts = async () => {
 
     altNames.splice(altNames.indexOf(commonName), 1)
 
-    console.log(`Renewing certificate CN=${commonName} SAN=${JSON.stringify(altNames)} ${isTest ? 'test' : 'live'}`)
+    console.log([
+      `Renewing certificate CN=${commonName}`,
+      `SAN=${JSON.stringify(altNames)}`,
+      isTest ? 'test' : 'live'}
+    ].join(' '))
 
     return requestCert({host, port}, [commonName, ...altNames], isTest)
   }))
 
-  console.log(`${certsForRenewal.length} of ${certs.length} certificates synced`)
+  if (httpRedirectUrl !== undefined) {
+    httpRedirect.stop()
+  }
+
+  console.log(`${certsForRenewal.length} of ${certs.length} certs synced`)
 }
 
 syncCerts().catch((e) => {console.error(`ERROR! ${e}`)})
