@@ -3,4 +3,5 @@
 cahKeys
 certs
 certbot
+coverage
 node_modules

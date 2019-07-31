@@ -9,27 +9,11 @@ const generateCert = require('../../helpers/generateCert')
 const fileExists = require('../../helpers/fileExists')
 const mkdirRecursive = require('../../helpers/mkdirRecursive')
 const config = require('../../config')
+const findCertificate = require('../../helpers/findCertificate')
 
 const readFile = util.promisify(fs.readFile)
 const unlink = util.promisify(fs.unlink)
 const readdir = util.promisify(fs.readdir)
-
-const findCert = (cachedCertificates, commonName, altNames, isTest) =>
-  cachedCertificates.find(
-    ({
-      subject: {commonName: certCommonName},
-      altNames: certAltNames,
-      issuer: {commonName: issuerCommonName}
-    }) => {
-      const certIsTest = (issuerCommonName.indexOf('Fake') !== -1)
-
-      return (
-        certIsTest === isTest &&
-        certCommonName === commonName &&
-        arrayItemsMatch(certAltNames, altNames)
-      )
-    }
-  )
 
 module.exports = async (payload) => {
   const {isTest, domains} = payload
@@ -44,12 +28,14 @@ module.exports = async (payload) => {
     }
   }))
 
-  const cachedCertificates = await getLocalCertificates(`${certbotConfigDir}/live/`)
+  const cachedCertificates = await getLocalCertificates(
+    `${certbotConfigDir}/live/`
+  )
   const cachedCert = findCert(cachedCertificates, commonName, altNames, isTest)
   const tarPath = `${tmpDir}/${uuid()}`
   const certPath = (cachedCert !== undefined)
     ? cachedCert.certPath
-    : (await generateCert(commonName, altNames, isTest))
+    : (await generateCert(commonName, altNames, isTest, config))
   const files = (await readdir(certPath))
     .filter((file) => file.indexOf('.pem') !== -1)
   await tar.c(
@@ -57,7 +43,9 @@ module.exports = async (payload) => {
     files
   )
   const buffer = await readFile(tarPath)
+  const response = {bundle: buffer.toString('base64')}
+
   await unlink(tarPath)
 
-  return {bundle: buffer.toString('base64')}
+  return response
 }

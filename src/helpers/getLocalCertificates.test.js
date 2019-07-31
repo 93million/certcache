@@ -7,8 +7,7 @@ jest.mock('fs')
 jest.mock('x509')
 jest.mock('./fileExists')
 
-test('should get local certificates', async () => {
-  const certDir = '/test/certs/'
+const certDir = '/test/certs/'
   const certDirItems = ['cert1', 'cert2', 'cert3', 'README.txt']
   const filePaths = [
     `${certDir}cert1/cert.pem`,
@@ -18,7 +17,12 @@ test('should get local certificates', async () => {
   ]
 
   fs.readdir.mockImplementation((path, callback) => {
-    callback(null, certDirItems)
+      callback(
+        (path === certDir)
+          ? null
+          : {...new Error(`ENOENT not found ${path}`)},
+        (path === certDir) ? certDirItems : undefined
+      )
   })
 
   const mockCert = {_test_: 58008}
@@ -26,11 +30,19 @@ test('should get local certificates', async () => {
   x509.parseCert.mockReturnValue(mockCert)
   fileExists.mockImplementation((path) => filePaths.includes(path))
 
+test('should get local certificates', async () => {
   const expected = [
     {...mockCert, certPath: `${certDir}cert1`},
     {...mockCert, certPath: `${certDir}cert2`},
     {...mockCert, certPath: `${certDir}cert3`}
   ]
 
-  expect(await getLocalCertificates(certDir)).toEqual(expected)
+  await expect(getLocalCertificates(certDir)).resolves.toEqual(expected)
 })
+
+test(
+  'should return a blank array when certificate diretcory doesn\'t exist',
+  async () => {
+    await expect(getLocalCertificates('/dir/that/doesnt/exist')).resolves.toHaveLength(0)
+  }
+)
