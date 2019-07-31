@@ -1,4 +1,5 @@
-const clientAuthenticatedHttps = require('../clientAuthenticatedHttps/clientAuthenticatedHttps')
+const clientAuthenticatedHttps =
+  require('../clientAuthenticatedHttps/clientAuthenticatedHttps')
 
 module.exports = ({host, port}, domains, isTest) => {
   const postData = JSON.stringify({action: 'getCert', domains, isTest})
@@ -7,16 +8,14 @@ module.exports = ({host, port}, domains, isTest) => {
     hostname: host,
     method: 'POST',
     path: '/',
-    port: port
+    port
   }
 
   return new Promise(async (resolve) => {
     const response = []
     const req = await clientAuthenticatedHttps.request(options, (res) => {
       res.on('data', (data) => response.push(data))
-      res.on('end', () => {
-        resolve(response.join(''))
-      })
+      res.on('end', () => { resolve(response.join('')) })
     })
 
     req.on('error', (e) => {
