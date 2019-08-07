@@ -1,7 +1,7 @@
 .DS_Store
-.vscode
-cahKeys
-certs
-certbot
-coverage
-node_modules
+/.vscode
+/cahKeys
+/certs
+/certbot
+/coverage
+/node_modules
