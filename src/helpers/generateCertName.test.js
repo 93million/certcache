@@ -7,8 +7,9 @@ test(
     const commonName = 'example.com'
     const altNames = ['www.example.com', 'www1.example.com']
     const isTest = true
+    const extras = {isTest}
 
-    expect(generateCertName(commonName, altNames, isTest))
-      .toBe(md5(JSON.stringify({commonName, altNames, isTest})))
+    expect(generateCertName(commonName, altNames, extras))
+      .toBe(md5(JSON.stringify({commonName, altNames, extras})))
   }
 )

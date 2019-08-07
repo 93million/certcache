@@ -2,8 +2,8 @@ const getCertbotRenewArgs = require('./getCertbotRenewArgs')
 
 const defaultConfig = {
   certbotConfigDir: '/test/certbot/config',
-  certbotLogsDir: '/test/certbot/config',
-  certbotWorkDir: '/test/certbot/config'
+  certbotLogsDir: '/test/certbot/logs',
+  certbotWorkDir: '/test/certbot/work'
 }
 
 const certbotDefaultArgs = getCertbotRenewArgs(defaultConfig)

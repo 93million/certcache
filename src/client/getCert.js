@@ -3,6 +3,7 @@ const requestCert = require('../helpers/requestCert')
 const writeBundle = require('../helpers/writeBundle')
 const config = require('../config')
 const httpRedirect = require('../helpers/httpRedirect')
+const debug = require('debug')('certcache:getCert')
 
 const opts = getopts(process.argv.slice(2), {
   alias: {host: 'h', 'test-cert': 't', domains: 'd'},
@@ -47,9 +48,16 @@ const getCert = async () => {
 
     if (responseObj.success === true) {
       writeBundle(certName, responseObj.data.bundle)
-      console.log(`Created certificate bundle at ${certName}`)
     } else {
-      console.error(`Error obtaining certificate ${certName}`)
+      let message = `Error obtaining certificate ${certName}`
+
+      debug(`Error obtaining bundle`, responseObj)
+
+      if (responseObj.error !== undefined) {
+        message += `. Error: '${responseObj.error}'`
+      }
+
+      console.error(message)
     }
   }
 }

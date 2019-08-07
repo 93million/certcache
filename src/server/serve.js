@@ -1,6 +1,7 @@
 const clientAuthenticatedHttps = require('../clientAuthenticatedHttps/clientAuthenticatedHttps')
 const actions = require('./actions')
-const certbotRenew = require('../helpers/certbotRenew')
+const FeedbackError = require('../helpers/FeedbackError')
+const debug = require('debug')('certcache:server')
 
 const serve = async () => {
   const server = await clientAuthenticatedHttps.createServer((req, res) => {
@@ -14,6 +15,8 @@ const serve = async () => {
       const requestBody = data.join('')
       let response
       let result
+
+      debug('Request received', requestBody)
 
       const {action, ...payload} = JSON.parse(requestBody)
 
@@ -35,13 +38,12 @@ const serve = async () => {
       )
       res.write(JSON.stringify(result))
       res.end()
+      debug('Response sent')
     })
   })
 
   server.listen(4433)
 }
-
-class FeedbackError extends Error {}
 
 callAction = (action, payload) => {
   if (actions[action] === undefined) {
@@ -51,18 +53,7 @@ callAction = (action, payload) => {
   return actions[action](payload)
 }
 
-const renew = async () => {
-  try {
-    certbotRenew()
-  } catch (e) {
-    console.error('An error occurred when trying to renew certificates', e)
-  }
-}
-
 serve().then(() => {
   console.log('certcache listening on port 4433')
 })
 
-renew()
-
-setInterval(renew, 1000 * 20)

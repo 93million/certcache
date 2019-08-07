@@ -1,51 +1,52 @@
-const md5 = require('md5')
-const tar = require('tar')
-const getLocalCertificates = require('../../helpers/getLocalCertificates')
-const util = require('util')
-const fs = require('fs')
-const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
-const uuid = require('uuid')
-const generateCert = require('../../helpers/generateCert')
-const fileExists = require('../../helpers/fileExists')
-const mkdirRecursive = require('../../helpers/mkdirRecursive')
+const generators = require('../../config/generators')
+const locators = require('../../config/locators')
+const generateFirstCertInSequence = require(
+  '../../helpers/generateFirstCertInSequence'
+)
+const CertLocator = require('../../classes/CertLocator')
+const CertGenerator = require('../../classes/CertGenerator')
+const backends = require('../../helpers/plugins')
 const config = require('../../config')
-const findCertificate = require('../../helpers/findCertificate')
+const FeedbackError = require('../../helpers/FeedbackError')
 
-const readFile = util.promisify(fs.readFile)
-const unlink = util.promisify(fs.unlink)
-const readdir = util.promisify(fs.readdir)
+const getGenerators = (sequence) => sequence
+  .map(() => new CertLocator(backends[sequence]))
 
 module.exports = async (payload) => {
   const {isTest, domains} = payload
+  const extras = {isTest}
   const [commonName, ...altNames] = domains
+
   altNames.push(commonName)
-  const certbotConfigDir = config.certbotConfigDir
-  const tmpDir = config.certcacheTmpDir
 
-  await Promise.all([certbotConfigDir, tmpDir].map(async (dir) => {
-    if (await fileExists(dir) === false) {
-      await mkdirRecursive(dir)
-    }
-  }))
+  const certLocators = locators
+    .map((key) => new CertLocator(backends[key]))
+  const certGenerators = generators
+    .map((key) => new CertGenerator(backends[key]))
 
-  const cachedCertificates = await getLocalCertificates(
-    `${certbotConfigDir}/live/`
-  )
-  const cachedCert = findCert(cachedCertificates, commonName, altNames, isTest)
-  const tarPath = `${tmpDir}/${uuid()}`
-  const certPath = (cachedCert !== undefined)
-    ? cachedCert.certPath
-    : (await generateCert(commonName, altNames, isTest, config))
-  const files = (await readdir(certPath))
-    .filter((file) => file.indexOf('.pem') !== -1)
-  await tar.c(
-    {file: tarPath, gzip: true, cwd: certPath, follow: true},
-    files
-  )
-  const buffer = await readFile(tarPath)
-  const response = {bundle: buffer.toString('base64')}
+  const localCertsAll = await Promise
+  .all(certLocators.map(async (certLocator) => await certLocator.getLocalCerts()))
 
-  await unlink(tarPath)
+  const localCertSearch = await Promise
+    .all(certLocators.map(async (certLocator) => (await certLocator.getLocalCerts())
+      .findCert(commonName, altNames, {isTest})
+    ))
 
-  return response
+  localCert = localCertSearch.find((localCert) => localCert !== undefined)
+
+  const cert = (localCert !== undefined)
+    ? localCert
+    : (await generateFirstCertInSequence(
+      certGenerators,
+      commonName,
+      altNames,
+      extras,
+      config
+    ))
+
+  if (cert === undefined) {
+    throw new FeedbackError('Unable to generate cert using any backend')
+  }
+
+  return {bundle: Buffer.from(await cert.getArchive()).toString('base64')}
 }
