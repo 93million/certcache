@@ -8,6 +8,7 @@ const CertGenerator = require('../../classes/CertGenerator')
 const backends = require('../../helpers/plugins')
 const config = require('../../config')
 const FeedbackError = require('../../helpers/FeedbackError')
+const debug = require('debug')
 
 const getGenerators = (sequence) => sequence
   .map(() => new CertLocator(backends[sequence]))
@@ -16,6 +17,8 @@ module.exports = async (payload) => {
   const {isTest, domains} = payload
   const extras = {isTest}
   const [commonName, ...altNames] = domains
+
+  debug('Request for certificate', domains, 'with extras', extras)
 
   altNames.push(commonName)
 
@@ -33,6 +36,10 @@ module.exports = async (payload) => {
     ))
 
   localCert = localCertSearch.find((localCert) => localCert !== undefined)
+
+  if (localCert !== undefined) {
+    debug('Found matching cert locally')
+  }
 
   const cert = (localCert !== undefined)
     ? localCert
