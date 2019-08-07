@@ -27,12 +27,10 @@ module.exports = async (payload) => {
   const certGenerators = generators
     .map((key) => new CertGenerator(backends[key]))
 
-  const localCertsAll = await Promise
-  .all(certLocators.map(async (certLocator) => await certLocator.getLocalCerts()))
-
   const localCertSearch = await Promise
-    .all(certLocators.map(async (certLocator) => (await certLocator.getLocalCerts())
-      .findCert(commonName, altNames, {isTest})
+    .all(certLocators.map(
+      async (certLocator) => (await certLocator.getLocalCerts())
+        .findCert(commonName, altNames, {isTest})
     ))
 
   localCert = localCertSearch.find((localCert) => localCert !== undefined)

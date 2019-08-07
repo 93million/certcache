@@ -20,10 +20,19 @@ module.exports = (fn, concurrency) => {
 
         resolve(val)
       }
+      const error = (val) => {
+        inFlightNum--
+
+        while (inFlightNum < concurrency && stack.length !== 0) {
+          callNext()
+        }
+
+        reject(val)
+      }
       const callback = () => {
         inFlightNum++
 
-        return fn(..._args).then(complete)
+        fn(..._args).then(complete, error)
       }
 
       stack.push(callback)
