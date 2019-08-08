@@ -7,9 +7,7 @@ jest.mock('child_process')
 
 let firstCallback
 
-child_process.execFile.mockImplementation((exec, args, callback) => {
-  callback(null, true)
-})
+
 
 const commonName = 'test.example.com'
 const altNames = ['test.example.com', 'test1.example.com', 'foo.jimmy.bar']
@@ -17,7 +15,10 @@ const certName = generateCertName(commonName, altNames, true)
 const certbotConfig = {...config, letsencryptEmail: 'test@example.com'}
 
 beforeEach(() => {
-  child_process.execFile.mockClear()
+  child_process.execFile.mockReset()
+  child_process.execFile.mockImplementation((exec, args, callback) => {
+    callback(null, true)
+  })
 })
 
 test(
@@ -48,4 +49,21 @@ test(
   }
 )
 
+test(
+  'should throw errors encountered',
+  async () => {
+    child_process.execFile.mockReset()
+    child_process.execFile.mockImplementation((exec, args, callback) => {
+      callback(new Error('certbot exited with error'), null)
+    })
 
+    await expect(generateCert(
+      commonName,
+      altNames,
+      true,
+      certbotConfig
+    ))
+      .rejects
+      .toThrow()
+  }
+)
