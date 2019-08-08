@@ -8,8 +8,8 @@ module.exports.certbotExec = process.env.CERTCACHE_CERTBOT_EXEC ||
   defaults.certbotExec
 module.exports.certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
   defaults.certbotConfigDir
-module.exports.certbotLogsDir = __dirname + '/../../certbot/logs/'
-module.exports.certbotWorkDir = __dirname + '/../../certbot/work/'
+module.exports.certbotLogsDir = defaults.certbotLogsDir
+module.exports.certbotWorkDir = defaults.certbotWorkDir
 module.exports.letsencryptEmail = process.env.CERTCACHE_LETSENCRYPT_EMAIL
 module.exports.certcacheTmpDir = process.env.CERTCACHE_TMP_DIR ||
   defaults.certcacheTmpDir

@@ -26,19 +26,19 @@ class Certificate {
 
   async getArchive () {
     const tmpDir = await mkdtemp(
-      path.join(os.tmpdir(),'com.93million.certcache.')
+      path.join(os.tmpdir(), 'com.93million.certcache.')
     )
     debug(`created temp dir ${tmpDir}`)
     const bundleFiles = this.handlers.getFilesForBundle(this.certPath)
     const tmpCertPath = `${tmpDir}/cert.pem`
     const tmpChainPath = `${tmpDir}/chain.pem`
-    const tmpKeyPath = `${tmpDir}/key.pem`
+    const tmpKeyPath = `${tmpDir}/privkey.pem`
     const tmpFullchainPath = `${tmpDir}/fullchain.pem`
 
     await Promise.all([
       copyFile(bundleFiles.cert, tmpCertPath),
       copyFile(bundleFiles.chain, tmpChainPath),
-      copyFile(bundleFiles.key, tmpKeyPath),
+      copyFile(bundleFiles.privkey, tmpKeyPath),
       copyFile(bundleFiles.cert, tmpFullchainPath)
         .then(() => readFile(bundleFiles.chain))
         .then((chainBuffer) => appendFile(tmpFullchainPath, chainBuffer))
@@ -46,7 +46,7 @@ class Certificate {
 
     const tarStream = await tar.c(
       {gzip: true, cwd: tmpDir},
-      ['cert.pem', 'chain.pem', 'key.pem', 'fullchain.pem']
+      ['cert.pem', 'chain.pem', 'privkey.pem', 'fullchain.pem']
     )
 
     await rmdir(tmpDir)

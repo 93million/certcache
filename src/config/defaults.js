@@ -6,4 +6,3 @@ module.exports.certbotConfigDir = __dirname + '/../../certbot/config/'
 module.exports.certbotLogsDir = __dirname + '/../../certbot/logs/'
 module.exports.certbotWorkDir = __dirname + '/../../certbot/work/'
 module.exports.certcacheTmpDir = '/tmp/certcache/'
-

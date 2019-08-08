@@ -6,6 +6,6 @@ module.exports = (certPath) => {
   return {
     cert: `${dirname}/cert.pem`,
     chain: `${dirname}/chain.pem`,
-    key: `${dirname}/privkey.pem`
+    privkey: `${dirname}/privkey.pem`
   }
 }
