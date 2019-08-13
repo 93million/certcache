@@ -1,7 +1,7 @@
 const fs = require('fs')
 const util = require('util')
 const readdir = util.promisify(fs.readdir)
-const fileExists = require('../../helpers/fileExists')
+const fileExists = require('../../lib/helpers/fileExists')
 const path = require('path')
 
 module.exports = async () => {

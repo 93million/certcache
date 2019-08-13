@@ -1,10 +1,10 @@
 const getLocalCertPaths = require('./getLocalCertPaths')
 const fs = require('fs')
-const fileExists = require('../../helpers/fileExists')
+const fileExists = require('../../lib/helpers/fileExists')
 const path = require('path')
 
 jest.mock('fs')
-jest.mock('../../helpers/fileExists')
+jest.mock('../../lib/helpers/fileExists')
 jest.mock('path')
 
 const dirContents = ['cert1', 'cert2', 'cert3']

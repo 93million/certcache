@@ -5,7 +5,7 @@ const generateFirstCertInSequence = require(
 )
 const CertLocator = require('../../classes/CertLocator')
 const CertGenerator = require('../../classes/CertGenerator')
-const backends = require('../../plugins')
+const backends = require('../../../backends')
 const config = require('../../../config')
 const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')

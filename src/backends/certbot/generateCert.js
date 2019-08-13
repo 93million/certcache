@@ -1,5 +1,5 @@
 const util = require('util')
-const generateCertName = require('../../generateCertName')
+const generateCertName = require('../../lib/generateCertName')
 const getCertbotCertonlyArgs = require('./lib/getCertbotCertonlyArgs')
 const debug = require('debug')('certcache:generateCert')
 const execCertbot = require('./lib/execCertbot')

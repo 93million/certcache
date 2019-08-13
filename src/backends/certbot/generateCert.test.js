@@ -1,13 +1,11 @@
 const child_process = require('child_process')
-const config = require('../../../config')
+const config = require('../../config')
 const generateCert = require('./generateCert')
-const generateCertName = require('../../generateCertName')
+const generateCertName = require('../../lib/generateCertName')
 
 jest.mock('child_process')
 
 let firstCallback
-
-
 
 const commonName = 'test.example.com'
 const altNames = ['test.example.com', 'test1.example.com', 'foo.jimmy.bar']

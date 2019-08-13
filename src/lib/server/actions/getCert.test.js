@@ -3,7 +3,7 @@ const generators = require('../../../config/generators')
 const locators = require('../../../config/locators')
 const CertLocator = require('../../classes/CertLocator')
 const CertGenerator = require('../../classes/CertGenerator')
-const backends = require('../../plugins')
+const backends = require('../../../backends')
 const generateFirstCertInSequence = require(
   '../../generateFirstCertInSequence'
 )
