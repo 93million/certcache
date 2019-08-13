@@ -4,7 +4,7 @@ const fileExists = require('./fileExists')
 const mkdirRecursive = require('./mkdirRecursive')
 const {Readable, Writable} = require('stream')
 const config = require('../config')
-const certName = 'jimmythecertificate'
+const certName = 'testcert.pem'
 
 jest.mock('tar')
 jest.mock('./fileExists')
@@ -51,17 +51,17 @@ test(
 test(
   'should pass certificate path through to tar command',
   async () => {
-    let certPath
+    let tarCwd
 
     tar.x.mockImplementation(({cwd}) => {
-      certPath = cwd
+      tarCwd = cwd
 
       return new Writable({ write: () => {} })
     })
 
-    await writeBundle(certName, data)
+    await writeBundle(`${config.certcacheCertDir}/${certName}`, data)
 
-    expect(certPath).toBe(`${config.certcacheCertDir}/${certName}`)
+    expect(tarCwd).toBe(`${config.certcacheCertDir}/${certName}`)
   }
 )
 
@@ -70,7 +70,7 @@ test(
   async () => {
     fileExists.mockImplementation(() => Promise.resolve(false))
 
-    await writeBundle(certName, data)
+    await writeBundle(`${config.certcacheCertDir}/${certName}`, data)
 
     expect(mkdirRecursive)
       .toBeCalledWith(`${config.certcacheCertDir}/${certName}`)

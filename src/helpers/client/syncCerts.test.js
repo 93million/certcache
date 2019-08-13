@@ -4,17 +4,22 @@ const requestCert = require('../requestCert')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
+const writeBundle = require('../writeBundle')
+const path = require('path')
 
 jest.mock('getopts')
 jest.mock('../requestCert')
 jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
+jest.mock('../writeBundle')
 
 let mockOpts
 let mockResponse
+const certcacheCertDir = '/test/certcache/certs'
 const mockConfig = {
   certcacheHost: 'bar.com',
-  certcachePort: 54321
+  certcachePort: 54321,
+  certcacheCertDir
 }
 
 for (let i in mockConfig) {
@@ -32,7 +37,8 @@ const generateMockCert = (tld, isTest = true, daysBeforeExpiry) => {
     issuerCommonName: isTest
       ? 'Fake LE Intermediate X1'
       : 'Let\'s Encrypt Authority X3',
-    notAfter
+    notAfter,
+    certPath: `${certcacheCertDir}/${tld}/cert.pem`
   }
 }
 const mockLocalCerts = [
@@ -116,5 +122,44 @@ test(
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalledTimes(1)
+  }
+)
+
+test(
+  'should write cert bundle to filesystem when received from certcache server',
+  async () => {
+    await syncCerts()
+
+    mockCertsForRenewal.forEach((mockCert) => {
+      expect(writeBundle)
+        .toBeCalledWith(
+          path.dirname(mockCert.certPath),
+          mockResponse.data.bundle
+        )
+    })
+  }
+)
+
+test(
+  'should output a warning if cert fails to be retrieved from certcache server',
+  async () => {
+    mockResponse = {success: false}
+
+    await syncCerts()
+
+    expect(console.error).toBeCalledTimes(mockCertsForRenewal.length)
+  }
+)
+
+test(
+  'should output any error messages retrieved from certcache server',
+  async () => {
+    const error = '__test error__'
+
+    mockResponse = {success: false, error}
+
+    await syncCerts()
+
+    expect(console.error.mock.calls[0][0]).toContain(error)
   }
 )

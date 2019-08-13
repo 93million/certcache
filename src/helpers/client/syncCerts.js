@@ -3,8 +3,9 @@ const requestCert = require('../requestCert')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
-
-
+const path = require('path')
+const writeBundle = require('../writeBundle')
+const debug = require('debug')('certcache:getCert')
 
 module.exports = async () => {
   const opts = getopts(process.argv.slice(2), {
@@ -27,10 +28,11 @@ module.exports = async () => {
     httpRedirect.start(httpRedirectUrl)
   }
 
-  await Promise.all(certsForRenewal.map(({
+  await Promise.all(certsForRenewal.map(async ({
     commonName,
     altNames,
-    issuerCommonName
+    issuerCommonName,
+    certPath
   }) => {
     const isTest = (issuerCommonName.indexOf('Fake') !== -1)
 
@@ -42,7 +44,27 @@ module.exports = async () => {
       isTest ? 'test' : 'live'
     ].join(' '))
 
-    return requestCert({host, port}, [commonName, ...altNames], isTest)
+    const response = await requestCert(
+      {host, port},
+      [commonName, ...altNames],
+      isTest
+    )
+
+    const responseObj = JSON.parse(response)
+
+    if (responseObj.success === true) {
+      await writeBundle(path.dirname(certPath), responseObj.data.bundle)
+    } else {
+      let message = `Error obtaining certificate ${certPath}`
+
+      debug(`Error obtaining bundle`, responseObj)
+
+      if (responseObj.error !== undefined) {
+        message += `. Error: '${responseObj.error}'`
+      }
+
+      console.error(message)
+    }
   }))
 
   if (httpRedirectUrl !== undefined) {

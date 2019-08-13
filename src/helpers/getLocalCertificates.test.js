@@ -32,9 +32,9 @@ fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {
   const expected = [
-    {...mockCert, certPath: `${certDir}cert1`},
-    {...mockCert, certPath: `${certDir}cert2`},
-    {...mockCert, certPath: `${certDir}cert3`}
+    {...mockCert, certPath: `${certDir}cert1/cert.pem`},
+    {...mockCert, certPath: `${certDir}cert2/cert.pem`},
+    {...mockCert, certPath: `${certDir}cert3/cert.pem`}
   ]
 
   await expect(getLocalCertificates(certDir)).resolves.toEqual(expected)

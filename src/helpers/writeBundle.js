@@ -4,11 +4,8 @@ const util = require('util')
 const { Readable } = require('stream')
 const fileExists = require('./fileExists')
 const mkdirRecursive = require('./mkdirRecursive')
-const config = require('../config')
 
-module.exports = async (certName, data) => {
-  const certcacheCertDir = config.certcacheCertDir
-  const certPath = `${certcacheCertDir}/${certName}`
+module.exports = async (certPath, data) => {
   const tarStream = new Readable()
 
   tarStream.push(Buffer.from(data, 'base64'))

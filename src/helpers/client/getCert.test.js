@@ -96,7 +96,10 @@ test(
     await getCert()
 
     expect(writeBundle)
-      .toBeCalledWith(mockOpts['cert-name'], mockResponse.data.bundle)
+      .toBeCalledWith(
+        `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
+         mockResponse.data.bundle
+      )
   }
 )
 
