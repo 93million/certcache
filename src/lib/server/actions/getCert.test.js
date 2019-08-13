@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const getCert = require('./getCert')
 const generators = require('../../../config/generators')
 const locators = require('../../../config/locators')
@@ -12,10 +14,10 @@ const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
 const altNames = [...domains.slice(1), domains[0]]
 const isTest = true
-const payload = {domains, isTest}
+const payload = { domains, isTest }
 const getLocalCerts = jest.fn()
 const findCert = jest.fn()
-const extras = {isTest}
+const extras = { isTest }
 const mockCert = { getArchive: () => Promise.resolve('done') }
 
 beforeEach(() => {
@@ -28,14 +30,14 @@ beforeEach(() => {
   })
 })
 
-getLocalCerts.mockReturnValue(Promise.resolve({findCert}))
+getLocalCerts.mockReturnValue(Promise.resolve({ findCert }))
 
 jest.mock('../../classes/CertGenerator')
 jest.mock('../../classes/CertLocator')
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
 
-CertLocator.mockImplementation(() => ({getLocalCerts}))
+CertLocator.mockImplementation(() => ({ getLocalCerts }))
 CertGenerator.mockImplementation(() => {})
 
 test(

@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const mkdirRecursive = require('./mkdirRecursive')
 const fs = require('fs')
 const fileExists = require('./fileExists')

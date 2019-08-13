@@ -11,7 +11,6 @@ const mkdtemp = util.promisify(fs.mkdtemp)
 const copyFile = util.promisify(fs.copyFile)
 const appendFile = util.promisify(fs.appendFile)
 const readFile = util.promisify(fs.readFile)
-const open = util.promisify(fs.open)
 const rmdir = util.promisify(rimraf)
 
 class Certificate {
@@ -19,7 +18,7 @@ class Certificate {
     this.handlers = handlers
     const certInfo = getCertInfo(certPath)
 
-    for (let i in certInfo) {
+    for (const i in certInfo) {
       this[i] = certInfo[i]
     }
   }
@@ -45,7 +44,7 @@ class Certificate {
     ])
 
     const tarStream = await tar.c(
-      {gzip: true, cwd: tmpDir},
+      { gzip: true, cwd: tmpDir },
       ['cert.pem', 'chain.pem', 'privkey.pem', 'fullchain.pem']
     )
 

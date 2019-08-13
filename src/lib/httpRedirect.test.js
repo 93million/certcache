@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const httpRedirect = require('./httpRedirect')
 const http = require('http')
 
@@ -7,15 +9,15 @@ const listen = jest.fn()
 const close = jest.fn()
 let requestHandler
 
-listen.mockReturnValue({close})
+listen.mockReturnValue({ close })
 
 http.createServer.mockImplementation((handler) => {
   requestHandler = handler
 
-  return {listen}
+  return { listen }
 })
 
-const res = {writeHead: jest.fn(), end: jest.fn()}
+const res = { writeHead: jest.fn(), end: jest.fn() }
 const redirectUrl = 'http://example.com'
 const requestPath = '/.well-known/anything/'
 
@@ -42,7 +44,7 @@ test(
   'should redirect requests to paths starting with \'/.well-known/\'',
   () => {
     httpRedirect.start(redirectUrl)
-    requestHandler({url: requestPath}, res)
+    requestHandler({ url: requestPath }, res)
 
     expect(res.writeHead).toHaveBeenCalledTimes(1)
     expect(res.writeHead).toBeCalledWith(302, {
@@ -56,7 +58,7 @@ test(
   'should not redirect requests to paths not starting with \'/.well-known/\'',
   () => {
     httpRedirect.start(redirectUrl)
-    requestHandler({url: '/test/path/'}, res)
+    requestHandler({ url: '/test/path/' }, res)
 
     expect(res.writeHead).not.toHaveBeenCalled()
     expect(res.end).toHaveBeenCalledTimes(1)
@@ -67,10 +69,10 @@ test(
   'should to redirect URLs ending with and without forward slashes equally',
   () => {
     httpRedirect.start(redirectUrl)
-    requestHandler({url: requestPath}, res)
+    requestHandler({ url: requestPath }, res)
 
     httpRedirect.start(`${redirectUrl}/`)
-    requestHandler({url: requestPath}, res)
+    requestHandler({ url: requestPath }, res)
 
     expect(res.writeHead).toHaveBeenCalledTimes(2)
     expect(res.end).toHaveBeenCalledTimes(2)

@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const fs = require('fs')
 const getCertInfo = require('./getCertInfo')
 const fileExists = require('./helpers/fileExists')
@@ -17,24 +19,24 @@ const filePaths = [
 ]
 
 fs.readdir.mockImplementation((path, callback) => {
-    callback(
-      (path === certDir)
-        ? null
-        : {...new Error(`ENOENT not found ${path}`)},
-      (path === certDir) ? certDirItems : undefined
-    )
+  callback(
+    (path === certDir)
+      ? null
+      : { ...new Error(`ENOENT not found ${path}`) },
+    (path === certDir) ? certDirItems : undefined
+  )
 })
 
-const mockCert = {_test_: 58008}
+const mockCert = { _test_: 58008 }
 
 getCertInfo.mockReturnValue(mockCert)
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {
   const expected = [
-    {...mockCert, certPath: `${certDir}cert1/cert.pem`},
-    {...mockCert, certPath: `${certDir}cert2/cert.pem`},
-    {...mockCert, certPath: `${certDir}cert3/cert.pem`}
+    { ...mockCert, certPath: `${certDir}cert1/cert.pem` },
+    { ...mockCert, certPath: `${certDir}cert2/cert.pem` },
+    { ...mockCert, certPath: `${certDir}cert3/cert.pem` }
   ]
 
   await expect(getLocalCertificates(certDir)).resolves.toEqual(expected)

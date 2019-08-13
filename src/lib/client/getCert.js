@@ -10,14 +10,14 @@ const usage = () => {
     process.argv[1],
     '-d|--domains <domains> [-t|--test-cert] [-h|--host certcache-host]',
     '[-p|--port certcache-port] [--cert-name certificate-name]'
-  ].join (' ')
+  ].join(' ')
   console.log(`Usage: ${usage}`)
 }
 
 module.exports = async () => {
   const opts = getopts(process.argv.slice(2), {
-    alias: {host: 'h', 'test-cert': 't', domains: 'd'},
-    default: {'test-cert': false}
+    alias: { host: 'h', 'test-cert': 't', domains: 'd' },
+    default: { 'test-cert': false }
   })
   const host = opts.host || config.certcacheHost
   const port = opts.port || config.certcachePort
@@ -34,7 +34,7 @@ module.exports = async () => {
     }
 
     const response = await requestCert(
-      {host, port},
+      { host, port },
       opts.domains.split(','),
       opts['test-cert']
     )

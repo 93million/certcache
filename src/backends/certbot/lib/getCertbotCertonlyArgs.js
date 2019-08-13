@@ -1,5 +1,5 @@
 module.exports = (commonName, certName, altNames, extras, certbotConfig) => {
-  const {isTest} = extras
+  const { isTest } = extras
   const {
     certbotConfigDir,
     certbotLogsDir,

@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const child_process = require('child_process')
 const config = require('../../config')
 const generateCert = require('./generateCert')
@@ -5,12 +7,9 @@ const generateCertName = require('../../lib/generateCertName')
 
 jest.mock('child_process')
 
-let firstCallback
-
 const commonName = 'test.example.com'
 const altNames = ['test.example.com', 'test1.example.com', 'foo.jimmy.bar']
-const certName = generateCertName(commonName, altNames, true)
-const certbotConfig = {...config, letsencryptEmail: 'test@example.com'}
+const certbotConfig = { ...config, letsencryptEmail: 'test@example.com' }
 
 beforeEach(() => {
   child_process.execFile.mockReset()

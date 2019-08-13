@@ -9,7 +9,7 @@ module.exports.start = (httpRedirectUrl) => {
 
   redirectServer = http.createServer((req, res) => {
     if (req.url.startsWith('/.well-known/')) {
-      res.writeHead(302, {'Location': `${httpRedirectUrl}${req.url}`})
+      res.writeHead(302, { Location: `${httpRedirectUrl}${req.url}` })
     }
 
     res.end()

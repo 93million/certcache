@@ -1,8 +1,10 @@
+/* global jest describe test expect beforeEach */
+
 const getCertInfo = require('../getCertInfo')
 const fs = require('fs')
 const Certificate = require('./Certificate')
 const tar = require('tar')
-const {Readable} = require('stream')
+const { Readable } = require('stream')
 const rimraf = require('rimraf')
 
 jest.mock('../getCertInfo')
@@ -23,17 +25,17 @@ let mockedTarCreateStream
 
 handlers.getFilesForBundle.mockReturnValue(mockedFilesForBundle)
 tar.c.mockImplementation(() => Promise.resolve(mockedTarCreateStream))
-fs.copyFile.mockImplementation((src, dest, callback) => {callback(null, true)})
+fs.copyFile.mockImplementation((src, dest, callback) => { callback(null, true) })
 fs.appendFile.mockImplementation((file, contents, callback) => {
   callback(null, true)
 })
-fs.readFile.mockImplementation((path, callback) => {callback(null, true)})
+fs.readFile.mockImplementation((path, callback) => { callback(null, true) })
 fs.mkdtemp.mockImplementation((path, callback) => {
   callback(null, tmpDir)
 })
-rimraf.mockImplementation((path, callback) => {callback(null, true)})
+rimraf.mockImplementation((path, callback) => { callback(null, true) })
 
-getCertInfo.mockReturnValue({testProp})
+getCertInfo.mockReturnValue({ testProp })
 
 const certPath = '/test/crt.cer'
 

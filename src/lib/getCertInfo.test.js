@@ -1,17 +1,18 @@
+/* global jest test expect */
+
 const getCertInfo = require('./getCertInfo')
 const x509 = require('x509')
 
 jest.mock('x509')
 
-const notAfter = new Date()
 const mockedCert = {
-  subject: {commonName: 'test.example.com'},
+  subject: { commonName: 'test.example.com' },
   altNames: [
     'test.example.com',
     'www1.test.example.com',
     'foo.test.example.com'
   ],
-  issuer: {commonName: 'Jimmy the issuer'}
+  issuer: { commonName: 'Jimmy the issuer' }
 }
 const certPath = '/test/cert/path'
 

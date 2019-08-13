@@ -1,18 +1,20 @@
+/* global jest test expect beforeEach */
+
 const requestCert = require('./requestCert')
 const clientAuthenticatedHttps =
   require('../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
 
 jest.mock('../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
 
-const pushEvent = (eventObj, event, callback) => {
+const pushEvent = (eventObj, event, handler) => {
   if (eventObj[event] === undefined) {
     eventObj[event] = []
   }
 
-  eventObj[event].push(callback)
+  eventObj[event].push(handler)
 }
 const dispatchEvent = (eventObj, event, argsArr = []) => {
-  eventObj[event].forEach((callback) => callback(...argsArr))
+  eventObj[event].forEach((handler) => handler(...argsArr))
 }
 let requestEvents = {}
 let requestData
@@ -38,14 +40,12 @@ const responseObj = {
     pushEvent(responseEvents, event, callback)
   }
 }
-let requestOptions
 let responseCallback
 
 clientAuthenticatedHttps.request.mockImplementation((options, callback) => {
-  requestOptions = options
   responseCallback = callback
 
-  return requestObj
+  return Promise.resolve(requestObj)
 })
 
 const host = 'certcache.example.com'
@@ -61,7 +61,7 @@ beforeEach(() => {
 test(
   'should send a request to the for the certificate to the certcache server',
   async () => {
-    const request = requestCert({host, port}, domains, isTest)
+    const request = requestCert({ host, port }, domains, isTest)
 
     responseCallback(responseObj)
 
@@ -70,14 +70,14 @@ test(
     await request
 
     expect(requestData)
-      .toBe(JSON.stringify({action: 'getCert', domains, isTest}))
+      .toBe(JSON.stringify({ action: 'getCert', domains, isTest }))
   }
 )
 
 test(
   'should return the data returned by the certcache server in a promise',
   async () => {
-    const request = requestCert({host, port}, domains, isTest)
+    const request = requestCert({ host, port }, domains, isTest)
 
     responseCallback(responseObj)
 
@@ -93,7 +93,7 @@ test(
 test(
   'should throw an error if an error is returned by the request library',
   async () => {
-    const request = requestCert({host, port}, domains, isTest)
+    const request = requestCert({ host, port }, domains, isTest)
 
     responseCallback(responseObj)
 

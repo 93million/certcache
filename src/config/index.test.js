@@ -1,4 +1,4 @@
-const defaults = require('./defaults')
+/* global test expect */
 
 test('should respect env vars when creating config', () => {
   const testWithEnvVars = (envVarsOverrides) => {
@@ -19,11 +19,10 @@ test('should respect env vars when creating config', () => {
       ['CERTCACHE_HTTP_REDIRECT_URL', 'httpRedirectUrl']
     ]
 
-
     envVarMaps.forEach(([envVar, configProp]) => {
       expect(config[configProp])
         .toBe(envVarsOverrides[envVar])
-      }
+    }
     )
   }
 

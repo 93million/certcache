@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const getLocalCertPaths = require('./getLocalCertPaths')
 const fs = require('fs')
 const fileExists = require('../../lib/helpers/fileExists')
@@ -26,10 +28,9 @@ const filePaths = [
   '/test/certs/notcert2/file3'
 ]
 
-
 path.resolve.mockReturnValue('/test/certs')
 
-fileExists.mockImplementation(async (path) => await filePaths.includes(path))
+fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test(
   'should return an array of paths to certs',
@@ -48,16 +49,15 @@ test(
 test(
   'should return an ampty array when directory doesn\'t exist',
   async () => {
+    const error = {
+      ...new Error(`ENOENT: no such file or directory, stat '${path}'`),
+      code: 'ENOENT',
+      path,
+      syscall: 'stat'
+    }
+
     fs.readdir
-      .mockImplementation((path, callback) => callback(
-        {
-          ...new Error(`ENOENT: no such file or directory, stat '${path}'`),
-          code: 'ENOENT',
-          path,
-          syscall: 'stat'
-        },
-        null
-      ))
+      .mockImplementation((path, callback) => callback(error, null))
 
     await expect(getLocalCertPaths()).resolves.toEqual([])
   }

@@ -1,6 +1,7 @@
+/* global jest test expect beforeEach */
+
 const CertLocator = require('./CertLocator')
 const CertList = require('./CertList')
-const getCertInfo = require('../getCertInfo')
 
 jest.mock('../getCertInfo')
 

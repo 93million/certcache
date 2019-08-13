@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const locateKeysDir = require('./locateKeysDir')
 const path = require('path')
 const fileExists = require('./fileExists')
@@ -20,7 +22,7 @@ jest.mock('path')
 jest.mock('./fileExists')
 
 path.dirname.mockReturnValue(scriptPath)
-fileExists.mockImplementation(async (path) => await filePaths.includes(path))
+fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test(
   'should locate directory containing cahkeys',

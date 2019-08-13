@@ -1,6 +1,4 @@
 const tar = require('tar')
-const fs = require('fs')
-const util = require('util')
 const { Readable } = require('stream')
 const fileExists = require('./helpers/fileExists')
 const mkdirRecursive = require('./helpers/mkdirRecursive')
@@ -15,5 +13,5 @@ module.exports = async (certPath, data) => {
     await mkdirRecursive(certPath)
   }
 
-  await tarStream.pipe(tar.x({cwd: certPath}))
+  await tarStream.pipe(tar.x({ cwd: certPath }))
 }

@@ -1,4 +1,4 @@
-const getopts = require("getopts")
+const getopts = require('getopts')
 const requestCert = require('../requestCert')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
@@ -9,8 +9,8 @@ const debug = require('debug')('certcache:getCert')
 
 module.exports = async () => {
   const opts = getopts(process.argv.slice(2), {
-    alias: {host: 'h', test: 't', daemon: 'D'},
-    default: {test: false, days: 30, daemon: false}
+    alias: { host: 'h', test: 't', daemon: 'D' },
+    default: { test: false, days: 30, daemon: false }
   })
   const certcacheCertDir = config.certcacheCertDir
   const certs = await getLocalCertificates(certcacheCertDir)
@@ -19,7 +19,7 @@ module.exports = async () => {
   certRenewEpoch.setDate(certRenewEpoch.getDate() + opts.days)
 
   const certsForRenewal = certs
-    .filter(({notAfter}) => (notAfter.getTime() < certRenewEpoch.getTime()))
+    .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
   const host = opts.host || config.certcacheHost
   const port = opts.port || config.certcachePort
   const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
@@ -45,7 +45,7 @@ module.exports = async () => {
     ].join(' '))
 
     const response = await requestCert(
-      {host, port},
+      { host, port },
       [commonName, ...altNames],
       isTest
     )

@@ -1,14 +1,15 @@
+/* global jest test expect beforeEach */
+
 const CertGenerator = require('./CertGenerator')
 const Certificate = require('./Certificate')
-const getCertInfo = require('../getCertInfo')
 
 const handlers = {
   generateCert: jest.fn()
 }
 const commonName = 'test.example.com'
 const altNames = ['test.example.com', 'foo.test.com']
-const extras = {isTest: false}
-const config = {testConfigItem: '/test/config/item'}
+const extras = { isTest: false }
+const config = { testConfigItem: '/test/config/item' }
 const certGenerator = new CertGenerator(handlers)
 
 jest.mock('../getCertInfo')

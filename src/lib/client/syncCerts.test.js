@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const syncCerts = require('./syncCerts')
 const getopts = require('getopts')
 const requestCert = require('../requestCert')
@@ -22,7 +24,7 @@ const mockConfig = {
   certcacheCertDir
 }
 
-for (let i in mockConfig) {
+for (const i in mockConfig) {
   config[i] = mockConfig[i]
 }
 
@@ -60,7 +62,7 @@ console.error = jest.fn()
 console.log = jest.fn()
 
 beforeEach(() => {
-  mockResponse = {success: true, data: {bundle: 'foobar54321'}}
+  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
   mockOpts = {
     host: 'example.com',
     port: 12345,
@@ -77,7 +79,7 @@ beforeEach(() => {
   certRenewEpoch.setDate(certRenewEpoch.getDate() + mockOpts.days)
 
   mockCertsForRenewal = mockLocalCerts
-    .filter(({notAfter}) => (notAfter.getTime() < certRenewEpoch.getTime()))
+    .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 })
 
 test(
@@ -87,7 +89,7 @@ test(
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(requestCert).toBeCalledWith(
-        {host: mockOpts.host, port: mockOpts.port},
+        { host: mockOpts.host, port: mockOpts.port },
         [mockLocalCert.commonName, ...mockLocalCert.altNames],
         mockLocalCert.issuerCommonName.indexOf('Fake') !== -1
       )
@@ -98,13 +100,13 @@ test(
 test(
   'should request certs using config when no command-line args provided',
   async () => {
-    mockOpts = {days: 30}
+    mockOpts = { days: 30 }
 
     await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(requestCert).toBeCalledWith(
-        {host: mockConfig.certcacheHost, port: mockConfig.certcachePort},
+        { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
         [mockLocalCert.commonName, ...mockLocalCert.altNames],
         mockLocalCert.issuerCommonName.indexOf('Fake') !== -1
       )
@@ -117,7 +119,7 @@ test(
   async () => {
     const httpRedirectUrl = 'https://certcache.example.com'
 
-    mockOpts = {'http-redirect-url': httpRedirectUrl, days: 30}
+    mockOpts = { 'http-redirect-url': httpRedirectUrl, days: 30 }
     await syncCerts()
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
@@ -143,7 +145,7 @@ test(
 test(
   'should output a warning if cert fails to be retrieved from certcache server',
   async () => {
-    mockResponse = {success: false}
+    mockResponse = { success: false }
 
     await syncCerts()
 
@@ -156,7 +158,7 @@ test(
   async () => {
     const error = '__test error__'
 
-    mockResponse = {success: false, error}
+    mockResponse = { success: false, error }
 
     await syncCerts()
 

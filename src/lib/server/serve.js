@@ -13,20 +13,19 @@ module.exports = async () => {
 
     req.on('end', async () => {
       const requestBody = data.join('')
-      let response
       let result
 
       debug('Request received', requestBody)
 
-      const {action, ...payload} = JSON.parse(requestBody)
+      const { action, ...payload } = JSON.parse(requestBody)
 
       try {
-        result = {success: true, data: await callAction(action, payload)}
+        result = { success: true, data: await callAction(action, payload) }
       } catch (error) {
-        result = {success: false}
+        result = { success: false }
 
         if (error instanceof FeedbackError) {
-          result = {...result, error: error.message}
+          result = { ...result, error: error.message }
         }
 
         console.error('Error:', error)
@@ -34,7 +33,7 @@ module.exports = async () => {
 
       res.writeHead(
         result.success ? 200 : 500,
-        {'Content-Type': 'application/json'}
+        { 'Content-Type': 'application/json' }
       )
       res.write(JSON.stringify(result))
       res.end()
@@ -45,7 +44,7 @@ module.exports = async () => {
   server.listen(4433)
 }
 
-callAction = (action, payload) => {
+const callAction = (action, payload) => {
   if (actions[action] === undefined) {
     throw new FeedbackError(`Action '${action}' not found`)
   }

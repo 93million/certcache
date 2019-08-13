@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const fs = require('fs')
 const fileExists = require('./fileExists')
 
@@ -10,14 +12,14 @@ fs.stat.mockImplementation((path, callback) => {
 
   callback(
     pathExists
-      ?  null
+      ? null
       : {
         ...new Error(`ENOENT: no such file or directory, stat '${path}'`),
         code: 'ENOENT',
         path,
         syscall: 'stat'
       },
-    pathExists ? {size: 123} : undefined
+    pathExists ? { size: 123 } : undefined
   )
 })
 

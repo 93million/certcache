@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const getCAHKeyPath = require('./getCAHKeyPath')
 const locateKeysDir = require('./locateKeysDir')
 const fs = require('fs')
@@ -11,7 +13,6 @@ jest.mock('./locateKeysDir')
 jest.mock('fs')
 
 locateKeysDir.mockReturnValue(Promise.resolve(cahKeyDir))
-
 
 beforeEach(() => {
   locateKeysDir.mockClear()

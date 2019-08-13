@@ -1,19 +1,21 @@
+/* global test expect */
+
 const findCertificate = require('./findCertificate')
 
 const cert1 = {
-  subject: {commonName: 'example.com'},
+  subject: { commonName: 'example.com' },
   altNames: ['www.example.com', 'www1.example.com', 'foo.example.com'],
-  issuer: {commonName: 'SuperCA'}
+  issuer: { commonName: 'SuperCA' }
 }
 const cert2 = {
-  subject: {commonName: 'bar.com'},
+  subject: { commonName: 'bar.com' },
   altNames: ['www.bar.com', 'www1.bar.com', 'foo.bar.com'],
-  issuer: {commonName: 'SuperCA'}
+  issuer: { commonName: 'SuperCA' }
 }
 const cert3 = {
-  subject: {commonName: 'dibber.dob'},
+  subject: { commonName: 'dibber.dob' },
   altNames: ['www.dibber.dob', 'www1.dibber.dob', 'foo.dibber.dob'],
-  issuer: {commonName: 'Fake LE Root X1'}
+  issuer: { commonName: 'Fake LE Root X1' }
 }
 const certList = [cert1, cert2, cert3]
 

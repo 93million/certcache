@@ -5,7 +5,7 @@ const fileExists = require('./fileExists')
 
 module.exports = async (path) => {
   const dirsArr = path.split('/').filter((item) => (item !== ''))
-  const searchPaths = dirsArr.map((undefined, i, dirs) => (
+  const searchPaths = dirsArr.map((path, i, dirs) => (
     `/${[...dirs].splice(0, i + 1).join('/')}`
   ))
 

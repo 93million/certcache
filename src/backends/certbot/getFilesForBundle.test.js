@@ -1,3 +1,5 @@
+/* global test expect */
+
 const getFilesForBundle = require('./getFilesForBundle')
 const path = require('path')
 

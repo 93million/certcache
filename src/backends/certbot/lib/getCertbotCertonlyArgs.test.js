@@ -1,3 +1,5 @@
+/* global test expect */
+
 const getCertbotCertonlyArgs = require('./getCertbotCertonlyArgs')
 
 const commonName = 'example.com'
@@ -12,7 +14,7 @@ const certbotArgsArr = getCertbotCertonlyArgs(
   commonName,
   certName,
   altNames,
-  {isTest: true},
+  { isTest: true },
   {
     certbotConfigDir,
     certbotLogsDir,

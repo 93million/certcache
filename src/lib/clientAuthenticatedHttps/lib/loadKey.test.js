@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const loadKey = require('./loadKey')
 const tar = require('tar')
 const fs = require('fs')
@@ -8,9 +10,6 @@ jest.mock('fs')
 jest.mock('rimraf')
 
 const tmpDir = '/test/tmp/dir'
-let tmpDirsCreated = []
-let tmpDirCount = 0
-let tmpDirsDeleted = []
 const testKeyObj = {
   ca: 'test ca cert content',
   cert: 'test cert contents',

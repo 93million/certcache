@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const getCert = require('./getCert')
 const getopts = require('getopts')
 const requestCert = require('../requestCert')
@@ -17,7 +19,7 @@ const mockConfig = {
   certcachePort: 54321
 }
 
-for (let i in mockConfig) {
+for (const i in mockConfig) {
   config[i] = mockConfig[i]
 }
 
@@ -32,7 +34,7 @@ console.error = jest.fn()
 console.log = jest.fn()
 
 beforeEach(() => {
-  mockResponse = {success: true, data: {bundle: 'foobar54321'}}
+  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
   mockOpts = {
     'cert-name': 'test-cert-name',
     domains: 'example.com,test.example.com,foo.example.com',
@@ -53,7 +55,7 @@ test(
     await getCert()
 
     expect(requestCert).toBeCalledWith(
-      {host: mockOpts.host, port: mockOpts.port},
+      { host: mockOpts.host, port: mockOpts.port },
       mockOpts.domains.split(','),
       mockOpts['test-cert']
     )
@@ -71,7 +73,7 @@ test(
     await getCert()
 
     expect(requestCert).toBeCalledWith(
-      {host: mockConfig.certcacheHost, port: mockConfig.certcachePort},
+      { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
       mockOpts.domains.split(','),
       mockOpts['test-cert']
     )
@@ -98,7 +100,7 @@ test(
     expect(writeBundle)
       .toBeCalledWith(
         `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
-         mockResponse.data.bundle
+        mockResponse.data.bundle
       )
   }
 )
@@ -106,7 +108,7 @@ test(
 test(
   'should output a warning if cert fails to be retrieved from certcache server',
   async () => {
-    mockResponse = {success: false}
+    mockResponse = { success: false }
 
     await getCert()
 
@@ -119,7 +121,7 @@ test(
   async () => {
     const error = '__test error__'
 
-    mockResponse = {success: false, error}
+    mockResponse = { success: false, error }
 
     await getCert()
 

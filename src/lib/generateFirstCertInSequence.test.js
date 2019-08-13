@@ -1,10 +1,11 @@
+/* global jest test expect */
+
 const generateFirstCertInSequence = require('./generateFirstCertInSequence')
 
-const certPath = '/test/cert.pem'
 const generateCert = jest.fn()
 let parallelCalls = 0
 const numParallelCalls = []
-const mockCert = {_test_: 58008}
+const mockCert = { _test_: 58008 }
 
 generateCert.mockImplementation((shouldThrow = false) => {
   parallelCalls++
@@ -22,7 +23,7 @@ const certGenerators = [...Array(5).keys()].map((i) => ({
 const commonName = 'example.com'
 const altNames = ['www.example.com', 'test.example.com', 'test2.example.com']
 const isTest = false
-const extras = {isTest}
+const extras = { isTest }
 const config = {}
 
 test(

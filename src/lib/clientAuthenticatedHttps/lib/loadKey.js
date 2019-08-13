@@ -14,7 +14,7 @@ module.exports = async (keyPath) => {
     path.join(os.tmpdir(), 'com.93million.cahkeys.')
   )
 
-  await tar.x({file: keyPath, cwd: tmpDir})
+  await tar.x({ file: keyPath, cwd: tmpDir })
 
   const ca = await readFile(`${tmpDir}/ca-crt.pem`)
   const cert = await readFile(`${tmpDir}/crt.pem`)
@@ -22,5 +22,5 @@ module.exports = async (keyPath) => {
 
   await rmdir(tmpDir)
 
-  return {ca, cert, key}
+  return { ca, cert, key }
 }

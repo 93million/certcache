@@ -1,3 +1,5 @@
+/* global jest test expect beforeEach */
+
 const serve = require('./serve')
 const clientAuthenticatedHttps = require('../../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
 const actions = require('./actions')
@@ -8,7 +10,7 @@ jest.mock('../../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
 jest.mock('./actions')
 
 let action
-let payload = {test: 'payload', other: 58008}
+const payload = { test: 'payload', other: 58008 }
 let response
 const mockActionReturnValue = { foo: 'bar', test: 123 }
 const listen = jest.fn()
@@ -17,13 +19,13 @@ const writeHead = jest.fn()
 console.error = jest.fn()
 
 clientAuthenticatedHttps.createServer.mockImplementation((callback) => {
-  const requestBody = JSON.stringify({action, ...payload})
+  const requestBody = JSON.stringify({ action, ...payload })
   const _response = []
-  const req = new Readable({read: () => {}})
-  const res = new Writable({write: (chunk, encoding, callback) => {
+  const req = new Readable({ read: () => {} })
+  const res = new Writable({ write: (chunk, encoding, callback) => {
     _response.push(chunk)
     callback()
-  }})
+  } })
 
   res.writeHead = writeHead
 
@@ -35,7 +37,7 @@ clientAuthenticatedHttps.createServer.mockImplementation((callback) => {
   return new Promise((resolve) => {
     res.on('finish', () => {
       response = _response.join('')
-      resolve({listen})
+      resolve({ listen })
     })
   })
 })
@@ -119,7 +121,7 @@ test(
   async () => {
     await serve()
 
-    expect(writeHead).toBeCalledWith(200, {'Content-Type': 'application/json'})
+    expect(writeHead).toBeCalledWith(200, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -130,6 +132,6 @@ test(
 
     await serve()
 
-    expect(writeHead).toBeCalledWith(500, {'Content-Type': 'application/json'})
+    expect(writeHead).toBeCalledWith(500, { 'Content-Type': 'application/json' })
   }
 )

@@ -1,8 +1,10 @@
+/* global jest test expect beforeEach */
+
 const writeBundle = require('./writeBundle')
 const tar = require('tar')
 const fileExists = require('./helpers/fileExists')
 const mkdirRecursive = require('./helpers/mkdirRecursive')
-const {Readable, Writable} = require('stream')
+const { Writable } = require('stream')
 const config = require('../config')
 const certName = 'testcert.pem'
 
@@ -17,7 +19,7 @@ beforeEach(() => {
 
   fileExists.mockImplementation(() => Promise.resolve(true))
   mkdirRecursive.mockImplementation(() => Promise.resolve())
-  tar.x.mockImplementation(({cwd}) => new Writable({ write: () => {} }))
+  tar.x.mockImplementation(({ cwd }) => new Writable({ write: () => {} }))
 })
 
 const decodedData = 'test cert data here'
@@ -26,7 +28,7 @@ const data = Buffer.from(decodedData).toString('base64')
 test(
   'should pipe certificate data to tar for writing to fs',
   async () => {
-    let tarInput = []
+    const tarInput = []
     const tarStream = new Writable({
       write: (chunk, encoding, callback) => {
         tarInput.push(chunk)
@@ -36,9 +38,9 @@ test(
 
     tar.x.mockImplementation(() => tarStream)
 
-    const promise = new Promise((res) => {
+    const promise = new Promise((resolve) => {
       tarStream.on('finish', () => {
-        res(tarInput.join(''))
+        resolve(tarInput.join(''))
       })
     })
 
@@ -53,7 +55,7 @@ test(
   async () => {
     let tarCwd
 
-    tar.x.mockImplementation(({cwd}) => {
+    tar.x.mockImplementation(({ cwd }) => {
       tarCwd = cwd
 
       return new Writable({ write: () => {} })

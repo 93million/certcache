@@ -6,6 +6,7 @@
   "scripts": {
     "generate-access-keys": "bash src/bin/generate-access-keys.sh",
     "getcert": "node src/client/getCert.js",
+    "lint": "eslint src",
     "start": "node src/server/serve.js",
     "startdev": "nodemon --inspect src/server/serve.js",
     "startclient": "while true; do node src/client/syncCerts.js; sleep 21600; done",
@@ -23,6 +24,12 @@
     "x509": "^0.3.4"
   },
   "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1"
   },

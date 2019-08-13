@@ -11,8 +11,8 @@ const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')
 
 module.exports = async (payload) => {
-  const {isTest, domains} = payload
-  const extras = {isTest}
+  const { isTest, domains } = payload
+  const extras = { isTest }
   const [commonName, ...altNames] = domains
 
   debug('Request for certificate', domains, 'with extras', extras)
@@ -29,7 +29,7 @@ module.exports = async (payload) => {
         .findCert(commonName, altNames, extras)
     ))
 
-  localCert = localCertSearch.find((localCert) => localCert !== undefined)
+  const localCert = localCertSearch.find((localCert) => localCert !== undefined)
 
   if (localCert !== undefined) {
     debug('Found matching cert locally')
@@ -49,5 +49,5 @@ module.exports = async (payload) => {
     throw new FeedbackError('Unable to generate cert using any backend')
   }
 
-  return {bundle: Buffer.from(await cert.getArchive()).toString('base64')}
+  return { bundle: Buffer.from(await cert.getArchive()).toString('base64') }
 }

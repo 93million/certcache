@@ -1,7 +1,8 @@
+/* global jest describe test expect beforeEach */
+
 const clientAuthenticatedHttps = require('./clientAuthenticatedHttps')
 const https = require('https')
 const loadKey = require('./lib/loadKey')
-const getCAHKeyPath = require('./lib/getCAHKeyPath')
 
 jest.mock('https')
 jest.mock('./lib/loadKey')
@@ -10,7 +11,7 @@ jest.mock('./lib/getCAHKeyPath')
 const mockLoadKeyObj = {
   ca: '/path/test/ca-cert.pem',
   cert: '/path/test/cert.pem',
-  key: '/path/test/key.pem',
+  key: '/path/test/key.pem'
 }
 
 loadKey.mockReturnValue(Promise.resolve(mockLoadKeyObj))
@@ -83,7 +84,7 @@ describe(
   'clientAuthenticatedHttps.request()',
   () => {
     const url = 'https://www.example.com/test?url=true'
-    const opts = {method: 'POST'}
+    const opts = { method: 'POST' }
     const callback = () => {}
 
     https.request.mockImplementation = () => {}
@@ -106,7 +107,7 @@ describe(
         await clientAuthenticatedHttps.request(opts)
 
         expect(https.request)
-          .toBeCalledWith({...mockLoadKeyObj, ...opts}, undefined)
+          .toBeCalledWith({ ...mockLoadKeyObj, ...opts }, undefined)
       }
     )
     test(
@@ -115,7 +116,7 @@ describe(
         await clientAuthenticatedHttps.request(url, opts)
 
         expect(https.request)
-          .toBeCalledWith(url, {...mockLoadKeyObj, ...opts}, undefined)
+          .toBeCalledWith(url, { ...mockLoadKeyObj, ...opts }, undefined)
       }
     )
     test(
@@ -132,7 +133,7 @@ describe(
         await clientAuthenticatedHttps.request(opts, callback)
 
         expect(https.request)
-          .toBeCalledWith({...mockLoadKeyObj, ...opts}, callback)
+          .toBeCalledWith({ ...mockLoadKeyObj, ...opts }, callback)
       }
     )
     test(
@@ -141,7 +142,7 @@ describe(
         await clientAuthenticatedHttps.request(url, opts, callback)
 
         expect(https.request)
-          .toBeCalledWith(url, {...mockLoadKeyObj, ...opts}, callback)
+          .toBeCalledWith(url, { ...mockLoadKeyObj, ...opts }, callback)
       }
     )
     test(
@@ -151,7 +152,7 @@ describe(
 
         expect(https.request).toBeCalledWith(
           url,
-          {...mockLoadKeyObj, ...opts, method: 'GET'},
+          { ...mockLoadKeyObj, ...opts, method: 'GET' },
           callback
         )
       }

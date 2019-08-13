@@ -1,3 +1,5 @@
+/* global jest test expect */
+
 const concurrencyLimiter = require('./concurrencyLimiter')
 
 test(
@@ -9,7 +11,7 @@ test(
       setTimeout(resolve, 0)
     })
     const limitedFn = concurrencyLimiter(asyncFn, 2)
-    const all = Promise.all([
+    Promise.all([
       limitedFn(),
       limitedFn(),
       limitedFn(),

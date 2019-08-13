@@ -1,3 +1,5 @@
+/* global test expect */
+
 const arrayItemsMatch = require('./arrayItemsMatch')
 
 const srcList = ['93million.com', '93m.co.uk', 'www.93m.co.uk']
