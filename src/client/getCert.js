@@ -1,3 +1,3 @@
-const getCert = require('../helpers/client/getCert')
+const getCert = require('../lib/client/getCert')
 
 getCert().catch((e) => {console.error('ERROR!', e)})

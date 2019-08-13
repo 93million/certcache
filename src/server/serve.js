@@ -1,3 +1,3 @@
-const serve = require('../helpers/server/serve')
+const serve = require('../lib/server/serve')
 
 serve()

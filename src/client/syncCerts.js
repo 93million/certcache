@@ -1,3 +1,3 @@
-const syncCerts = require('../helpers/client/syncCerts')
+const syncCerts = require('../lib/client/syncCerts')
 
 syncCerts().catch((e) => {console.error(`ERROR! ${e}`)})
