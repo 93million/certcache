@@ -43,10 +43,12 @@ beforeEach(() => {
   requestCert.mockClear()
   console.error.mockClear()
   console.log.mockClear()
+  httpRedirect.start.mockClear()
+  httpRedirect.stop.mockClear()
 })
 
 test(
-  'should get opts from command line when provided as args',
+  'should request certs using args from command-line when provided',
   async () => {
     await getCert()
 
@@ -59,7 +61,7 @@ test(
 )
 
 test(
-  'should get opts from config when not provided as args',
+  'should request certs using config when no command-line args provided',
   async () => {
     mockOpts = {
       domains: 'example.com,test.bar.com,foo.bar.com',

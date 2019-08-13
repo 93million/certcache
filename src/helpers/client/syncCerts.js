@@ -1,15 +1,16 @@
 const getopts = require("getopts")
-const requestCert = require('../helpers/requestCert')
-const getLocalCertificates = require('../helpers/getLocalCertificates')
-const config = require('../config')
-const httpRedirect = require('../helpers/httpRedirect')
+const requestCert = require('../requestCert')
+const getLocalCertificates = require('../getLocalCertificates')
+const config = require('../../config')
+const httpRedirect = require('../httpRedirect')
 
-const opts = getopts(process.argv.slice(2), {
-  alias: {host: 'h', test: 't', daemon: 'D'},
-  default: {test: false, days: 30, daemon: false}
-})
+
 
 module.exports = async () => {
+  const opts = getopts(process.argv.slice(2), {
+    alias: {host: 'h', test: 't', daemon: 'D'},
+    default: {test: false, days: 30, daemon: false}
+  })
   const certcacheCertDir = config.certcacheCertDir
   const certs = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
@@ -27,9 +28,9 @@ module.exports = async () => {
   }
 
   await Promise.all(certsForRenewal.map(({
-    subject: {commonName},
+    commonName,
     altNames,
-    issuer: {commonName: issuerCommonName}
+    issuerCommonName
   }) => {
     const isTest = (issuerCommonName.indexOf('Fake') !== -1)
 
@@ -38,7 +39,7 @@ module.exports = async () => {
     console.log([
       `Renewing certificate CN=${commonName}`,
       `SAN=${JSON.stringify(altNames)}`,
-      isTest ? 'test' : 'live'}
+      isTest ? 'test' : 'live'
     ].join(' '))
 
     return requestCert({host, port}, [commonName, ...altNames], isTest)

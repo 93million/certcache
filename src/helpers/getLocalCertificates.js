@@ -1,9 +1,9 @@
 const fs = require('fs')
-const x509 = require('x509')
+const getCertInfo = require('./getCertInfo')
 const util = require('util')
+const fileExists = require('./fileExists')
 
 const readdir = util.promisify(fs.readdir)
-const fileExists = require('./fileExists')
 
 module.exports = async (certDir) => {
   const files = await readdir(certDir).catch(() => [])
@@ -13,5 +13,5 @@ module.exports = async (certDir) => {
 
   return certPaths
     .filter((undefined, i) => existsArr[i])
-    .map((certPath) => ({...x509.parseCert(`${certPath}/cert.pem`), certPath}))
+    .map((certPath) => ({...getCertInfo(`${certPath}/cert.pem`), certPath}))
 }

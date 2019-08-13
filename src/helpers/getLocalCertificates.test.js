@@ -1,10 +1,10 @@
 const fs = require('fs')
-const x509 = require('x509')
+const getCertInfo = require('./getCertInfo')
 const fileExists = require('./fileExists')
 const getLocalCertificates = require('./getLocalCertificates')
 
 jest.mock('fs')
-jest.mock('x509')
+jest.mock('./getCertInfo')
 jest.mock('./fileExists')
 
 const certDir = '/test/certs/'
@@ -27,7 +27,7 @@ fs.readdir.mockImplementation((path, callback) => {
 
 const mockCert = {_test_: 58008}
 
-x509.parseCert.mockReturnValue(mockCert)
+getCertInfo.mockReturnValue(mockCert)
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {
