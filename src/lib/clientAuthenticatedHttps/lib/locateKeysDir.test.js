@@ -2,7 +2,7 @@ const locateKeysDir = require('./locateKeysDir')
 const path = require('path')
 const fileExists = require('./fileExists')
 
-const cahKeysPath = '/test/dir/dir1/cahKeys'
+const cahKeysPath = '/test/dir/dir1/cahkeys'
 const scriptPath = '/test/dir/dir1/dir2/script'
 const filePaths = [
   '/',
@@ -23,7 +23,7 @@ path.dirname.mockReturnValue(scriptPath)
 fileExists.mockImplementation(async (path) => await filePaths.includes(path))
 
 test(
-  'should locate directory containing cahKeys',
+  'should locate directory containing cahkeys',
   async () => {
     await expect(locateKeysDir()).resolves.toBe(cahKeysPath)
   }

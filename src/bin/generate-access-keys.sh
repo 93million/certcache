@@ -15,5 +15,5 @@ if [ -z "$SERVER_NAME" ]; then
   exit 1
 fi
 
-"$DIR/../clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../cahKeys" -n "$SERVER_NAME"
-"$DIR/../clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../cahKeys" -n "client"
+"$DIR/../clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../cahkeys" -n "$SERVER_NAME"
+"$DIR/../clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../cahkeys" -n "client"

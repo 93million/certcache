@@ -1,6 +1,6 @@
 .DS_Store
 /.vscode
-/cahKeys
+/cahkeys
 /certs
 /certbot
 /coverage

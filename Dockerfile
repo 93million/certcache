@@ -7,7 +7,7 @@ RUN apk update && apk add bash certbot openssl python g++ make
 COPY . /certcache/
 RUN npm i
 
-VOLUME /certcache/cahKeys/
+VOLUME /certcache/cahkeys/
 VOLUME /certcache/certbot/
 VOLUME /certcache/certs/
 
