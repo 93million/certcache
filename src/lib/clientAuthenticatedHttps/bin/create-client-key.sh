@@ -16,12 +16,12 @@ while getopts ":n:k:" o; do
 done
 shift $((OPTIND-1))
 
-tar -xzf "$KEYDIR/server.key" -C "$KEYDIR" "ca-crt.pem" "ca-key.pem" ".srl"
+tar -xzf "$KEYDIR/server.cahkey" -C "$KEYDIR" "ca-crt.pem" "ca-key.pem" ".srl"
 
 openssl genrsa -out "$KEYDIR/key.pem" 4096
 openssl req -new -subj "/C=GB/ST=Tyne and Wear/L=Newcastle upon Tyne/O=clientAuthenticatedHttps/OU=clientAuthenticatedHttps/CN=$COMMON_NAME" -key "$KEYDIR/key.pem" -out "$KEYDIR/csr.pem"
 openssl x509 -req -days 999 -in "$KEYDIR/csr.pem" -CA "$KEYDIR/ca-crt.pem" -CAkey "$KEYDIR/ca-key.pem" -out "$KEYDIR/crt.pem" -CAserial "$KEYDIR/.srl"
 
-tar -czf "$KEYDIR/$COMMON_NAME.key" -C "$KEYDIR" "ca-crt.pem" "crt.pem" "key.pem"
+tar -czf "$KEYDIR/$COMMON_NAME.cahkey" -C "$KEYDIR" "ca-crt.pem" "crt.pem" "key.pem"
 
 rm -f "$KEYDIR/ca-crt.pem" "$KEYDIR/ca-key.pem" "$KEYDIR/crt.pem" "$KEYDIR/key.pem" "$KEYDIR/csr.pem" "$KEYDIR/.srl"

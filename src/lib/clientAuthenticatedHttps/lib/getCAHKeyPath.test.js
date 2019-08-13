@@ -3,9 +3,9 @@ const locateKeysDir = require('./locateKeysDir')
 const fs = require('fs')
 
 const cahKey = 'testkey'
-const dirKeyFileName = 'testclient.key'
+const dirKeyFileName = 'testclient.cahkey'
 const cahKeyDir = '/test/cahkeys/dir'
-const mockDirList = ['server.key', dirKeyFileName]
+const mockDirList = ['server.cahkey', dirKeyFileName]
 
 jest.mock('./locateKeysDir')
 jest.mock('fs')
@@ -25,7 +25,7 @@ test(
   'should return path to key when supplied as argument',
   async () => {
     await expect(getCAHKeyPath(cahKey))
-      .resolves.toBe(`${cahKeyDir}/${cahKey}.key`)
+      .resolves.toBe(`${cahKeyDir}/${cahKey}.cahkey`)
   }
 )
 
@@ -37,7 +37,7 @@ test(
     process.env.CAH_KEY_NAME = cahKey
 
     await expect(getCAHKeyPath())
-      .resolves.toBe(`${cahKeyDir}/${cahKey}.key`)
+      .resolves.toBe(`${cahKeyDir}/${cahKey}.cahkey`)
   }
 )
 
@@ -52,7 +52,7 @@ test(
   'should throw error when no cert dir is specified and more than 2 files are present in directory',
   async () => {
     fs.readdir.mockImplementation((path, callback) => {
-      callback(null, [...mockDirList, 'extra.client.key'])
+      callback(null, [...mockDirList, 'extra.client.cahkey'])
     })
 
     await expect(getCAHKeyPath()).rejects.toThrowError()
