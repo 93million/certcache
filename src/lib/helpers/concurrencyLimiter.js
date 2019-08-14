@@ -17,6 +17,8 @@ module.exports = (fn, concurrency) => {
       const complete = (val) => {
         inFlightNum--
 
+        callNext()
+
         resolve(val)
       }
       const error = (val) => {

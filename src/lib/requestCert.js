@@ -12,7 +12,7 @@ module.exports = ({ host, port }, domains, isTest) => {
     port
   }
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const response = []
 
     clientAuthenticatedHttps
@@ -28,7 +28,7 @@ module.exports = ({ host, port }, domains, isTest) => {
       })
       .then((req) => {
         req.on('error', (e) => {
-          throw new Error(e)
+          reject(e)
         })
 
         debug('requestCert() request', options)
