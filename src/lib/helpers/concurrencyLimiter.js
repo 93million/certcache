@@ -7,39 +7,32 @@ module.exports = (fn, concurrency) => {
 
     return new Promise((resolve, reject) => {
       const callNext = () => {
-        const callback = stack.shift()
+        while (inFlightNum < concurrency && stack.length !== 0) {
+          const callback = stack.shift()
 
-        callback()
+          inFlightNum++
+          callback()
+        }
       }
       const complete = (val) => {
         inFlightNum--
-
-        while (inFlightNum < concurrency && stack.length !== 0) {
-          callNext()
-        }
 
         resolve(val)
       }
       const error = (val) => {
         inFlightNum--
 
-        while (inFlightNum < concurrency && stack.length !== 0) {
-          callNext()
-        }
+        callNext()
 
         reject(val)
       }
       const callback = () => {
-        inFlightNum++
-
         fn(..._args).then(complete, error)
       }
 
       stack.push(callback)
 
-      if (inFlightNum < concurrency) {
-        callNext()
-      }
+      callNext()
     })
   }
 }
