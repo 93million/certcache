@@ -47,7 +47,7 @@ module.exports = async () => {
     const response = await requestCert(
       { host, port },
       [commonName, ...altNames],
-      isTest
+      { isTest }
     )
 
     const responseObj = JSON.parse(response)

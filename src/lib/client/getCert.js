@@ -36,7 +36,7 @@ module.exports = async () => {
     const response = await requestCert(
       { host, port },
       opts.domains.split(','),
-      opts['test-cert']
+      { isTest: opts['test-cert'] }
     )
 
     if (httpRedirectUrl !== undefined) {

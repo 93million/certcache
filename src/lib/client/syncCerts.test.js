@@ -91,7 +91,7 @@ test(
       expect(requestCert).toBeCalledWith(
         { host: mockOpts.host, port: mockOpts.port },
         [mockLocalCert.commonName, ...mockLocalCert.altNames],
-        mockLocalCert.issuerCommonName.indexOf('Fake') !== -1
+        { isTest: mockLocalCert.issuerCommonName.indexOf('Fake') !== -1 }
       )
     })
   }
@@ -108,7 +108,7 @@ test(
       expect(requestCert).toBeCalledWith(
         { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
         [mockLocalCert.commonName, ...mockLocalCert.altNames],
-        mockLocalCert.issuerCommonName.indexOf('Fake') !== -1
+        { isTest: mockLocalCert.issuerCommonName.indexOf('Fake') !== -1 }
       )
     })
   }

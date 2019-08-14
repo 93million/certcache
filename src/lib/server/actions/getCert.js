@@ -11,8 +11,7 @@ const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')
 
 module.exports = async (payload) => {
-  const { isTest, domains } = payload
-  const extras = { isTest }
+  const { extras, domains } = payload
   const [commonName, ...altNames] = domains
 
   debug('Request for certificate', domains, 'with extras', extras)

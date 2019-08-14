@@ -57,7 +57,7 @@ test(
     expect(requestCert).toBeCalledWith(
       { host: mockOpts.host, port: mockOpts.port },
       mockOpts.domains.split(','),
-      mockOpts['test-cert']
+      { isTest: mockOpts['test-cert'] }
     )
   }
 )
@@ -75,7 +75,7 @@ test(
     expect(requestCert).toBeCalledWith(
       { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
       mockOpts.domains.split(','),
-      mockOpts['test-cert']
+      { isTest: mockOpts['test-cert'] }
     )
   }
 )

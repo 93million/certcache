@@ -2,8 +2,8 @@ const clientAuthenticatedHttps =
   require('../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
 const debug = require('debug')('certcache:requestCert')
 
-module.exports = ({ host, port }, domains, isTest) => {
-  const postData = JSON.stringify({ action: 'getCert', domains, isTest })
+module.exports = ({ host, port }, domains, extras) => {
+  const postData = JSON.stringify({ action: 'getCert', domains, extras })
   const options = {
     headers: { 'Content-Length': Buffer.from(postData).length },
     hostname: host,
