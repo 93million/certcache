@@ -30,10 +30,22 @@
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
+    "husky": "^3.0.3",
     "jest": "^24.8.0",
+    "lint-staged": "^9.2.1",
     "nodemon": "^1.19.1"
   },
   "jest": {
     "testEnvironment": "node"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint"
+    ]
   }
 }
