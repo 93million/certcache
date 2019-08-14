@@ -1,6 +1,6 @@
 /* global jest test expect beforeEach */
 
-const child_process = require('child_process')
+const childProcess = require('child_process')
 const config = require('../../config')
 const generateCert = require('./generateCert')
 const generateCertName = require('../../lib/generateCertName')
@@ -12,8 +12,8 @@ const altNames = ['test.example.com', 'test1.example.com', 'foo.jimmy.bar']
 const certbotConfig = { ...config, letsencryptEmail: 'test@example.com' }
 
 beforeEach(() => {
-  child_process.execFile.mockReset()
-  child_process.execFile.mockImplementation((exec, args, callback) => {
+  childProcess.execFile.mockReset()
+  childProcess.execFile.mockImplementation((exec, args, callback) => {
     callback(null, true)
   })
 })
@@ -26,7 +26,7 @@ test(
       generateCert(commonName, altNames, true, certbotConfig)
     ])
 
-    expect(child_process.execFile).toBeCalledTimes(1)
+    expect(childProcess.execFile).toBeCalledTimes(1)
   }
 )
 
@@ -49,8 +49,8 @@ test(
 test(
   'should throw errors encountered',
   async () => {
-    child_process.execFile.mockReset()
-    child_process.execFile.mockImplementation((exec, args, callback) => {
+    childProcess.execFile.mockReset()
+    childProcess.execFile.mockImplementation((exec, args, callback) => {
       callback(new Error('certbot exited with error'), null)
     })
 

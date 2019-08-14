@@ -1,7 +1,7 @@
-const child_process = require('child_process')
+const childProcess = require('child_process')
 const util = require('util')
 const concurrencyLimiter = require('../../../lib/helpers/concurrencyLimiter')
 
-const execFile = util.promisify(child_process.execFile)
+const execFile = util.promisify(childProcess.execFile)
 
 module.exports = concurrencyLimiter(execFile, 1)
