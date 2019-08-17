@@ -18,7 +18,7 @@ module.exports = async (
 
               return certPath
             })
-            .catch(() => {})
+            .catch((e) => { console.error(e) })
         }
 
         return cert
