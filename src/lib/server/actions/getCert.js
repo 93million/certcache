@@ -8,7 +8,7 @@ const CertGenerator = require('../../classes/CertGenerator')
 const backends = require('../../../backends')
 const config = require('../../../config')
 const FeedbackError = require('../../FeedbackError')
-const debug = require('debug')
+const debug = require('debug')('certcache:server/actions/getCert')
 
 module.exports = async (payload) => {
   const { extras, domains } = payload
@@ -32,6 +32,8 @@ module.exports = async (payload) => {
 
   if (localCert !== undefined) {
     debug('Found matching cert locally')
+  } else {
+    debug('No local certificate found - executing cert generators')
   }
 
   const cert = (localCert !== undefined)
