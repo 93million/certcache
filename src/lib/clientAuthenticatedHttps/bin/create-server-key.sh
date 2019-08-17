@@ -2,6 +2,12 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+cleanup () {
+  rm -f "$KEYDIR/ca-crt.pem" "$KEYDIR/ca-key.pem" "$KEYDIR/crt.pem" "$KEYDIR/key.pem" "$KEYDIR/csr.pem" "$KEYDIR/.srl"
+}
+
+trap cleanup SIGHUP SIGINT EXIT
+
 while getopts ":n:k:" o; do
   case "${o}" in
     n)
