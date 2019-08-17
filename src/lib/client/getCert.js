@@ -46,7 +46,7 @@ module.exports = async () => {
     const responseObj = JSON.parse(response)
 
     if (responseObj.success === true) {
-      writeBundle(
+      await writeBundle(
         `${config.certcacheCertDir}/${certName}`,
         responseObj.data.bundle
       )
