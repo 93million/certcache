@@ -7,7 +7,7 @@ COPY . /certcachesrc/
 ENV NODE_ENV=production
 
 RUN apk update && \
-  apk add bash certbot openssl python g++ make git && \
+  apk add --no-cache bash certbot openssl python g++ make git && \
   pip3 install certbot-dns-standalone && \
   rm -rf /var/cache/apk/* && \
   npm install --production -g /certcachesrc/
