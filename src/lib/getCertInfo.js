@@ -2,10 +2,19 @@ const x509 = require('x509')
 
 module.exports = (certPath) => {
   const {
-    subject: { commonName },
     altNames,
-    issuer: { commonName: issuerCommonName }
+    issuer: { commonName: issuerCommonName },
+    notAfter,
+    notBefore,
+    subject: { commonName }
   } = x509.parseCert(certPath)
 
-  return { altNames, certPath, commonName, issuerCommonName }
+  return {
+    altNames,
+    certPath,
+    commonName,
+    issuerCommonName,
+    notAfter,
+    notBefore
+  }
 }

@@ -12,7 +12,9 @@ const mockedCert = {
     'www1.test.example.com',
     'foo.test.example.com'
   ],
-  issuer: { commonName: 'Jimmy the issuer' }
+  issuer: { commonName: 'Jimmy the issuer' },
+  notAfter: new Date(),
+  notBefore: new Date()
 }
 const certPath = '/test/cert/path'
 
@@ -25,7 +27,9 @@ test(
       commonName: mockedCert.subject.commonName,
       altNames: mockedCert.altNames,
       issuerCommonName: mockedCert.issuer.commonName,
-      certPath
+      certPath,
+      notAfter: mockedCert.notAfter,
+      notBefore: mockedCert.notBefore
     })
   }
 )
