@@ -2,24 +2,24 @@
 
 const syncCerts = require('./syncCerts')
 const getopts = require('getopts')
-const requestCert = require('../requestCert')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
-const writeBundle = require('../writeBundle')
+const getDomainsFromConfig = require('./getDomainsFromConfig')
+const obtainCert = require('./obtainCert')
+const yaml = require('yaml')
 const path = require('path')
 
 jest.mock('getopts')
-jest.mock('../requestCert')
 jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
-jest.mock('../writeBundle')
+jest.mock('./getDomainsFromConfig')
+jest.mock('./obtainCert')
 
 let mockOpts
-let mockResponse
 const certcacheCertDir = '/test/certcache/certs'
 const mockConfig = {
-  certcacheHost: 'bar.com',
+  certcacheHost: 'certcache.example.com',
   certcachePort: 54321,
   certcacheCertDir
 }
@@ -48,29 +48,44 @@ const mockLocalCerts = [
   generateMockCert('93million.com', false, 10),
   generateMockCert('test.example.com', false, 50)
 ]
+mockLocalCerts.findCert = jest.fn()
 let mockCertsForRenewal
+const mockCertcacheDomains = [
+  {
+    cert_name: 'mail',
+    domains: ['mail.mcelderry.com'],
+    is_test: true
+  },
+  {
+    cert_name: 'web',
+    domains: [
+      'mcelderry.com',
+      'gitlab.mcelderry.com',
+      'switchd.mcelderry.com',
+      'webmail.mcelderry.com',
+      'www.mcelderry.com',
+      'foo.boo.coo'
+    ]
+  }
+]
+
+console.log = jest.fn()
+
+getDomainsFromConfig.mockReturnValue(mockCertcacheDomains)
 
 getopts.mockImplementation(() => {
   return mockOpts
 })
-requestCert.mockImplementation(() => {
-  return Promise.resolve(JSON.stringify(mockResponse))
-})
 getLocalCertificates.mockReturnValue(mockLocalCerts)
 
-console.error = jest.fn()
-console.log = jest.fn()
-
 beforeEach(() => {
-  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
+  console.log.mockClear()
   mockOpts = {
     host: 'example.com',
     port: 12345,
     days: 30
   }
-  requestCert.mockClear()
-  console.error.mockClear()
-  console.log.mockClear()
+
   httpRedirect.start.mockClear()
   httpRedirect.stop.mockClear()
 
@@ -80,6 +95,10 @@ beforeEach(() => {
 
   mockCertsForRenewal = mockLocalCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
+
+  delete process.env.CERTCACHE_DOMAINS
+  getDomainsFromConfig.mockClear()
+  obtainCert.mockClear()
 })
 
 test(
@@ -88,10 +107,13 @@ test(
     await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
-      expect(requestCert).toBeCalledWith(
-        { host: mockOpts.host, port: mockOpts.port },
-        [mockLocalCert.commonName, ...mockLocalCert.altNames],
-        { isTest: mockLocalCert.issuerCommonName.indexOf('Fake') !== -1 }
+      expect(obtainCert).toBeCalledWith(
+        mockOpts.host,
+        mockOpts.port,
+        mockLocalCert.commonName,
+        mockLocalCert.altNames,
+        (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
+        path.dirname(mockLocalCert.certPath)
       )
     })
   }
@@ -105,10 +127,13 @@ test(
     await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
-      expect(requestCert).toBeCalledWith(
-        { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
-        [mockLocalCert.commonName, ...mockLocalCert.altNames],
-        { isTest: mockLocalCert.issuerCommonName.indexOf('Fake') !== -1 }
+      expect(obtainCert).toBeCalledWith(
+        mockConfig.certcacheHost,
+        mockConfig.certcachePort,
+        mockLocalCert.commonName,
+        mockLocalCert.altNames,
+        (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
+        path.dirname(mockLocalCert.certPath)
       )
     })
   }
@@ -128,40 +153,13 @@ test(
 )
 
 test(
-  'should write cert bundle to filesystem when received from certcache server',
+  'should parse domains passed in environment variable \'CERTCACHE_DOMAINS\'',
   async () => {
-    await syncCerts()
-
-    mockCertsForRenewal.forEach((mockCert) => {
-      expect(writeBundle)
-        .toBeCalledWith(
-          path.dirname(mockCert.certPath),
-          mockResponse.data.bundle
-        )
-    })
-  }
-)
-
-test(
-  'should output a warning if cert fails to be retrieved from certcache server',
-  async () => {
-    mockResponse = { success: false }
+    process.env.CERTCACHE_DOMAINS = yaml.stringify(mockCertcacheDomains)
 
     await syncCerts()
 
-    expect(console.error).toBeCalledTimes(mockCertsForRenewal.length)
-  }
-)
-
-test(
-  'should output any error messages retrieved from certcache server',
-  async () => {
-    const error = '__test error__'
-
-    mockResponse = { success: false, error }
-
-    await syncCerts()
-
-    expect(console.error.mock.calls[0][0]).toContain(error)
+    expect(getDomainsFromConfig)
+      .toBeCalledWith(mockCertcacheDomains)
   }
 )

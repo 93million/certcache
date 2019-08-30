@@ -5,12 +5,12 @@ const getopts = require('getopts')
 const requestCert = require('../requestCert')
 const httpRedirect = require('../httpRedirect')
 const config = require('../../config')
-const writeBundle = require('../writeBundle')
+const obtainCert = require('./obtainCert')
 
 jest.mock('getopts')
 jest.mock('../requestCert')
 jest.mock('../httpRedirect')
-jest.mock('../writeBundle')
+jest.mock('./obtainCert')
 
 let mockOpts
 let mockResponse
@@ -52,12 +52,17 @@ beforeEach(() => {
 test(
   'should request certs using args from command-line when provided',
   async () => {
+    const mockDomainsArr = mockOpts.domains.split(',')
+
     await getCert()
 
-    expect(requestCert).toBeCalledWith(
-      { host: mockOpts.host, port: mockOpts.port },
-      mockOpts.domains.split(','),
-      { isTest: mockOpts['test-cert'] }
+    expect(obtainCert).toBeCalledWith(
+      mockOpts.host,
+      mockOpts.port,
+      mockDomainsArr[0],
+      mockDomainsArr.slice(1),
+      mockOpts['test-cert'],
+      `${config.certcacheCertDir}/${mockOpts['cert-name']}`
     )
   }
 )
@@ -72,10 +77,18 @@ test(
 
     await getCert()
 
-    expect(requestCert).toBeCalledWith(
-      { host: mockConfig.certcacheHost, port: mockConfig.certcachePort },
-      mockOpts.domains.split(','),
-      { isTest: mockOpts['test-cert'] }
+    const mockDomainsArr = mockOpts.domains.split(',')
+    const [commonName, ...altNames] = mockDomainsArr
+
+    await getCert()
+
+    expect(obtainCert).toBeCalledWith(
+      mockConfig.certcacheHost,
+      mockConfig.certcachePort,
+      commonName,
+      altNames,
+      mockOpts['test-cert'],
+      `${config.certcacheCertDir}/${commonName}`
     )
   }
 )
@@ -97,35 +110,17 @@ test(
   async () => {
     await getCert()
 
-    expect(writeBundle)
+    const mockDomainsArr = mockOpts.domains.split(',')
+
+    expect(obtainCert)
       .toBeCalledWith(
-        `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
-        mockResponse.data.bundle
+        mockOpts.host,
+        mockOpts.port,
+        mockDomainsArr[0],
+        mockDomainsArr.slice(1),
+        mockOpts['test-cert'],
+        `${config.certcacheCertDir}/${mockOpts['cert-name']}`
       )
-  }
-)
-
-test(
-  'should output a warning if cert fails to be retrieved from certcache server',
-  async () => {
-    mockResponse = { success: false }
-
-    await getCert()
-
-    expect(console.error).toBeCalledTimes(1)
-  }
-)
-
-test(
-  'should output any error messages retrieved from certcache server',
-  async () => {
-    const error = '__test error__'
-
-    mockResponse = { success: false, error }
-
-    await getCert()
-
-    expect(console.error.mock.calls[0][0]).toContain(error)
   }
 )
 

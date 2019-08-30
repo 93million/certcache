@@ -16,7 +16,7 @@ module.exports = async (payload) => {
 
   debug('Request for certificate', domains, 'with extras', extras)
 
-  altNames.push(commonName)
+  altNames.unshift(commonName)
 
   const certLocators = locators.map((key) => new CertLocator(backends[key]))
   const certGenerators = generators
@@ -31,9 +31,9 @@ module.exports = async (payload) => {
   const localCert = localCertSearch.find((localCert) => localCert !== undefined)
 
   if (localCert !== undefined) {
-    debug('Found matching cert locally')
+    debug('Found matching cert locally', domains)
   } else {
-    debug('No local certificate found - executing cert generators')
+    debug('No local certificate found - executing cert generators', domains)
   }
 
   const cert = (localCert !== undefined)

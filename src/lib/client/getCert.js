@@ -1,9 +1,7 @@
 const getopts = require('getopts')
-const requestCert = require('../requestCert')
-const writeBundle = require('../writeBundle')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
-const debug = require('debug')('certcache:getCert')
+const obtainCert = require('./obtainCert')
 
 const usage = () => {
   const usage = [
@@ -27,39 +25,24 @@ module.exports = async () => {
     usage()
   } else {
     const domains = opts.domains.split(',')
-    const certName = opts['cert-name'] || domains[0]
+    const [commonName, ...altNames] = domains
+    const certName = opts['cert-name'] || commonName
 
     if (httpRedirectUrl !== undefined) {
       httpRedirect.start(httpRedirectUrl)
     }
 
-    const response = await requestCert(
-      { host, port },
-      opts.domains.split(','),
-      { isTest: opts['test-cert'] }
+    obtainCert(
+      host,
+      port,
+      domains[0],
+      altNames,
+      opts['test-cert'],
+      `${config.certcacheCertDir}/${certName}`
     )
 
     if (httpRedirectUrl !== undefined) {
       httpRedirect.stop()
-    }
-
-    const responseObj = JSON.parse(response)
-
-    if (responseObj.success === true) {
-      await writeBundle(
-        `${config.certcacheCertDir}/${certName}`,
-        responseObj.data.bundle
-      )
-    } else {
-      let message = `Error obtaining certificate ${certName}`
-
-      debug(`Error obtaining bundle`, responseObj)
-
-      if (responseObj.error !== undefined) {
-        message += `. Error: '${responseObj.error}'`
-      }
-
-      console.error(message)
     }
   }
 }

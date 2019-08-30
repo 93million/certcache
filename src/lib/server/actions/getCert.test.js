@@ -12,7 +12,7 @@ const generateFirstCertInSequence = require(
 
 const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
-const altNames = [...domains.slice(1), domains[0]]
+const altNames = [domains[0], ...domains.slice(1)]
 const isTest = true
 const payload = { domains, extras: { isTest } }
 const getLocalCerts = jest.fn()

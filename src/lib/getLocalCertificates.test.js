@@ -4,18 +4,19 @@ const fs = require('fs')
 const getCertInfo = require('./getCertInfo')
 const fileExists = require('./helpers/fileExists')
 const getLocalCertificates = require('./getLocalCertificates')
+const CertList = require('./classes/CertList')
 
 jest.mock('fs')
 jest.mock('./getCertInfo')
 jest.mock('./helpers/fileExists')
 
-const certDir = '/test/certs/'
+const certDir = '/test/certs'
 const certDirItems = ['cert1', 'cert2', 'cert3', 'README.txt']
 const filePaths = [
-  `${certDir}cert1/cert.pem`,
-  `${certDir}cert2/cert.pem`,
-  `${certDir}cert3/cert.pem`,
-  `${certDir}README.txt`
+  `${certDir}/cert1/cert.pem`,
+  `${certDir}/cert2/cert.pem`,
+  `${certDir}/cert3/cert.pem`,
+  `${certDir}/README.txt`
 ]
 
 fs.readdir.mockImplementation((path, callback) => {
@@ -33,13 +34,15 @@ getCertInfo.mockReturnValue(mockCert)
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {
-  const expected = [
-    { ...mockCert, certPath: `${certDir}cert1/cert.pem` },
-    { ...mockCert, certPath: `${certDir}cert2/cert.pem` },
-    { ...mockCert, certPath: `${certDir}cert3/cert.pem` }
-  ]
+  const expected = CertList.from([
+    { ...mockCert, certPath: `${certDir}/cert1/cert.pem` },
+    { ...mockCert, certPath: `${certDir}/cert2/cert.pem` },
+    { ...mockCert, certPath: `${certDir}/cert3/cert.pem` }
+  ])
 
-  await expect(getLocalCertificates(certDir)).resolves.toEqual(expected)
+  const localCerts = getLocalCertificates(certDir)
+
+  await expect(localCerts).resolves.toEqual(expected)
 })
 
 test(
