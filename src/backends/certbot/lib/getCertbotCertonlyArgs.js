@@ -14,6 +14,7 @@ module.exports = (commonName, certName, altNames, extras, certbotConfig) => {
     ].join(' '))
   }
 
+  const domains = Array.from(new Set([commonName, ...altNames]))
   const certbotArgs = [
     'certonly',
     '--non-interactive',
@@ -22,7 +23,7 @@ module.exports = (commonName, certName, altNames, extras, certbotConfig) => {
     '--agree-tos',
     '--no-eff-email',
     `-d`,
-    [commonName, ...altNames].join(','),
+    domains.join(','),
     `--cert-name`,
     certName,
     `-m`,

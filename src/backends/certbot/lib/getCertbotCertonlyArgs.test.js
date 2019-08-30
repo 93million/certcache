@@ -4,7 +4,7 @@ const getCertbotCertonlyArgs = require('./getCertbotCertonlyArgs')
 
 const commonName = 'example.com'
 const certName = 'abcd1234'
-const altNames = ['www.example.com', 'foo.example.com', 'abcd.1234']
+const altNames = ['www.example.com', 'foo.example.com', 'abcd.1234', 'example.com']
 const letsencryptEmail = 'test@example.com'
 const certbotConfigDir = '/test/certbot/config/'
 const certbotLogsDir = '/test/certbot/logs/'
@@ -112,5 +112,32 @@ test(
     }
 
     expect(getCertbotCertonlyArgsWithMissingEmail).toThrow()
+  }
+)
+
+test(
+  'should provide a list of unique (not repeating) domain names',
+  () => {
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      certName,
+      [...altNames, commonName],
+      false,
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        certbotHttpAuthPort,
+        letsencryptEmail
+      }
+    )
+
+    const domainRepeatCounts = certbotArgs[certbotArgs.indexOf('-d') + 1]
+      .split(',')
+      .map((domain, i, domains) => (
+        domains.filter((_domain) => (_domain === domain))
+      ).length)
+
+    expect(Math.max(...domainRepeatCounts)).toBe(1)
   }
 )
