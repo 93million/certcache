@@ -80,5 +80,10 @@ module.exports = async () => {
     httpRedirect.stop()
   }
 
-  console.log(`${certsForRenewal.length} of ${certs.length} certs synced`)
+  console.log([
+    certsForRenewal.length + configDomainsWithoutCert.length,
+    'of',
+    certs.length + configDomainsWithoutCert.length,
+    'certs synced'
+  ].join(' '))
 }
