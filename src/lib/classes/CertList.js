@@ -6,7 +6,7 @@ class CertList extends Array {
       const isTest = (issuerCommonName.indexOf('Fake') !== -1)
 
       return (
-        isTest === extras.isTest &&
+        isTest === (extras.isTest === true) &&
         commonName === searchCommonName &&
         arrayItemsMatch(altNames, searchAltNames)
       )
