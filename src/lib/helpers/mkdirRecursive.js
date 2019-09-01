@@ -12,7 +12,13 @@ module.exports = async (path) => {
   return searchPaths.reduce(
     async (acc, path) => (
       (await fileExists(path) === false)
-        ? acc.then(() => mkdir(path))
+        ? acc.then(() =>
+          mkdir(path).catch((e) => {
+            if (e.code !== 'EEXIST') {
+              throw e
+            }
+          })
+        )
         : acc
     ),
     Promise.resolve()
