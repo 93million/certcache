@@ -17,3 +17,8 @@ module.exports.certbotHttpAuthPort = process
   .env
   .CERTCACHE_CERTBOT_HTTP_AUTH_PORT
 module.exports.httpRedirectUrl = process.env.CERTCACHE_HTTP_REDIRECT_URL
+module.exports.renewDaysBefore = (
+  process.env.CERTCACHE_RENEW_DAYS_BEFORE === undefined
+)
+  ? defaults.renewDaysBefore
+  : Number(process.env.CERTCACHE_RENEW_DAYS_BEFORE)

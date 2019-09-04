@@ -26,3 +26,4 @@ module.exports.certbotWorkDir = path.resolve(
   'work'
 )
 module.exports.certcacheTmpDir = '/tmp/certcache/'
+module.exports.renewDaysBefore = 30

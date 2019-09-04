@@ -16,14 +16,20 @@ test('should respect env vars when creating config', () => {
       ['CERTCACHE_LETSENCRYPT_EMAIL', 'letsencryptEmail'],
       ['CERTCACHE_TMP_DIR', 'certcacheTmpDir'],
       ['CERTCACHE_CERTBOT_HTTP_AUTH_PORT', 'certbotHttpAuthPort'],
-      ['CERTCACHE_HTTP_REDIRECT_URL', 'httpRedirectUrl']
+      ['CERTCACHE_HTTP_REDIRECT_URL', 'httpRedirectUrl'],
+      ['CERTCACHE_RENEW_DAYS_BEFORE', 'renewDaysBefore']
     ]
+    const numericEnvVars = ['CERTCACHE_RENEW_DAYS_BEFORE']
 
     envVarMaps.forEach(([envVar, configProp]) => {
-      expect(config[configProp])
-        .toBe(envVarsOverrides[envVar])
-    }
-    )
+      let val = envVarsOverrides[envVar]
+
+      if (numericEnvVars.includes(envVar)) {
+        val = Number(val)
+      }
+
+      expect(config[configProp]).toBe(val)
+    })
   }
 
   testWithEnvVars({
@@ -35,6 +41,7 @@ test('should respect env vars when creating config', () => {
     CERTCACHE_LETSENCRYPT_EMAIL: 'test@example.com',
     CERTCACHE_TMP_DIR: '/test/tmp/dir',
     CERTCACHE_CERTBOT_HTTP_AUTH_PORT: 'testcertbotauthport',
-    CERTCACHE_HTTP_REDIRECT_URL: 'http://test.http/redirect?url'
+    CERTCACHE_HTTP_REDIRECT_URL: 'http://test.http/redirect?url',
+    CERTCACHE_RENEW_DAYS_BEFORE: '30'
   })
 })

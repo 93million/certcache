@@ -11,7 +11,7 @@ const debug = require('debug')('certcache:syncCerts')
 module.exports = async () => {
   const opts = getopts(process.argv.slice(2), {
     alias: { host: 'h', test: 't', daemon: 'D' },
-    default: { test: false, days: 30, daemon: false }
+    default: { test: false, daemon: false }
   })
   const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
     ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
@@ -34,12 +34,12 @@ module.exports = async () => {
   )
   const certRenewEpoch = new Date()
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + opts.days)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
 
   const certsForRenewal = certs
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
-  debug(`Local certs that expiring in next ${opts.days} days:`, certsForRenewal)
+  debug(`Local certs that expiring in next ${config.renewDaysBefore} days:`, certsForRenewal)
 
   const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
   const host = opts.host || config.certcacheHost

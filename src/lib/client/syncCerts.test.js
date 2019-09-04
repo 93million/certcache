@@ -82,8 +82,7 @@ beforeEach(() => {
   console.log.mockClear()
   mockOpts = {
     host: 'example.com',
-    port: 12345,
-    days: 30
+    port: 12345
   }
 
   httpRedirect.start.mockClear()
@@ -91,7 +90,7 @@ beforeEach(() => {
 
   const certRenewEpoch = new Date()
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + mockOpts.days)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
 
   mockCertsForRenewal = mockLocalCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
@@ -122,7 +121,7 @@ test(
 test(
   'should request certs using config when no command-line args provided',
   async () => {
-    mockOpts = { days: 30 }
+    mockOpts = { }
 
     await syncCerts()
 
@@ -144,7 +143,7 @@ test(
   async () => {
     const httpRedirectUrl = 'https://certcache.example.com'
 
-    mockOpts = { 'http-redirect-url': httpRedirectUrl, days: 30 }
+    mockOpts = { 'http-redirect-url': httpRedirectUrl }
     await syncCerts()
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)

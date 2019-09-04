@@ -18,13 +18,20 @@ const payload = { domains, extras: { isTest } }
 const getLocalCerts = jest.fn()
 const findCert = jest.fn()
 const extras = { isTest }
-const mockCert = { getArchive: () => Promise.resolve('done') }
+const date90DaysAway = new Date()
+date90DaysAway.setDate(date90DaysAway.getDate() + 90)
+
+const date1DayAway = new Date()
+date1DayAway.setDate(date1DayAway.getDate() + 1)
+
+const mockCert = { getArchive: () => Promise.resolve('done'), notAfter: date90DaysAway }
 
 beforeEach(() => {
   findCert.mockReset()
   findCert.mockReturnValue(mockCert)
   CertLocator.mockClear()
   CertGenerator.mockClear()
+  generateFirstCertInSequence.mockReset()
   generateFirstCertInSequence.mockImplementation(() => {
     return Promise.resolve(mockCert)
   })
@@ -97,5 +104,34 @@ test(
     generateFirstCertInSequence.mockReturnValue()
 
     expect(getCert(payload)).rejects.toThrow()
+  }
+)
+
+test(
+  'should renew certificates close to expiry',
+  async () => {
+    findCert.mockReturnValue({ ...mockCert, notAfter: date1DayAway })
+
+    await getCert(payload)
+
+    expect(generateFirstCertInSequence)
+      .toBeCalledWith(
+        expect.any(Array),
+        commonName,
+        altNames,
+        extras,
+        expect.any(Object)
+      )
+  }
+)
+
+test(
+  'should not renew certificates far from expiry',
+  async () => {
+    findCert.mockReturnValue({ ...mockCert, notAfter: date90DaysAway })
+
+    await getCert(payload)
+
+    expect(generateFirstCertInSequence).not.toBeCalled()
   }
 )

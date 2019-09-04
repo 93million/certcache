@@ -33,7 +33,8 @@ module.exports = (commonName, certName, altNames, extras, certbotConfig) => {
     `--logs-dir`,
     certbotLogsDir,
     `--work-dir`,
-    certbotWorkDir
+    certbotWorkDir,
+    '--force-renewal'
   ]
 
   if (isTest) {

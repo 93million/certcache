@@ -28,7 +28,14 @@ module.exports = async (payload) => {
         .findCert(commonName, altNames, extras)
     ))
 
-  const localCert = localCertSearch.find((localCert) => localCert !== undefined)
+  const certRenewEpoch = new Date()
+
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
+
+  const localCert = localCertSearch.find((localCert) => (
+    localCert !== undefined &&
+    localCert.notAfter.getTime() >= certRenewEpoch.getTime()
+  ))
 
   if (localCert !== undefined) {
     debug('Found matching cert locally', domains)
