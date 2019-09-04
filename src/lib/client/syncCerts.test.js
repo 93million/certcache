@@ -1,7 +1,6 @@
 /* global jest test expect beforeEach */
 
 const syncCerts = require('./syncCerts')
-const getopts = require('getopts')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
@@ -73,9 +72,6 @@ console.log = jest.fn()
 
 getDomainsFromConfig.mockReturnValue(mockCertcacheDomains)
 
-getopts.mockImplementation(() => {
-  return mockOpts
-})
 getLocalCertificates.mockReturnValue(mockLocalCerts)
 
 beforeEach(() => {
@@ -103,7 +99,7 @@ beforeEach(() => {
 test(
   'should request certs using args from command-line when provided',
   async () => {
-    await syncCerts()
+    await syncCerts(mockOpts)
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(obtainCert).toBeCalledWith(
@@ -123,7 +119,7 @@ test(
   async () => {
     mockOpts = { }
 
-    await syncCerts()
+    await syncCerts(mockOpts)
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(obtainCert).toBeCalledWith(
@@ -144,7 +140,7 @@ test(
     const httpRedirectUrl = 'https://certcache.example.com'
 
     mockOpts = { 'http-redirect-url': httpRedirectUrl }
-    await syncCerts()
+    await syncCerts(mockOpts)
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalledTimes(1)
@@ -156,7 +152,7 @@ test(
   async () => {
     process.env.CERTCACHE_DOMAINS = yaml.stringify(mockCertcacheDomains)
 
-    await syncCerts()
+    await syncCerts(mockOpts)
 
     expect(getDomainsFromConfig)
       .toBeCalledWith(mockCertcacheDomains)

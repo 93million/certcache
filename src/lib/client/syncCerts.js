@@ -1,4 +1,3 @@
-const getopts = require('getopts')
 const getLocalCertificates = require('../getLocalCertificates')
 const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
@@ -8,11 +7,7 @@ const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
 
-module.exports = async () => {
-  const opts = getopts(process.argv.slice(2), {
-    alias: { host: 'h', test: 't', daemon: 'D' },
-    default: { test: false, daemon: false }
-  })
+module.exports = async (opts) => {
   const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
     ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
     : []
@@ -57,20 +52,25 @@ module.exports = async () => {
   }) => {
     const isTest = (issuerCommonName.indexOf('Fake') !== -1)
 
-    obtainCert(host, port, commonName, altNames, isTest, path.dirname(certPath))
+    return obtainCert(
+      host,
+      port,
+      commonName,
+      altNames,
+      isTest,
+      path.dirname(certPath)
+    )
   }))
 
   const configDomainPromise = Promise.all(configDomainsWithoutCert.map(
-    async ({ domains, isTest, certName }) => {
-      obtainCert(
-        host,
-        port,
-        domains[0],
-        domains,
-        isTest,
-        `${config.certcacheCertDir}/${certName}`
-      )
-    }
+    async ({ domains, isTest, certName }) => obtainCert(
+      host,
+      port,
+      domains[0],
+      domains,
+      isTest,
+      `${config.certcacheCertDir}/${certName}`
+    )
   ))
 
   await certRenewalPromise

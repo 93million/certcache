@@ -13,6 +13,7 @@ let action
 const payload = { test: 'payload', other: 58008 }
 let response
 const mockActionReturnValue = { foo: 'bar', test: 123 }
+const mockOpts = { port: 1234 }
 const listen = jest.fn()
 const writeHead = jest.fn()
 
@@ -62,13 +63,14 @@ beforeEach(() => {
   actions.testAction.mockClear()
   console.error.mockClear()
   writeHead.mockClear()
+  listen.mockClear()
   action = 'testAction'
 })
 
 test(
   'should call action submitted in request',
   async () => {
-    await serve()
+    await serve(mockOpts)
 
     expect(actions.testAction).toBeCalledTimes(1)
   }
@@ -77,7 +79,7 @@ test(
 test(
   'should return data returned by action',
   async () => {
-    await serve()
+    await serve(mockOpts)
 
     expect(JSON.parse(response).data).toEqual(mockActionReturnValue)
   }
@@ -88,7 +90,7 @@ test(
   async () => {
     action = 'nonExistantAction'
 
-    await serve()
+    await serve(mockOpts)
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -99,7 +101,7 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve()
+    await serve(mockOpts)
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -110,7 +112,7 @@ test(
   async () => {
     action = 'throwingFeedbackErrorAction'
 
-    await serve()
+    await serve(mockOpts)
 
     expect(JSON.parse(response).error).toBe(feedbackErrorMessage)
   }
@@ -119,7 +121,7 @@ test(
 test(
   'should send a 200 HTTP status code when action completes successfully',
   async () => {
-    await serve()
+    await serve(mockOpts)
 
     expect(writeHead).toBeCalledWith(200, { 'Content-Type': 'application/json' })
   }
@@ -130,8 +132,19 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve()
+    await serve(mockOpts)
 
     expect(writeHead).toBeCalledWith(500, { 'Content-Type': 'application/json' })
+  }
+)
+
+test(
+  'should start server on port specified in opts',
+  async () => {
+    action = 'throwingAction'
+
+    await serve(mockOpts)
+
+    expect(listen).toBeCalledWith(mockOpts.port)
   }
 )

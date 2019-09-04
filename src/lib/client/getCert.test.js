@@ -1,7 +1,6 @@
 /* global jest test expect beforeEach */
 
 const getCert = require('./getCert')
-const getopts = require('getopts')
 const requestCert = require('../requestCert')
 const httpRedirect = require('../httpRedirect')
 const config = require('../../config')
@@ -23,9 +22,6 @@ for (const i in mockConfig) {
   config[i] = mockConfig[i]
 }
 
-getopts.mockImplementation(() => {
-  return mockOpts
-})
 requestCert.mockImplementation(() => {
   return Promise.resolve(JSON.stringify(mockResponse))
 })
@@ -54,7 +50,7 @@ test(
   async () => {
     const mockDomainsArr = mockOpts.domains.split(',')
 
-    await getCert()
+    await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
       mockOpts.host,
@@ -75,12 +71,12 @@ test(
       'test-cert': false
     }
 
-    await getCert()
+    await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
     const [commonName, ...altNames] = mockDomainsArr
 
-    await getCert()
+    await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
       mockConfig.certcacheHost,
@@ -98,7 +94,7 @@ test(
   async () => {
     mockOpts['http-redirect-url'] = 'https://certcache.example.com'
 
-    await getCert()
+    await getCert(mockOpts)
 
     expect(httpRedirect.start).toBeCalledWith(mockOpts['http-redirect-url'])
     expect(httpRedirect.stop).toBeCalled()
@@ -108,7 +104,7 @@ test(
 test(
   'should write cert bundle to filesystem when received from certcache server',
   async () => {
-    await getCert()
+    await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
 
@@ -121,18 +117,5 @@ test(
         mockOpts['test-cert'],
         `${config.certcacheCertDir}/${mockOpts['cert-name']}`
       )
-  }
-)
-
-test(
-  'should output usage when no domains are supplied',
-  async () => {
-    mockOpts = {
-      'test-cert': false
-    }
-
-    await getCert()
-
-    expect(console.log.mock.calls[0][0]).toContain('Usage: ')
   }
 )

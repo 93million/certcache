@@ -1,8 +1,10 @@
 const defaults = require('./defaults')
 
-module.exports.certcacheHost = process.env.CERTCACHE_HOST || defaults.certcacheHost
-module.exports.certcachePort = process.env.CERTCACHE_PORT || defaults.certcachePort
-module.exports.certcacheCertDir = process.env.CERTCACHE_CERT_DIR ||
+module.exports.certcacheHost = process.env.CERTCACHE_HOST ||
+  defaults.certcacheHost
+module.exports.certcachePort = process.env.CERTCACHE_PORT ||
+  defaults.certcachePort
+module.exports.certcacheCertDir = process.env.CERTCACHE_CERTS_DIR ||
   defaults.certcacheCertDir
 module.exports.certbotExec = process.env.CERTCACHE_CERTBOT_EXEC ||
   defaults.certbotExec
@@ -22,3 +24,7 @@ module.exports.renewDaysBefore = (
 )
   ? defaults.renewDaysBefore
   : Number(process.env.CERTCACHE_RENEW_DAYS_BEFORE)
+module.exports.clientSyncInterval = process
+  .env
+  .CERTCACHE_CLIENT_SYNC_INTERVAL ||
+  defaults.clientSyncInterval

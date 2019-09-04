@@ -27,3 +27,4 @@ module.exports.certbotWorkDir = path.resolve(
 )
 module.exports.certcacheTmpDir = '/tmp/certcache/'
 module.exports.renewDaysBefore = 30
+module.exports.clientSyncInterval = 60 * 60 * 6

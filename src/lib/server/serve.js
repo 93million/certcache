@@ -3,7 +3,7 @@ const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const debug = require('debug')('certcache:server')
 
-module.exports = async () => {
+module.exports = async (opts) => {
   const server = await clientAuthenticatedHttps.createServer((req, res) => {
     const data = []
 
@@ -41,7 +41,7 @@ module.exports = async () => {
     })
   })
 
-  server.listen(4433)
+  server.listen(opts.port)
 }
 
 const callAction = (action, payload) => {
