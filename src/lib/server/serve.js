@@ -1,4 +1,4 @@
-const clientAuthenticatedHttps = require('../../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
+const clientAuthenticatedHttps = require('client-authenticated-https')
 const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const debug = require('debug')('certcache:server')

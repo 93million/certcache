@@ -1,5 +1,4 @@
-const clientAuthenticatedHttps =
-  require('../lib/clientAuthenticatedHttps/clientAuthenticatedHttps')
+const clientAuthenticatedHttps = require('client-authenticated-https')
 const debug = require('debug')('certcache:requestCert')
 
 module.exports = ({ host, port }, domains, extras) => {
