@@ -15,7 +15,11 @@ module.exports = (domainsConfig) => {
         item.domains = item.domains.split(',')
       }
 
-      const { cert_name: certName, is_test: isTest, ..._item } = item
+      let { cert_name: certName, is_test: isTest, ..._item } = item
+
+      if (certName === undefined) {
+        certName = item.domains[0]
+      }
 
       item = { ..._item, certName, isTest }
     }
