@@ -14,7 +14,7 @@ module.exports = {
   },
   handler: (argv) => {
     const syncPeriodically = () => {
-      syncCerts().catch((e) => { console.error(`ERROR! ${e}`) })
+      syncCerts(argv).catch((e) => { console.error(`ERROR! ${e}`) })
       setTimeout(syncPeriodically, 1000 * config.clientSyncInterval)
     }
     syncPeriodically()
