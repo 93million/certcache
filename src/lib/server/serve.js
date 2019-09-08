@@ -20,7 +20,7 @@ module.exports = async (opts) => {
       const { action, ...payload } = JSON.parse(requestBody)
 
       try {
-        result = { success: true, data: await callAction(action, payload) }
+        result = { success: true, data: await callAction(action, payload, req) }
       } catch (error) {
         result = { success: false }
 
@@ -44,10 +44,10 @@ module.exports = async (opts) => {
   server.listen(opts.port)
 }
 
-const callAction = (action, payload) => {
+const callAction = (action, payload, req) => {
   if (actions[action] === undefined) {
     throw new FeedbackError(`Action '${action}' not found`)
   }
 
-  return actions[action](payload)
+  return actions[action](payload, { req })
 }

@@ -9,9 +9,31 @@ const backends = require('../../../backends')
 const config = require('../../../config')
 const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')('certcache:server/actions/getCert')
+const yaml = require('yaml')
+const clientPermittedAccessToCerts =
+  require('../../clientPermittedAccessToCerts')
 
-module.exports = async (payload) => {
+module.exports = async (payload, { req }) => {
   const { extras, domains } = payload
+  const clientCertCommonName = req.connection.getPeerCertificate().subject.CN
+
+  if (process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS !== undefined) {
+    const clientCertRestrictions =
+      yaml.parse(process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS)
+
+    if (!clientPermittedAccessToCerts(
+      clientCertRestrictions,
+      clientCertCommonName,
+      domains
+    )) {
+      throw new FeedbackError([
+        'Client',
+        clientCertCommonName,
+        'does not have permission to generate the requested certs'
+      ].join(' '))
+    }
+  }
+
   const [commonName, ...altNames] = domains
 
   debug('Request for certificate', domains, 'with extras', extras)

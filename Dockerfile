@@ -4,7 +4,7 @@ WORKDIR /certcache/
 
 RUN apk update && \
   apk add bash certbot openssl python g++ make git && \
-  npm install "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/app/certcache.git#1.2.0"
+  npm install "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/app/certcache.git#1.3.0"
 
 VOLUME /certcache/cahkeys/
 VOLUME /certcache/certbot/

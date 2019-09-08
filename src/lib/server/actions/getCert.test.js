@@ -6,9 +6,9 @@ const locators = require('../../../config/locators')
 const CertLocator = require('../../classes/CertLocator')
 const CertGenerator = require('../../classes/CertGenerator')
 const backends = require('../../../backends')
-const generateFirstCertInSequence = require(
-  '../../generateFirstCertInSequence'
-)
+const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
+const clientPermittedAccessToCerts =
+  require('../../clientPermittedAccessToCerts')
 
 const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
@@ -23,8 +23,17 @@ date90DaysAway.setDate(date90DaysAway.getDate() + 90)
 
 const date1DayAway = new Date()
 date1DayAway.setDate(date1DayAway.getDate() + 1)
+const mockArchive = '__mockArchive__'
 
-const mockCert = { getArchive: () => Promise.resolve('done'), notAfter: date90DaysAway }
+const mockCert = {
+  getArchive: () => Promise.resolve(mockArchive),
+  notAfter: date90DaysAway
+}
+const getPeerCertificate = jest.fn()
+getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
+const req = {
+  connection: { getPeerCertificate }
+}
 
 beforeEach(() => {
   findCert.mockReset()
@@ -35,6 +44,8 @@ beforeEach(() => {
   generateFirstCertInSequence.mockImplementation(() => {
     return Promise.resolve(mockCert)
   })
+  clientPermittedAccessToCerts.mockClear()
+  clientPermittedAccessToCerts.mockReturnValue(true)
 })
 
 getLocalCerts.mockReturnValue(Promise.resolve({ findCert }))
@@ -43,6 +54,7 @@ jest.mock('../../classes/CertGenerator')
 jest.mock('../../classes/CertLocator')
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
+jest.mock('../../clientPermittedAccessToCerts')
 
 CertLocator.mockImplementation(() => ({ getLocalCerts }))
 CertGenerator.mockImplementation(() => {})
@@ -50,7 +62,7 @@ CertGenerator.mockImplementation(() => {})
 test(
   'should load cert locators in order defined in config',
   async () => {
-    await getCert(payload)
+    await getCert(payload, { req })
 
     locators.forEach((key, i) => {
       expect(CertLocator.mock.calls[0][i]).toBe(backends[key])
@@ -61,7 +73,7 @@ test(
 test(
   'should load cert generators in order defined in config',
   async () => {
-    await getCert(payload)
+    await getCert(payload, { req })
 
     generators.forEach((key, i) => {
       expect(CertGenerator.mock.calls[0][i]).toBe(backends[key])
@@ -72,7 +84,7 @@ test(
 test(
   'should search for local certificates from data provided in payload',
   async () => {
-    await getCert(payload)
+    await getCert(payload, { req })
 
     expect(findCert)
       .toBeCalledWith(commonName, altNames, extras)
@@ -84,7 +96,7 @@ test(
   async () => {
     findCert.mockReturnValue()
 
-    await getCert(payload)
+    await getCert(payload, { req })
 
     expect(generateFirstCertInSequence)
       .toBeCalledWith(
@@ -103,7 +115,7 @@ test(
     findCert.mockReturnValue()
     generateFirstCertInSequence.mockReturnValue()
 
-    expect(getCert(payload)).rejects.toThrow()
+    expect(getCert(payload, { req })).rejects.toThrow()
   }
 )
 
@@ -112,7 +124,7 @@ test(
   async () => {
     findCert.mockReturnValue({ ...mockCert, notAfter: date1DayAway })
 
-    await getCert(payload)
+    await getCert(payload, { req })
 
     expect(generateFirstCertInSequence)
       .toBeCalledWith(
@@ -130,8 +142,39 @@ test(
   async () => {
     findCert.mockReturnValue({ ...mockCert, notAfter: date90DaysAway })
 
-    await getCert(payload)
+    await getCert(payload, { req })
 
     expect(generateFirstCertInSequence).not.toBeCalled()
+  }
+)
+
+test(
+  'should throw error when client cannot access cert',
+  async () => {
+    process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
+
+    clientPermittedAccessToCerts.mockReturnValue(false)
+
+    await expect(getCert(payload, { req }))
+      .rejects
+      .toThrow('Client foo does not have permission to generate the requested certs')
+  }
+)
+
+test(
+  'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but client has permission',
+  async () => {
+    process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
+
+    await expect(getCert(payload, { req })).resolves.toEqual(expect.any(Object))
+  }
+)
+
+test(
+  'should resolve with certificate bundle',
+  async () => {
+    await expect(getCert(payload, { req })).resolves.toEqual({
+      bundle: Buffer.from(mockArchive).toString('base64')
+    })
   }
 )

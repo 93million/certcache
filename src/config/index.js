@@ -28,3 +28,6 @@ module.exports.clientSyncInterval = process
   .env
   .CERTCACHE_CLIENT_SYNC_INTERVAL ||
   defaults.clientSyncInterval
+module.exports.clientCertWhitelist = process
+  .env
+  .CERTCACHE_CLIENT_CERT_WHITELIST
