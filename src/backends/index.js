@@ -1,3 +1,4 @@
 module.exports = {
-  certbot: require('./certbot')
+  certbot: require('./certbot'),
+  thirdparty: require('./thirdparty')
 }

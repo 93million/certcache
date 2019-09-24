@@ -1,66 +1,48 @@
-const tar = require('tar')
+const tar = require('tar-stream')
+const zlib = require('zlib')
 const getCertInfo = require('../getCertInfo')
-const fs = require('fs')
-const util = require('util')
-const rimraf = require('rimraf')
-const path = require('path')
-const os = require('os')
 const debug = require('debug')('certcache:certificate')
 
-const mkdtemp = util.promisify(fs.mkdtemp)
-const copyFile = util.promisify(fs.copyFile)
-const appendFile = util.promisify(fs.appendFile)
-const readFile = util.promisify(fs.readFile)
-const rmdir = util.promisify(rimraf)
-
 class Certificate {
-  constructor (handlers, certPath) {
+  constructor (handlers, certInfo) {
     this.handlers = handlers
-    const certInfo = getCertInfo(certPath)
 
     for (const i in certInfo) {
       this[i] = certInfo[i]
     }
   }
 
+  static async fromPath (handlers, certPath) {
+    const certInfo = await getCertInfo(certPath)
+
+    return new Certificate(handlers, certInfo)
+  }
+
   async getArchive () {
-    const tmpDir = await mkdtemp(
-      path.join(os.tmpdir(), 'com.93million.certcache.')
+    const pack = tar.pack()
+    const bundle = await this.handlers.getBundle(this)
+
+    pack.entry({ name: 'cert.pem' }, bundle.cert)
+    pack.entry({ name: 'chain.pem' }, bundle.chain)
+    pack.entry({ name: 'privkey.pem' }, bundle.privkey)
+    pack.entry(
+      { name: 'fullchain.pem' },
+      Buffer.concat([Buffer.from(bundle.cert), Buffer.from(bundle.chain)])
     )
-    debug(`created temp dir ${tmpDir}`)
-    const bundleFiles = this.handlers.getFilesForBundle(this.certPath)
-    const tmpCertPath = `${tmpDir}/cert.pem`
-    const tmpChainPath = `${tmpDir}/chain.pem`
-    const tmpKeyPath = `${tmpDir}/privkey.pem`
-    const tmpFullchainPath = `${tmpDir}/fullchain.pem`
-
-    await Promise.all([
-      copyFile(bundleFiles.cert, tmpCertPath),
-      copyFile(bundleFiles.chain, tmpChainPath),
-      copyFile(bundleFiles.privkey, tmpKeyPath),
-      copyFile(bundleFiles.cert, tmpFullchainPath)
-        .then(() => readFile(bundleFiles.chain))
-        .then((chainBuffer) => appendFile(tmpFullchainPath, chainBuffer))
-    ])
-
-    const tarStream = await tar.c(
-      { gzip: true, cwd: tmpDir },
-      ['cert.pem', 'chain.pem', 'privkey.pem', 'fullchain.pem']
-    )
-
-    await rmdir(tmpDir)
+    pack.finalize()
 
     return new Promise((resolve) => {
       const chunks = []
 
-      tarStream.on('data', (chunk) => {
-        chunks.push(chunk)
-      })
-
-      tarStream.on('end', () => {
-        debug(`created certificate archive from tar file`)
-        resolve(Buffer.concat(chunks))
-      })
+      pack
+        .pipe(zlib.createGzip())
+        .on('data', (chunk) => {
+          chunks.push(chunk)
+        })
+        .on('end', () => {
+          debug(`created certificate archive from tar file`)
+          resolve(Buffer.concat(chunks))
+        })
     })
   }
 }

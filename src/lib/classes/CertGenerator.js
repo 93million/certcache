@@ -10,7 +10,7 @@ class CertGenerator {
       .handlers
       .generateCert(commonName, altNames, extras, config)
 
-    return new Certificate(this.handlers, certPath)
+    return Certificate.fromPath(this.handlers, certPath)
   }
 }
 

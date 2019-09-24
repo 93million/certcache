@@ -11,8 +11,13 @@ module.exports = async (certDir) => {
   const certPaths = dirItems.map((item) => `${certDir}/${item}/cert.pem`)
   const existsArr = await Promise.all(certPaths.map(fileExists))
 
-  return CertList.from(certPaths
-    .filter((certPath, i) => existsArr[i])
-    .map((certPath) => ({ ...getCertInfo(certPath), certPath }))
+  return CertList.from(
+    await Promise.all(certPaths
+      .filter((certPath, i) => existsArr[i])
+      .map(async (certPath) => ({
+        ...await getCertInfo(certPath),
+        certPath
+      }))
+    )
   )
 }

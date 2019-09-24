@@ -1,35 +1,40 @@
 /* global jest test expect */
 
 const getCertInfo = require('./getCertInfo')
-const x509 = require('x509')
+const x509 = require('@fidm/x509')
+const fs = require('fs')
 
-jest.mock('x509')
+jest.mock('@fidm/x509')
+jest.mock('fs')
 
-const mockedCert = {
+const mockCert = {
   subject: { commonName: 'test.example.com' },
-  altNames: [
+  dnsNames: [
     'test.example.com',
     'www1.test.example.com',
     'foo.test.example.com'
   ],
   issuer: { commonName: 'Jimmy the issuer' },
-  notAfter: new Date(),
-  notBefore: new Date()
+  validTo: new Date().toISOString(),
+  validFrom: new Date().toISOString()
 }
 const certPath = '/test/cert/path'
 
-x509.parseCert.mockReturnValue(mockedCert)
+x509.Certificate.fromPEM.mockReturnValue(mockCert)
+fs.readFile.mockImplementation((path, callback) => {
+  callback(null, 'mockedCertFileContents')
+})
 
 test(
   'should return information about certificate',
-  () => {
-    expect(getCertInfo(certPath)).toEqual({
-      commonName: mockedCert.subject.commonName,
-      altNames: mockedCert.altNames,
-      issuerCommonName: mockedCert.issuer.commonName,
+  async () => {
+    await expect(getCertInfo(certPath)).resolves.toEqual({
+      commonName: mockCert.subject.commonName,
+      altNames: mockCert.dnsNames,
+      issuerCommonName: mockCert.issuer.commonName,
       certPath,
-      notAfter: mockedCert.notAfter,
-      notBefore: mockedCert.notBefore
+      notAfter: new Date(mockCert.validTo),
+      notBefore: new Date(mockCert.validFrom)
     })
   }
 )

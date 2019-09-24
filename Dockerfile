@@ -7,7 +7,7 @@ RUN apk update && \
   npm install "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/app/certcache.git#1.3.0"
 
 VOLUME /certcache/cahkeys/
-VOLUME /certcache/certbot/
+VOLUME /certcache/backends/
 VOLUME /certcache/certs/
 
 ENV CAH_KEYS_DIR=/certcache/cahkeys/

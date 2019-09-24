@@ -30,7 +30,7 @@ fs.readdir.mockImplementation((path, callback) => {
 
 const mockCert = { _test_: 58008 }
 
-getCertInfo.mockReturnValue(mockCert)
+getCertInfo.mockReturnValue(Promise.resolve(mockCert))
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {

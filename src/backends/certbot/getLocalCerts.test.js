@@ -1,13 +1,15 @@
 /* global jest test expect */
 
-const getLocalCertPaths = require('./getLocalCertPaths')
+const getLocalCerts = require('./getLocalCerts')
 const fs = require('fs')
 const fileExists = require('../../lib/helpers/fileExists')
 const path = require('path')
+const Certificate = require('../../lib/classes/Certificate')
 
 jest.mock('fs')
 jest.mock('../../lib/helpers/fileExists')
 jest.mock('path')
+jest.mock('../../lib/classes/Certificate')
 
 const dirContents = ['cert1', 'cert2', 'cert3']
 const filePaths = [
@@ -29,19 +31,26 @@ const filePaths = [
 ]
 
 path.resolve.mockReturnValue('/test/certs')
+Certificate.fromPath
+  .mockImplementation((handlers, path) => Promise.resolve({ handlers, path }))
 
 fileExists.mockImplementation((path) => filePaths.includes(path))
+const expectedHandler = {
+  getBundle: expect.any(Function),
+  getLocalCerts: expect.any(Function),
+  generateCert: expect.any(Function)
+}
 
 test(
-  'should return an array of paths to certs',
+  'should return an array of certificates',
   async () => {
     fs.readdir
       .mockImplementation((path, callback) => callback(null, dirContents))
 
-    await expect(getLocalCertPaths()).resolves.toEqual([
-      '/test/certs/cert1/cert.pem',
-      '/test/certs/cert2/cert.pem',
-      '/test/certs/cert3/cert.pem'
+    await expect(getLocalCerts()).resolves.toEqual([
+      { handlers: expectedHandler, path: '/test/certs/cert1/cert.pem' },
+      { handlers: expectedHandler, path: '/test/certs/cert2/cert.pem' },
+      { handlers: expectedHandler, path: '/test/certs/cert3/cert.pem' }
     ])
   }
 )
@@ -59,6 +68,6 @@ test(
     fs.readdir
       .mockImplementation((path, callback) => callback(error, null))
 
-    await expect(getLocalCertPaths()).resolves.toEqual([])
+    await expect(getLocalCerts()).resolves.toEqual([])
   }
 )

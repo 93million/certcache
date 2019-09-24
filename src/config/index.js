@@ -31,3 +31,5 @@ module.exports.clientSyncInterval = process
 module.exports.clientCertWhitelist = process
   .env
   .CERTCACHE_CLIENT_CERT_WHITELIST
+module.exports.thirdpartyDir = process.env.CERTCACHE_THIRDPARTY_DIR ||
+  defaults.thirdpartyDir

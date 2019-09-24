@@ -9,7 +9,6 @@ const obtainCert = require('./obtainCert')
 const yaml = require('yaml')
 const path = require('path')
 
-jest.mock('getopts')
 jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
 jest.mock('./getDomainsFromConfig')

@@ -46,8 +46,16 @@ module.exports = async (payload, { req }) => {
 
   const localCertSearch = await Promise
     .all(certLocators.map(
-      async (certLocator) => (await certLocator.getLocalCerts())
-        .findCert(commonName, altNames, extras)
+      async (certLocator) => {
+        const localCerts = await certLocator.getLocalCerts()
+        let matchingCerts = localCerts.findCert(commonName, altNames, extras)
+
+        if (altNames.length === 1 && matchingCerts === undefined) {
+          matchingCerts = localCerts.findCert(commonName, [], extras)
+        }
+
+        return matchingCerts
+      }
     ))
 
   const certRenewEpoch = new Date()

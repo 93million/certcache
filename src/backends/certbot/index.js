@@ -1,5 +1,5 @@
 module.exports = {
-  getFilesForBundle: require('./getFilesForBundle'),
-  getLocalCertPaths: require('./getLocalCertPaths'),
+  getBundle: require('./getBundle'),
+  getLocalCerts: require('./getLocalCerts'),
   generateCert: require('./generateCert')
 }

@@ -65,7 +65,7 @@ test(
     await getCert(payload, { req })
 
     locators.forEach((key, i) => {
-      expect(CertLocator.mock.calls[0][i]).toBe(backends[key])
+      expect(CertLocator.mock.calls[i][0]).toBe(backends[key])
     })
   }
 )
@@ -86,8 +86,23 @@ test(
   async () => {
     await getCert(payload, { req })
 
-    expect(findCert)
-      .toBeCalledWith(commonName, altNames, extras)
+    expect(findCert).toBeCalledWith(commonName, altNames, extras)
+  }
+)
+
+test(
+  'when provided only 1 domain, should search for local certs using only common name when unable to find certs with matching alt names',
+  async () => {
+    const commonName = 'test.example.com'
+    const payload = { domains: [commonName], extras: { isTest } }
+
+    findCert.mockReset()
+    findCert.mockReturnValue(undefined)
+
+    await getCert(payload, { req })
+
+    expect(findCert.mock.calls[0]).toEqual([commonName, [commonName], extras])
+    expect(findCert.mock.calls[1]).toEqual([commonName, [], extras])
   }
 )
 

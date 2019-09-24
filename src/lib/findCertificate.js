@@ -11,8 +11,8 @@ module.exports = (certList, commonName, altNames, isTest) =>
 
       return (
         certIsTest === isTest &&
-      certCommonName === commonName &&
-      arrayItemsMatch(certAltNames, altNames)
+        certCommonName === commonName &&
+        arrayItemsMatch(certAltNames, altNames)
       )
     }
   )

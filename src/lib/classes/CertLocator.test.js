@@ -5,14 +5,14 @@ const CertList = require('./CertList')
 
 jest.mock('../getCertInfo')
 
-const handlers = { getLocalCertPaths: jest.fn() }
+const handlers = { getLocalCerts: jest.fn() }
 const locatedCerts = ['/test/path/to/cert1.pem', '/test/path/to/cert2.pem']
 const certLocator = new CertLocator(handlers)
 
-handlers.getLocalCertPaths.mockReturnValue(Promise.resolve(locatedCerts))
+handlers.getLocalCerts.mockReturnValue(Promise.resolve(locatedCerts))
 
 beforeEach(() => {
-  handlers.getLocalCertPaths.mockClear()
+  handlers.getLocalCerts.mockClear()
 })
 
 test(

@@ -18,8 +18,10 @@ module.exports = async (opts) => {
   const configDomainsWithoutCert = configDomains
     .filter(({ domains, isTest }) => {
       return certs.findCert(
-        domains[0],
-        domains,
+        {
+          commonName: domains[0],
+          altNames: domains
+        },
         { isTest: (isTest === true) }
       ) === undefined
     })

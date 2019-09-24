@@ -6,23 +6,25 @@
   "bin": "src/cli/cli.js",
   "scripts": {
     "cli": "node src/cli/cli.js",
+    "clidev": "nodemon --inspect src/cli/cli.js",
     "lint": "eslint src",
     "start": "node src/cli/cli.js serve",
-    "startdev": "nodemon --inspect src/server/serve.js",
+    "startdev": "nodemon --inspect src/cli/cli.js serve",
     "test": "jest --coverage"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "client-authenticated-https": "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/lib/client-authenticated-https.git#1.0.0",
+    "@fidm/x509": "^1.2.1",
+    "client-authenticated-https": "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/lib/client-authenticated-https.git#1.0.1",
     "debug": "^4.1.1",
-    "getopts": "^2.2.5",
     "md5": "^2.2.1",
+    "node-rsa": "^1.0.5",
     "rimraf": "^2.6.3",
-    "tar": "^4.4.10",
+    "tar-stream": "^2.1.0",
     "uuid": "^3.3.2",
-    "x509": "^0.3.4",
-    "yaml": "^1.6.0"
+    "yaml": "^1.6.0",
+    "yargs": "^15.1.0"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
@@ -32,7 +34,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "husky": "^3.0.3",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "lint-staged": "^9.2.1",
     "nodemon": "^1.19.1"
   },

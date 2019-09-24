@@ -8,6 +8,7 @@ module.exports.certbotConfigDir = path.resolve(
   __dirname,
   '..',
   '..',
+  'backends',
   'certbot',
   'config'
 )
@@ -15,6 +16,7 @@ module.exports.certbotLogsDir = path.resolve(
   __dirname,
   '..',
   '..',
+  'backends',
   'certbot',
   'logs'
 )
@@ -22,9 +24,17 @@ module.exports.certbotWorkDir = path.resolve(
   __dirname,
   '..',
   '..',
+  'backends',
   'certbot',
   'work'
 )
 module.exports.certcacheTmpDir = '/tmp/certcache/'
 module.exports.renewDaysBefore = 30
 module.exports.clientSyncInterval = 60 * 60 * 6
+module.exports.thirdpartyDir = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'backends',
+  'thirdparty'
+)

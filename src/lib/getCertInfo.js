@@ -1,20 +1,26 @@
-const x509 = require('x509')
+const fs = require('fs')
+const util = require('util')
+const { Certificate } = require('@fidm/x509')
 
-module.exports = (certPath) => {
+const readFile = util.promisify(fs.readFile)
+
+module.exports = async (certPath) => {
+  const certData = await readFile(certPath)
+  const cert = Certificate.fromPEM(certData)
   const {
-    altNames,
+    dnsNames: altNames,
     issuer: { commonName: issuerCommonName },
-    notAfter,
-    notBefore,
+    validTo,
+    validFrom,
     subject: { commonName }
-  } = x509.parseCert(certPath)
+  } = cert
 
   return {
     altNames,
     certPath,
     commonName,
     issuerCommonName,
-    notAfter,
-    notBefore
+    notAfter: new Date(validTo),
+    notBefore: new Date(validFrom)
   }
 }

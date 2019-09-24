@@ -105,3 +105,19 @@ test(
       ])
   }
 )
+
+test(
+  'should name cert when no cert_name property is present in object',
+  () => {
+    const { cert_name: certName, ...config } = config1
+
+    expect(getDomainsFromConfig([config]))
+      .toEqual([
+        {
+          certName: expectedDomains1[0],
+          isTest: isTest1,
+          domains: expectedDomains1
+        }
+      ])
+  }
+)

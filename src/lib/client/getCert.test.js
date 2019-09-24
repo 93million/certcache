@@ -6,7 +6,6 @@ const httpRedirect = require('../httpRedirect')
 const config = require('../../config')
 const obtainCert = require('./obtainCert')
 
-jest.mock('getopts')
 jest.mock('../requestCert')
 jest.mock('../httpRedirect')
 jest.mock('./obtainCert')

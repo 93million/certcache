@@ -1,4 +1,4 @@
-const Certificate = require('./Certificate')
+
 const CertList = require('./CertList')
 
 class CertLocator {
@@ -7,10 +7,7 @@ class CertLocator {
   }
 
   async getLocalCerts () {
-    return CertList.from(
-      (await this.handlers.getLocalCertPaths())
-        .map((certPath) => new Certificate(this.handlers, certPath))
-    )
+    return CertList.from(await this.handlers.getLocalCerts())
   }
 }
 

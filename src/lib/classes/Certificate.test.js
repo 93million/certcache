@@ -1,117 +1,77 @@
-/* global jest describe test expect beforeEach */
+/* global jest describe test expect */
 
 const getCertInfo = require('../getCertInfo')
-const fs = require('fs')
 const Certificate = require('./Certificate')
-const tar = require('tar')
+const tar = require('tar-stream')
 const { Readable } = require('stream')
-const rimraf = require('rimraf')
+const zlib = require('zlib')
 
 jest.mock('../getCertInfo')
-jest.mock('tar')
 jest.mock('fs')
 jest.mock('rimraf')
 
 const testProp = 'foo123'
-const handlers = { getFilesForBundle: jest.fn() }
-const mockedFilesForBundle = {
-  cert: '/test/crt.cer',
-  chain: '/test/intr.pem',
-  privkey: '/test/key.priv'
-}
-const tmpDir = '/test/tmp/dir'
-
-let mockedTarCreateStream
-
-handlers.getFilesForBundle.mockReturnValue(mockedFilesForBundle)
-tar.c.mockImplementation(() => Promise.resolve(mockedTarCreateStream))
-fs.copyFile.mockImplementation((src, dest, callback) => { callback(null, true) })
-fs.appendFile.mockImplementation((file, contents, callback) => {
-  callback(null, true)
-})
-fs.readFile.mockImplementation((path, callback) => { callback(null, true) })
-fs.mkdtemp.mockImplementation((path, callback) => {
-  callback(null, tmpDir)
-})
-rimraf.mockImplementation((path, callback) => { callback(null, true) })
-
-getCertInfo.mockReturnValue({ testProp })
-
+const mockHandlers = { getBundle: jest.fn() }
 const certPath = '/test/crt.cer'
+const mockBundle = {
+  cert: Buffer.from('__mockCert__'),
+  chain: Buffer.from('__mockChain__'),
+  privkey: Buffer.from('_mockPrivkey__')
+}
 
-beforeEach(() => {
-  mockedTarCreateStream = new Readable()
+// let mockTarBuffer
 
-  mockedTarCreateStream.push('sample tar data')
-  mockedTarCreateStream.push(null)
-
-  tar.c.mockClear()
-})
+getCertInfo.mockReturnValue(Promise.resolve({ testProp }))
+mockHandlers.getBundle.mockReturnValue(mockBundle)
 
 describe('creates an archive', () => {
   test(
-    'creates temp folder',
+    'should return a tar archive of bundle as a buffer',
     async () => {
-      const cert = new Certificate(handlers, certPath)
+      const extract = tar.extract()
+      const archiveStream = new Readable({ read: () => {} })
+      const cert = await Certificate.fromPath(mockHandlers, certPath)
+      const archive = await cert.getArchive()
+      const expandedFiles = {}
 
-      await cert.getArchive()
+      archiveStream.push(archive)
+      archiveStream.push(null)
 
-      expect(fs.mkdtemp.mock.calls[0][0]).toContain('com.93million')
-    }
-  )
+      extract.on('entry', ({ name }, stream, next) => {
+        const chunks = []
 
-  test(
-    'copies files to temp folder',
-    async () => {
-      const cert = new Certificate(handlers, certPath)
+        stream.on('data', (chunk) => {
+          chunks.push(chunk)
+        })
 
-      await cert.getArchive()
+        stream.on('end', () => {
+          expandedFiles[name] = Buffer.concat(chunks)
+          next()
+        })
+      })
 
-      expect(fs.copyFile).toBeCalledWith(
-        mockedFilesForBundle.chain,
-        `${tmpDir}/chain.pem`,
-        expect.any(Function)
-      )
-      expect(fs.copyFile).toBeCalledWith(
-        mockedFilesForBundle.cert,
-        `${tmpDir}/fullchain.pem`,
-        expect.any(Function)
-      )
-      expect(fs.copyFile).toBeCalledWith(
-        mockedFilesForBundle.privkey,
-        `${tmpDir}/privkey.pem`,
-        expect.any(Function)
-      )
-    }
-  )
+      const receivedExpandedFiles = await new Promise((resolve, reject) => {
+        extract.on('finish', () => {
+          resolve(expandedFiles)
+        })
 
-  test(
-    'creates tar archive of certificate directory',
-    async () => {
-      const cert = new Certificate(handlers, certPath)
+        archiveStream.pipe(zlib.createGunzip()).pipe(extract)
+      })
 
-      await cert.getArchive()
-
-      expect(tar.c).toBeCalledTimes(1)
-    }
-  )
-
-  test(
-    'deletes temp folder',
-    async () => {
-      const cert = new Certificate(handlers, certPath)
-
-      await cert.getArchive()
-
-      expect(rimraf).toBeCalledWith(tmpDir, expect.any(Function))
+      expect(receivedExpandedFiles).toEqual({
+        'chain.pem': mockBundle.chain,
+        'fullchain.pem': Buffer.concat([mockBundle.cert, mockBundle.chain]),
+        'cert.pem': mockBundle.cert,
+        'privkey.pem': mockBundle.privkey
+      })
     }
   )
 })
 
 test(
   'makes properties of getCertInfo available to be consumed',
-  () => {
-    const cert = new Certificate(handlers, certPath)
+  async () => {
+    const cert = await Certificate.fromPath(mockHandlers, certPath)
 
     expect(cert.testProp).toBe(testProp)
   }
