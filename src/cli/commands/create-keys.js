@@ -19,7 +19,15 @@ module.exports = {
     }
   },
   handler: (argv) => {
-    const execScript = 'client-authenticated-https'
+    const execScript = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'node_modules',
+      '.bin',
+      'client-authenticated-https'
+    )
 
     execFile(
       execScript,
