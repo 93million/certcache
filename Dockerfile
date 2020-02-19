@@ -13,7 +13,7 @@ VOLUME /certcache/certs/
 ENV CAH_KEYS_DIR=/certcache/cahkeys/
 ENV CERTCACHE_CERTBOT_CONFIG_DIR=/certcache/certbot/config/
 ENV CERTCACHE_CERTS_DIR=/certcache/certs/
-ENV PATH="/certcache/node_modules/.bin:${PATH}"
+ENV PATH="${PATH}:/certcache/node_modules/.bin"
 
 EXPOSE 80
 EXPOSE 4433
