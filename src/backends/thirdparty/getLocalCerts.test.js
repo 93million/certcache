@@ -1,10 +1,12 @@
-/* global jest test expect */
+/* global jest test expect beforeEach */
 const getLocalCerts = require('./getLocalCerts')
 const CertFinder = require('./lib/CertFinder')
 const Certificate = require('../../lib/classes/Certificate')
+const fileExists = require('../../lib/helpers/fileExists')
 
 jest.mock('./lib/CertFinder')
 jest.mock('../../lib/classes/Certificate')
+jest.mock('../../lib/helpers/fileExists')
 
 const commonName = 'foo.example.com'
 const altNames = ['foo.example.com', 'test.example.com']
@@ -37,6 +39,11 @@ CertFinder.mockImplementation(() => ({ getCerts: mockGetCerts }))
 Certificate
   .mockImplementation((handlers, certInfo) => ({ handlers, certInfo }))
 
+beforeEach(() => {
+  fileExists.mockReset()
+  fileExists.mockReturnValue(Promise.resolve(true))
+})
+
 test(
   'should return an array of certificates',
   async () => {
@@ -44,5 +51,14 @@ test(
       certInfo: mockBundle,
       handlers: expect.any(Object)
     }])
+  }
+)
+
+test(
+  'should return an emptry array when thirdparty certificate dir is missing',
+  async () => {
+    fileExists.mockReturnValue(Promise.resolve(false))
+
+    await expect(getLocalCerts()).resolves.toHaveLength(0)
   }
 )
