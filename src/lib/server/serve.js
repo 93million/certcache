@@ -28,7 +28,7 @@ module.exports = async (opts) => {
           result = { ...result, error: error.message }
         }
 
-        console.error('Error:', error)
+        console.error(error)
       }
 
       res.writeHead(

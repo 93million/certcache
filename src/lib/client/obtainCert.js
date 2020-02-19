@@ -29,9 +29,9 @@ module.exports = async (
     debug(`Error obtaining bundle`, responseObj)
 
     if (responseObj.error !== undefined) {
-      message += `. Error: '${responseObj.error}'`
+      message += ` - message: '${responseObj.error}'`
     }
 
-    console.error(message)
+    throw new Error(message)
   }
 }

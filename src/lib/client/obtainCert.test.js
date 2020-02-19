@@ -72,40 +72,40 @@ test(
 )
 
 test(
-  'should output a warning if cert fails to be retrieved from certcache server',
+  'should throw an error when failing to get cert from certcache server',
   async () => {
     mockResponse = { success: false }
 
-    await obtainCert(
+    await expect(obtainCert(
       mockHost,
       mockPort,
       mockCommonName,
       mockAltNames,
       mockIsTest,
       mockCertDirPath
-    )
-
-    expect(console.error).toBeCalledTimes(1)
+    ))
+      .rejects
+      .toThrow()
   }
 )
 
 test(
-  'should output any error messages retrieved from certcache server',
+  'should throw an error containing messages retrieved from certcache server',
   async () => {
     const error = '__test error__'
 
     mockResponse = { success: false, error }
 
-    await obtainCert(
+    await expect(obtainCert(
       mockHost,
       mockPort,
       mockCommonName,
       mockAltNames,
       mockIsTest,
       mockCertDirPath
-    )
-
-    expect(console.error.mock.calls[0][0]).toContain(error)
+    ))
+      .rejects
+      .toThrow(error)
   }
 )
 

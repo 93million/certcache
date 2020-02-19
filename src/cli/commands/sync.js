@@ -14,7 +14,7 @@ module.exports = {
   },
   handler: (argv) => {
     syncCerts(argv).catch((e) => {
-      console.error(`ERROR! ${e}`)
+      console.error(e)
       process.exit(1)
     })
   }
