@@ -1,4 +1,4 @@
-FROM node:10.16.0-alpine
+FROM node:12.16.0-alpine3.11
 
 WORKDIR /certcache/
 
@@ -11,7 +11,7 @@ VOLUME /certcache/backends/
 VOLUME /certcache/certs/
 
 ENV CAH_KEYS_DIR=/certcache/cahkeys/
-ENV CERTCACHE_CERTBOT_CONFIG_DIR=/certcache/certbot/config/
+ENV CERTCACHE_CERTBOT_CONFIG_DIR=/certcache/backends/certbot/config/
 ENV CERTCACHE_CERTS_DIR=/certcache/certs/
 ENV PATH="${PATH}:/certcache/node_modules/.bin"
 
