@@ -13,6 +13,7 @@ module.exports.certbotConfigDir = process.env.CERTCACHE_CERTBOT_CONFIG_DIR ||
 module.exports.certbotLogsDir = defaults.certbotLogsDir
 module.exports.certbotWorkDir = defaults.certbotWorkDir
 module.exports.letsencryptEmail = process.env.CERTCACHE_LETSENCRYPT_EMAIL
+// XXX is `certcacheTmpDir` used?
 module.exports.certcacheTmpDir = process.env.CERTCACHE_TMP_DIR ||
   defaults.certcacheTmpDir
 module.exports.certbotHttpAuthPort = process

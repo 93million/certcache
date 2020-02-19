@@ -14,7 +14,7 @@ module.exports = {
     })
     yargs.option('keydir', {
       default: process.env.CAH_KEYS_DIR ||
-        path.resolve(__dirname, '..', '..', 'cahkeys')
+        path.resolve(process.cwd(), 'cahkeys')
     })
   },
   handler: (argv) => {

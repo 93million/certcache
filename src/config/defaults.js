@@ -2,39 +2,32 @@ const path = require('path')
 
 module.exports.certcacheHost = 'localhost'
 module.exports.certcachePort = 4433
-module.exports.certcacheCertDir = path.resolve(__dirname, '..', '..', 'certs')
+module.exports.certcacheCertDir = path.resolve(process.cwd(), 'certs')
 module.exports.certbotExec = 'certbot'
 module.exports.certbotConfigDir = path.resolve(
-  __dirname,
-  '..',
-  '..',
+  process.cwd(),
   'backends',
   'certbot',
   'config'
 )
 module.exports.certbotLogsDir = path.resolve(
-  __dirname,
-  '..',
-  '..',
+  process.cwd(),
   'backends',
   'certbot',
   'logs'
 )
 module.exports.certbotWorkDir = path.resolve(
-  __dirname,
-  '..',
-  '..',
+  process.cwd(),
   'backends',
   'certbot',
   'work'
 )
+// XXX is `certcacheTmpDir` used?
 module.exports.certcacheTmpDir = '/tmp/certcache/'
 module.exports.renewDaysBefore = 30
 module.exports.clientSyncInterval = 60 * 60 * 6
 module.exports.thirdpartyDir = path.resolve(
-  __dirname,
-  '..',
-  '..',
+  process.cwd(),
   'backends',
   'thirdparty'
 )
