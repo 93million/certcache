@@ -19,11 +19,11 @@ module.exports = {
     }
   },
   handler: (argv) => {
-    const execScript = 'client-authenticated-https'
+    const execScript = 'npx'
 
     execFile(
       execScript,
-      ['create-key', '--server', '--keydir', argv.keydir, '--name', argv.name]
+      ['client-authenticated-https', 'create-key', '--server', '--keydir', argv.keydir, '--name', argv.name]
     )
       .then(() => {
         execFile(
