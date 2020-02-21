@@ -7,8 +7,10 @@ module.exports = async (
   port,
   commonName,
   altNames,
+  // TODO move isTest into optionals with cahKeysDir
   isTest,
-  certDirPath
+  certDirPath,
+  { cahKeysDir }
 ) => {
   const domains = Array.from(new Set([commonName, ...altNames]))
 
@@ -18,7 +20,11 @@ module.exports = async (
     isTest ? 'test' : 'live'
   ].join(' '))
 
-  const response = await requestCert({ host, port }, domains, { isTest })
+  const response = await requestCert(
+    { cahKeysDir, host, port },
+    domains,
+    { isTest }
+  )
   const responseObj = JSON.parse(response)
 
   if (responseObj.success === true) {

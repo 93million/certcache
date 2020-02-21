@@ -10,16 +10,16 @@ const mockFirstLine = 'line 1'
 const mockSecondLine = 'line 2'
 const mockFileContents = [mockFirstLine, mockSecondLine].join('\n')
 
-fs.createReadStream.mockImplementation(() => {
-  return readable
-})
-
 let readable
 
 beforeEach(() => {
   readable = new Readable({ read: () => {} })
   readable.push(mockFileContents)
   readable.close = () => { readable.emit('close') }
+
+  fs.createReadStream.mockImplementation(() => {
+    return readable
+  })
 })
 
 test(

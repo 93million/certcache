@@ -6,7 +6,7 @@
   "bin": "src/cli/cli.js",
   "scripts": {
     "cli": "node src/cli/cli.js",
-    "clidev": "nodemon --inspect src/cli/cli.js",
+    "clidev": "nodemon --inspect -- src/cli/cli.js",
     "lint": "eslint src",
     "start": "node src/cli/cli.js serve",
     "startdev": "nodemon --inspect src/cli/cli.js serve",
@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "client-authenticated-https": "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/lib/client-authenticated-https.git#1.0.1",
+    "client-authenticated-https": "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/lib/client-authenticated-https.git#1.1.0",
     "debug": "^4.1.1",
     "md5": "^2.2.1",
     "node-rsa": "^1.0.5",

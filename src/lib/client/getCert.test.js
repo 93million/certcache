@@ -35,7 +35,8 @@ beforeEach(() => {
     domains: 'example.com,test.example.com,foo.example.com',
     host: 'example.com',
     port: 12345,
-    'test-cert': true
+    'test-cert': true,
+    cahkeys: '/path/to/cahkeys'
   }
   requestCert.mockClear()
   console.error.mockClear()
@@ -57,7 +58,8 @@ test(
       mockDomainsArr[0],
       mockDomainsArr.slice(1),
       mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${mockOpts['cert-name']}`
+      `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
+      { cahKeysDir: mockOpts.cahkeys }
     )
   }
 )
@@ -83,13 +85,14 @@ test(
       commonName,
       altNames,
       mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${commonName}`
+      `${config.certcacheCertDir}/${commonName}`,
+      { cahKeysDir: mockOpts.cahkeys }
     )
   }
 )
 
 test(
-  'should start an http proxy when requested',
+  'should start an http redirect server when requested',
   async () => {
     mockOpts['http-redirect-url'] = 'https://certcache.example.com'
 
@@ -114,7 +117,8 @@ test(
         mockDomainsArr[0],
         mockDomainsArr.slice(1),
         mockOpts['test-cert'],
-        `${config.certcacheCertDir}/${mockOpts['cert-name']}`
+        `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
+        { cahKeysDir: mockOpts.cahkeys }
       )
   }
 )

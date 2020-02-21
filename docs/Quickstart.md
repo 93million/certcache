@@ -56,7 +56,7 @@ On the server, generate a server/client key pair using the following command:
 
 ```
 cd ~/certcache-demo/server
-certbot --name certcache.localhost
+certcache create-keys --name certcache.localhost
 ```
 
 There should now be a new directory named `cahkeys` in the current directory.
@@ -84,8 +84,8 @@ total 32
 The client key needs to be copied from the server to the client so it can connect to the server.
 
 ```
-cd ~/certcache-demo/server
-cp cahkeys/client.cahkey ~/certcache-demo/client/cahkeys/
+mkdir -p ~/certcache-demo/client/cahkeys
+cp ~/certcache-demo/server/cahkeys/client.cahkey ~/certcache-demo/client/cahkeys/
 ```
 
 ### Generating certificiates using Let's Encrypt
@@ -96,9 +96,11 @@ In this demo we will use `ngrok` (https://ngrok.com) to quickly create a domain 
 
 If you don't want to use ngrok and have access to a domain for testing purposes, you can generatea cert for that domain using something like `ssh -R 80:localhost:80 <ssh host>`. For simplicity we will not cover that in this guide.
 
-Install `ngrok` and create an instance running on port 80 using the command:
+Install `ngrok` create an instance running on port 80 using the command:
 
-`ngrok http 80`
+```
+ngrok http 80
+```
 
 Make a note of the domain from which ngrok is forwarding http requests on port 80 (eg. `example1234.ngrok.io`)
 

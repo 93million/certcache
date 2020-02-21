@@ -60,7 +60,8 @@ module.exports = async (opts) => {
       commonName,
       altNames,
       isTest,
-      path.dirname(certPath)
+      path.dirname(certPath),
+      { cahKeysDir: opts.cahkeys }
     )
   }))
 

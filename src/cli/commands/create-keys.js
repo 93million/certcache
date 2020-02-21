@@ -1,6 +1,7 @@
 const childProcess = require('child_process')
 const path = require('path')
 const util = require('util')
+const { cahkeys } = require('./args')
 
 const execFile = util.promisify(childProcess.execFile)
 
@@ -8,14 +9,11 @@ module.exports = {
   cmd: 'create-keys',
   desc: 'Create access keys to allow certcache clients to access certcache server',
   builder: {
+    cahkeys,
     name: {
       alias: 'n',
       description: 'Certcache server hostname',
       required: true
-    },
-    keydir: {
-      default: process.env.CAH_KEYS_DIR ||
-        path.resolve(process.cwd(), 'cahkeys')
     }
   },
   handler: (argv) => {
@@ -23,12 +21,12 @@ module.exports = {
 
     execFile(
       execScript,
-      ['create-key', '--server', '--keydir', argv.keydir, '--name', argv.name]
+      ['create-key', '--server', '--keydir', argv.cahkeys, '--name', argv.name]
     )
       .then(() => {
         execFile(
           execScript,
-          ['create-key', '--keydir', argv.keydir, '--name', 'client']
+          ['create-key', '--keydir', argv.cahkeys, '--name', 'client']
         )
       })
       .catch((err) => {

@@ -19,7 +19,7 @@ const writeHead = jest.fn()
 
 console.error = jest.fn()
 
-clientAuthenticatedHttps.createServer.mockImplementation((callback) => {
+clientAuthenticatedHttps.createServer.mockImplementation((options, callback) => {
   const requestBody = JSON.stringify({ action, ...payload })
   const _response = []
   const req = new Readable({ read: () => {} })

@@ -1,10 +1,11 @@
-const config = require('../../config')
 const getCert = require('../../lib/client/getCert')
+const { cahkeys, host, httpRedirectUrl, port } = require('./args')
 
 module.exports = {
   cmd: 'get',
   desc: 'Get a single cert from Certcache server',
   builder: {
+    cahkeys,
     'cert-name': {
       description: 'Certificate name (used for certificate directory name)'
     },
@@ -13,18 +14,9 @@ module.exports = {
       description: 'List of comma-separated domain domains',
       required: true
     },
-    host: {
-      alias: 'h',
-      description: 'Hostname of Certcache Server'
-    },
-    'http-redirect-url': {
-      description: 'Address of a Certcache server to redirect HTTP-01 ACME challenges to'
-    },
-    port: {
-      alias: 'p',
-      default: config.certcachePort,
-      description: 'Port to connect to Certcache server'
-    },
+    host,
+    'http-redirect-url': httpRedirectUrl,
+    port,
     'test-cert': {
       alias: 't',
       boolean: true,

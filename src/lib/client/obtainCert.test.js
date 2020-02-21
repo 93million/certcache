@@ -22,6 +22,7 @@ const mockCommonName = 'example.com'
 const mockAltNames = ['test.example.com', 'foo.example.com']
 const mockIsTest = true
 const mockCertDirPath = '/test/path/certs/example.com'
+const mockCahKeysDir = '/test/path/cahkeys'
 
 beforeEach(() => {
   console.error.mockClear()
@@ -41,11 +42,12 @@ test(
       mockCommonName,
       mockAltNames,
       mockIsTest,
-      mockCertDirPath
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
     expect(requestCert).toBeCalledWith(
-      { host: mockHost, port: mockPort },
+      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
       [mockCommonName, ...mockAltNames],
       { isTest: mockIsTest }
     )
@@ -61,7 +63,8 @@ test(
       mockCommonName,
       mockAltNames,
       mockIsTest,
-      mockCertDirPath
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
     expect(writeBundle).toBeCalledWith(
@@ -82,7 +85,8 @@ test(
       mockCommonName,
       mockAltNames,
       mockIsTest,
-      mockCertDirPath
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     ))
       .rejects
       .toThrow()
@@ -102,7 +106,8 @@ test(
       mockCommonName,
       mockAltNames,
       mockIsTest,
-      mockCertDirPath
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     ))
       .rejects
       .toThrow(error)
@@ -118,7 +123,8 @@ test(
       mockCommonName,
       mockAltNames,
       mockIsTest === false,
-      mockCertDirPath
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
     expect(console.log.mock.calls.map((args) => (args.join(' '))).join(' '))

@@ -20,7 +20,8 @@ module.exports = async (opts) => {
     domains[0],
     altNames,
     opts['test-cert'],
-    `${config.certcacheCertDir}/${certName}`
+    `${config.certcacheCertDir}/${certName}`,
+    { cahKeysDir: opts.cahkeys }
   )
 
   if (httpRedirectUrl !== undefined) {

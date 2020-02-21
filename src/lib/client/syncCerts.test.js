@@ -77,7 +77,8 @@ beforeEach(() => {
   console.log.mockClear()
   mockOpts = {
     host: 'example.com',
-    port: 12345
+    port: 12345,
+    cahkeys: '/path/to/cahkeys'
   }
 
   httpRedirect.start.mockClear()
@@ -107,7 +108,8 @@ test(
         mockLocalCert.commonName,
         mockLocalCert.altNames,
         (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
-        path.dirname(mockLocalCert.certPath)
+        path.dirname(mockLocalCert.certPath),
+        { cahKeysDir: mockOpts.cahkeys }
       )
     })
   }
@@ -127,7 +129,8 @@ test(
         mockLocalCert.commonName,
         mockLocalCert.altNames,
         (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
-        path.dirname(mockLocalCert.certPath)
+        path.dirname(mockLocalCert.certPath),
+        { cahKeysDir: mockOpts.cahkeys }
       )
     })
   }
