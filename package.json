@@ -8,6 +8,7 @@
     "cli": "node src/cli/cli.js",
     "clidev": "nodemon --inspect -- src/cli/cli.js",
     "lint": "eslint src",
+    "sit": "jest -c sit/jest.config.js --rootDir sit",
     "start": "node src/cli/cli.js serve",
     "startdev": "nodemon --inspect src/cli/cli.js serve",
     "test": "jest --coverage"
@@ -33,6 +34,7 @@
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
+    "fs-extra": "^8.1.0",
     "husky": "^4.2.3",
     "jest": "^24.9.0",
     "lint-staged": "^9.2.1",

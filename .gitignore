@@ -5,3 +5,6 @@
 /backends
 /coverage
 /node_modules
+/sit/coverage
+/sit/skel/server/backends/thirdparty/
+/sit/tests
