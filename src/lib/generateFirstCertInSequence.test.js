@@ -1,36 +1,49 @@
 /* global jest test expect beforeEach */
 
 const generateFirstCertInSequence = require('./generateFirstCertInSequence')
+const Certificate = require('./classes/Certificate')
 
-const generateCert = jest.fn()
-let parallelCalls = 0
+let parallelCalls
 const numParallelCalls = []
-const mockCert = { _test_: 58008 }
+let mockCert
 const errorMessage = 'barf!'
 
-generateCert.mockImplementation((shouldThrow = false) => {
-  parallelCalls++
-  numParallelCalls.push(parallelCalls)
-  parallelCalls--
+jest.mock('./classes/Certificate')
 
-  return (shouldThrow)
-    ? Promise.reject(new Error(errorMessage))
-    : Promise.resolve(mockCert)
+Certificate.fromPath.mockImplementation((handlers, certPath) => {
+  return Promise.resolve(mockCert)
 })
 
-const certGenerators = [...Array(5).keys()].map((i) => ({
-  generateCert: () => generateCert(i !== 3)
-}))
+const createGeneratedCertMock = ({ shouldThrowError = false } = {}) => {
+  const generateCert = jest.fn()
+
+  generateCert.mockImplementation(() => {
+    parallelCalls++
+    numParallelCalls.push(parallelCalls)
+    parallelCalls--
+
+    if (shouldThrowError) {
+      throw new Error(errorMessage)
+    }
+
+    return Promise.resolve('/path/to/mock/cert')
+  })
+
+  return generateCert
+}
+
+const certGenerators = [
+  { generateCert: createGeneratedCertMock() },
+  { generateCert: createGeneratedCertMock() }
+]
 const commonName = 'example.com'
 const altNames = ['www.example.com', 'test.example.com', 'test2.example.com']
 const isTest = false
-const extras = { isTest }
 const config = {}
 
-console.error = jest.fn()
-
 beforeEach(() => {
-  console.error.mockClear()
+  parallelCalls = 0
+  mockCert = { _test_: 58008 }
 })
 
 test(
@@ -40,7 +53,7 @@ test(
       certGenerators,
       commonName,
       altNames,
-      extras,
+      { isTest },
       config
     )
 
@@ -55,7 +68,7 @@ test(
       certGenerators,
       commonName,
       altNames,
-      extras,
+      { isTest },
       config
     )
 
@@ -66,32 +79,16 @@ test(
 test(
   'should return undefined if cert cannot be generated',
   async () => {
-    const certGenerators = [...Array(5).keys()].map((i) => ({
-      generateCert: () => generateCert(true)
-    }))
+    mockCert = undefined
+
     const cert = await generateFirstCertInSequence(
       certGenerators,
       commonName,
       altNames,
-      extras,
+      { isTest },
       config
     )
 
     expect(cert).toBeUndefined()
-  }
-)
-
-test(
-  'should log errors to console.error',
-  async () => {
-    await generateFirstCertInSequence(
-      certGenerators,
-      commonName,
-      altNames,
-      extras,
-      config
-    )
-
-    expect(console.error.mock.calls[0][0].message).toBe(errorMessage)
   }
 )

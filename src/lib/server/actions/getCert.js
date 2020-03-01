@@ -14,7 +14,7 @@ const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
 
 module.exports = async (payload, { req }) => {
-  const { extras, domains } = payload
+  const { isTest, domains, notAfter: notAfterTs } = payload
   const clientCertCommonName = req.connection.getPeerCertificate().subject.CN
 
   if (process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS !== undefined) {

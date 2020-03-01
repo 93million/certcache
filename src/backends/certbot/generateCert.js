@@ -5,16 +5,16 @@ const execCertbot = require('./lib/execCertbot')
 
 const certsInGeneration = {}
 
-module.exports = async (commonName, altNames, extras, certbotConfig) => {
+module.exports = async (commonName, altNames, { isTest }, certbotConfig) => {
   const { certbotExec, certbotConfigDir } = certbotConfig
-  const certName = generateCertName(commonName, altNames, extras)
+  const certName = generateCertName(commonName, altNames, { isTest })
 
   if (certsInGeneration[certName] === undefined) {
     const certbotArgs = getCertbotCertonlyArgs(
       commonName,
       certName,
       altNames,
-      extras,
+      { isTest },
       certbotConfig
     )
 

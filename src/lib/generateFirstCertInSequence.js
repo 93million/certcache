@@ -1,29 +1,25 @@
+const Certificate = require('./classes/Certificate')
+
 module.exports = async (
   certGenerators,
   commonName,
   altNames,
-  extras,
+  { isTest },
   config
 ) => {
-  let certGenerated = false
-
   return certGenerators.reduce(
-    (acc, certGenerator) => {
-      return acc.then((cert) => {
-        if (certGenerated === false) {
-          cert = certGenerator
-            .generateCert(commonName, altNames, extras, config)
-            .then((certPath) => {
-              certGenerated = true
-
-              return certPath
-            })
-            .catch((e) => { console.error(e) })
-        }
-
-        return cert
-      })
-    },
+    async (acc, certGenerator) => (
+      (await acc) ||
+      Certificate.fromPath(
+        certGenerator,
+        await certGenerator.generateCert(
+          commonName,
+          altNames,
+          { isTest },
+          config
+        )
+      )
+    ),
     Promise.resolve()
   )
 }

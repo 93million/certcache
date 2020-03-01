@@ -49,10 +49,10 @@ beforeEach(() => {
 test(
   'should send a request for the certificate to the certcache server',
   async () => {
-    await requestCert({ host, port }, domains, { isTest })
+    await requestCert({ host, port }, { domains, isTest })
 
     expect(JSON.parse(requestData))
-      .toEqual({ action: 'getCert', domains, extras: { isTest } })
+      .toEqual({ action: 'getCert', domains, isTest })
   }
 )
 

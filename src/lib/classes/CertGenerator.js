@@ -5,10 +5,10 @@ class CertGenerator {
     this.handlers = handlers
   }
 
-  async generateCert (commonName, altNames, extras, config) {
+  async generateCert (commonName, altNames, { isTest }, config) {
     const certPath = await this
       .handlers
-      .generateCert(commonName, altNames, extras, config)
+      .generateCert(commonName, altNames, { isTest }, config)
 
     return Certificate.fromPath(this.handlers, certPath)
   }

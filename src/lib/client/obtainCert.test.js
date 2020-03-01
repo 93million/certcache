@@ -48,8 +48,7 @@ test(
 
     expect(requestCert).toBeCalledWith(
       { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
-      [mockCommonName, ...mockAltNames],
-      { isTest: mockIsTest }
+      { domains: [mockCommonName, ...mockAltNames], isTest: mockIsTest }
     )
   }
 )

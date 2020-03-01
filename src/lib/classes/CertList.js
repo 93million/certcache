@@ -1,12 +1,12 @@
 const arrayItemsMatch = require('../helpers/arrayItemsMatch')
 
 class CertList extends Array {
-  findCert (searchCommonName, searchAltNames, extras) {
+  findCert (searchCommonName, searchAltNames, { isTest }) {
     return this.find(({ altNames, commonName, issuerCommonName }) => {
-      const isTest = (issuerCommonName.indexOf('Fake') !== -1)
+      const certIsTest = issuerCommonName.startsWith('Fake')
 
       return (
-        isTest === (extras.isTest === true) &&
+        certIsTest === (isTest === true) &&
         commonName === searchCommonName &&
         arrayItemsMatch(altNames, searchAltNames)
       )

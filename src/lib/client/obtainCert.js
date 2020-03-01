@@ -22,8 +22,7 @@ module.exports = async (
 
   const response = await requestCert(
     { cahKeysDir, host, port },
-    domains,
-    { isTest }
+    { days, domains, isTest }
   )
   const responseObj = JSON.parse(response)
 
