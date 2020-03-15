@@ -24,7 +24,21 @@ module.exports = async (certDir, data) => {
 
   return new Promise((resolve, reject) => {
     extract.on('error', reject)
-    extract.on('finish', resolve)
+    extract.on('finish', async () => {
+      const writeStream = fs.createWriteStream(`${certDir}/fullchain.pem`)
+
+      writeStream.on('finish', () => {
+        const appendStream = fs.createWriteStream(
+          `${certDir}/fullchain.pem`,
+          { flags: 'a' }
+        )
+
+        fs.createReadStream(`${certDir}/chain.pem`).pipe(appendStream)
+
+        appendStream.on('finish', resolve)
+      })
+      fs.createReadStream(`${certDir}/cert.pem`).pipe(writeStream)
+    })
     tarStream.pipe(zlib.createGunzip()).pipe(extract)
   })
 }

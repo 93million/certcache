@@ -1,4 +1,6 @@
-module.exports = (clientCertRestrictions, commonName, domains) => (
+const reDomain = require('./regexps/reDomain')
+
+module.exports = (clientCertRestrictions, clientName, domains) => (
   domains.reduce(
     (acc, certDomain) => (
       acc &&
@@ -6,13 +8,19 @@ module.exports = (clientCertRestrictions, commonName, domains) => (
         (acc, { domains, allow = [], deny = [] }) => (
           acc &&
           domains.reduce(
-            (acc, domain) => (
-              acc &&
-              (
-                !new RegExp(domain).test(certDomain) ||
-                (allow.includes(commonName) && !deny.includes(commonName))
+            (acc, domain) => {
+              const reDomainMatch = domain.match(reDomain)
+              const domainMatch = (reDomainMatch !== null)
+                ? new RegExp(reDomainMatch[1]).test(certDomain)
+                : (domain === certDomain)
+              return (
+                acc &&
+                (
+                  domainMatch === false ||
+                  (allow.includes(clientName) && !deny.includes(clientName))
+                )
               )
-            ),
+            },
             true
           )
         ),

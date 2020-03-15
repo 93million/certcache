@@ -1,8 +1,9 @@
 const CertFinder = require('./lib/CertFinder')
-const config = require('../../config')
+const getConfig = require('../../lib/getConfig')
 
 module.exports = async ({ commonName, altNames, issuerCommonName }) => {
-  const certFinder = new CertFinder(config.thirdpartyDir)
+  const config = (await getConfig()).server.backends.thirdparty
+  const certFinder = new CertFinder(config.certDir)
   const cert = await certFinder
     .getCert({ commonName, altNames, issuerCommonName })
   const privkey = await certFinder.getKey(cert)

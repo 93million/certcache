@@ -1,15 +1,15 @@
-/* global test expect */
+/* global expect test */
 
 const getCertbotCertonlyArgs = require('./getCertbotCertonlyArgs')
 
 const commonName = 'example.com'
 const certName = 'abcd1234'
 const altNames = ['www.example.com', 'foo.example.com', 'abcd.1234', 'example.com']
-const letsencryptEmail = 'test@example.com'
+const email = 'test@example.com'
 const certbotConfigDir = '/test/certbot/config/'
 const certbotLogsDir = '/test/certbot/logs/'
 const certbotWorkDir = '/test/certbot/work/'
-const certbotHttpAuthPort = '12345'
+
 const certbotArgsArr = getCertbotCertonlyArgs(
   commonName,
   certName,
@@ -19,10 +19,10 @@ const certbotArgsArr = getCertbotCertonlyArgs(
     certbotConfigDir,
     certbotLogsDir,
     certbotWorkDir,
-    certbotHttpAuthPort,
-    letsencryptEmail
+    email
   }
 )
+
 const certbotArgs = certbotArgsArr.join(' ')
 
 test(
@@ -42,7 +42,7 @@ test(
 
 test(
   'should contain letsencrypt account email address',
-  () => { expect(certbotArgs).toContain(`-m ${letsencryptEmail}`) }
+  () => { expect(certbotArgs).toContain(`-m ${email}`) }
 )
 
 test(
@@ -84,8 +84,7 @@ test(
         certbotConfigDir,
         certbotLogsDir,
         certbotWorkDir,
-        certbotHttpAuthPort,
-        letsencryptEmail
+        email
       }
     ).join(' ')
 
@@ -105,8 +104,7 @@ test(
         {
           certbotConfigDir,
           certbotLogsDir,
-          certbotWorkDir,
-          certbotHttpAuthPort
+          certbotWorkDir
         }
       )
     }
@@ -127,8 +125,7 @@ test(
         certbotConfigDir,
         certbotLogsDir,
         certbotWorkDir,
-        certbotHttpAuthPort,
-        letsencryptEmail
+        email
       }
     )
 

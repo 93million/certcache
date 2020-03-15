@@ -10,6 +10,7 @@ jest.mock('fs')
 jest.mock('../../lib/helpers/fileExists')
 jest.mock('path')
 jest.mock('../../lib/classes/Certificate')
+jest.mock('../../lib/getConfig.js')
 
 const dirContents = ['cert1', 'cert2', 'cert3']
 const filePaths = [
@@ -32,13 +33,18 @@ const filePaths = [
 
 path.resolve.mockReturnValue('/test/certs')
 Certificate.fromPath
-  .mockImplementation((handlers, path) => Promise.resolve({ handlers, path }))
+  .mockImplementation((handlers, path) => {
+    return Promise.resolve({ handlers, path })
+  })
 
 fileExists.mockImplementation((path) => filePaths.includes(path))
 const expectedHandler = {
-  getBundle: expect.any(Function),
   getLocalCerts: expect.any(Function),
-  generateCert: expect.any(Function)
+  canGenerateDomains: expect.any(Function),
+  generateCert: expect.any(Function),
+  getBundle: expect.any(Function),
+  getConfig: expect.any(Function),
+  getExtras: expect.any(Function)
 }
 
 test(
@@ -47,7 +53,9 @@ test(
     fs.readdir
       .mockImplementation((path, callback) => callback(null, dirContents))
 
-    await expect(getLocalCerts()).resolves.toEqual([
+    const received = await getLocalCerts()
+
+    expect(received).toEqual([
       { handlers: expectedHandler, path: '/test/certs/cert1/cert.pem' },
       { handlers: expectedHandler, path: '/test/certs/cert2/cert.pem' },
       { handlers: expectedHandler, path: '/test/certs/cert3/cert.pem' }

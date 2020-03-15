@@ -25,10 +25,6 @@ class Certificate {
     pack.entry({ name: 'cert.pem' }, bundle.cert)
     pack.entry({ name: 'chain.pem' }, bundle.chain)
     pack.entry({ name: 'privkey.pem' }, bundle.privkey)
-    pack.entry(
-      { name: 'fullchain.pem' },
-      Buffer.concat([Buffer.from(bundle.cert), Buffer.from(bundle.chain)])
-    )
     pack.finalize()
 
     return new Promise((resolve) => {

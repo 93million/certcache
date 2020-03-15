@@ -7,7 +7,7 @@ module.exports = (certList, commonName, altNames, isTest) =>
       altNames: certAltNames,
       issuer: { commonName: issuerCommonName }
     }) => {
-      const certIsTest = (issuerCommonName.indexOf('Fake') !== -1)
+      const certIsTest = issuerCommonName.startsWith('Fake')
 
       return (
         certIsTest === isTest &&

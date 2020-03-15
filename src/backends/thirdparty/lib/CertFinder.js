@@ -36,7 +36,6 @@ class CertFinder {
           const cert = X509Certificate.fromPEM(pem)
 
           cert.certPath = certPath
-          // @todo find a way to use x509 lib to output pem
           cert.pem = pem
 
           return cert

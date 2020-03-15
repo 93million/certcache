@@ -10,7 +10,7 @@ module.exports = async (
   // TODO move isTest into optionals with cahKeysDir
   isTest,
   certDirPath,
-  { cahKeysDir }
+  { cahKeysDir, days }
 ) => {
   const domains = Array.from(new Set([commonName, ...altNames]))
 

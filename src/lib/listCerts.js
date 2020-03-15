@@ -1,8 +1,8 @@
-const locators = require('../config/locators')
+const path = require('path')
 const CertLocator = require('../lib/classes/CertLocator')
-const backends = require('../backends')
+const getBackends = require('./getBackends')
 const getLocalCertificates = require('./getLocalCertificates')
-const config = require('../config')
+const getConfig = require('./getConfig')
 
 const outputCertInfo = ({
   altNames,
@@ -22,6 +22,9 @@ const outputCertInfo = ({
 }
 
 module.exports = async (opts) => {
+  const backends = await getBackends()
+  const config = await getConfig()
+  const locators = Object.keys(backends)
   const filteredLocators = (opts.backends === undefined)
     ? locators
     : locators.filter((backend) => opts.backends.split(',').includes(backend))
@@ -30,7 +33,7 @@ module.exports = async (opts) => {
   const localCerts = await Promise.all(
     certLocators.map(async (certLocator) => certLocator.getLocalCerts())
   )
-  const clientCerts = await getLocalCertificates(config.certcacheCertDir)
+  const clientCerts = await getLocalCertificates(path.resolve(config.client.certDir))
 
   filteredLocators.forEach((locator, i) => {
     console.log(`===================\nBackend: ${locator}\n===================`)

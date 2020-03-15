@@ -1,21 +1,22 @@
-const generators = require('../../../config/generators')
-const locators = require('../../../config/locators')
-const generateFirstCertInSequence = require(
-  '../../generateFirstCertInSequence'
-)
-const CertLocator = require('../../classes/CertLocator')
-const CertGenerator = require('../../classes/CertGenerator')
-const backends = require('../../../backends')
-const config = require('../../../config')
+const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
 const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')('certcache:server/actions/getCert')
 const yaml = require('yaml')
 const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
+const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
+const getCertLocators = require('../../getCertLocators')
+const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
 
 module.exports = async (payload, { req }) => {
   const { isTest, domains, notAfter: notAfterTs } = payload
   const clientCertCommonName = req.connection.getPeerCertificate().subject.CN
+  const days = payload.days || 30
+  const notAfter = (notAfterTs === undefined)
+    ? new Date()
+    : new Date(notAfterTs)
+  const certRenewDate = new Date()
+  certRenewDate.setDate(certRenewDate.getDate() + days)
 
   if (process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS !== undefined) {
     const clientCertRestrictions =
@@ -34,57 +35,77 @@ module.exports = async (payload, { req }) => {
     }
   }
 
-  const [commonName, ...altNames] = domains
+  const commonName = domains[0]
+  const altNames = domains
 
-  debug('Request for certificate', domains, 'with extras', extras)
+  debug('Request for certificate', domains, 'is test', isTest)
 
-  altNames.unshift(commonName)
-
-  const certLocators = locators.map((key) => new CertLocator(backends[key]))
-  const certGenerators = generators
-    .map((key) => new CertGenerator(backends[key]))
+  const certLocators = await getCertLocators()
+  const certGenerators = await getCertGeneratorsForDomains(domains)
 
   const localCertSearch = await Promise
     .all(certLocators.map(
       async (certLocator) => {
         const localCerts = await certLocator.getLocalCerts()
-        let matchingCerts = localCerts.findCert(commonName, altNames, extras)
 
-        if (altNames.length === 1 && matchingCerts === undefined) {
-          matchingCerts = localCerts.findCert(commonName, [], extras)
-        }
+        localCerts.sort((a, b) => {
+          return (a.notAfter.getTime() > b.notAfter.getTime()) ? -1 : 1
+        })
+
+        const matchingCerts = localCerts.find(({
+          altNames: certAltNames,
+          commonName: certCommonName,
+          issuerCommonName,
+          notAfter: certNotAfter
+        }) => {
+          const certIsTest = issuerCommonName.startsWith('Fake')
+
+          return (
+            certIsTest === (isTest === true) &&
+            certCommonName === commonName &&
+            (
+              arrayItemsMatch(certAltNames, altNames) ||
+              (certAltNames.length === 0 && altNames.length === 1)
+            ) &&
+            certNotAfter.getTime() > notAfter.getTime()
+          )
+        })
 
         return matchingCerts
       }
     ))
 
-  const certRenewEpoch = new Date()
+  const localCert = localCertSearch
+    .find((localCert) => (localCert !== undefined))
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
+  let cert
 
-  const localCert = localCertSearch.find((localCert) => (
+  if (
     localCert !== undefined &&
-    localCert.notAfter.getTime() >= certRenewEpoch.getTime()
-  ))
-
-  if (localCert !== undefined) {
+    localCert.notAfter.getTime() >= certRenewDate.getTime()
+  ) {
     debug('Found matching cert locally', domains)
+    cert = localCert
   } else {
     debug('No local certificate found - executing cert generators', domains)
+    try {
+      cert = await generateFirstCertInSequence(
+        certGenerators,
+        commonName,
+        altNames,
+        { isTest }
+      )
+    } catch (e) {
+      if (localCert !== undefined) {
+        cert = localCert
+      } else {
+        throw e
+      }
+    }
   }
 
-  const cert = (localCert !== undefined)
-    ? localCert
-    : (await generateFirstCertInSequence(
-      certGenerators,
-      commonName,
-      altNames,
-      extras,
-      config
-    ))
-
   if (cert === undefined) {
-    throw new FeedbackError('Unable to generate cert using any backend')
+    throw new FeedbackError('Unable to find or generate requested certificate')
   }
 
   return { bundle: Buffer.from(await cert.getArchive()).toString('base64') }

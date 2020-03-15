@@ -5,20 +5,20 @@ const clientPermittedAccessToCerts = require('./clientPermittedAccessToCerts')
 const mockClientCertRestrictions = [
   {
     domains: [
-      '^(www[1-2]\\.)?example\\.com$',
-      '^secure[1-2]\\.93million\\.com$'
+      '~^(www[1-2]\\.)?example\\.com$',
+      '~^secure[1-2]\\.93million\\.com$'
     ],
     allow: ['deploy']
   },
   {
     domains: [
-      '^test[1-2]\\.example\\.com$',
-      '^qa[1-2]\\.93million\\.com$'
+      '~^test[1-2]\\.example\\.com$',
+      '~^qa[1-2]\\.93million\\.com$'
     ],
     deny: ['dev']
   },
   {
-    domains: ['^dev[1-2]\\.example\\.com$'],
+    domains: ['~^dev[1-2]\\.example\\.com$'],
     allow: [
       'deploy',
       'dev'

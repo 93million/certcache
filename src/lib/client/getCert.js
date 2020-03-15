@@ -1,11 +1,11 @@
-const config = require('../../config')
+const path = require('path')
+const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
 
 module.exports = async (opts) => {
-  const host = opts.host || config.certcacheHost
-  const port = opts.port || config.certcachePort
-  const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
+  const config = (await getConfig()).client
+  const { host, port, httpRedirectUrl } = config
   const domains = opts.domains.split(',')
   const [commonName, ...altNames] = domains
   const certName = opts['cert-name'] || commonName
@@ -17,10 +17,10 @@ module.exports = async (opts) => {
   await obtainCert(
     host,
     port,
-    domains[0],
+    commonName,
     altNames,
     opts['test-cert'],
-    `${config.certcacheCertDir}/${certName}`,
+    path.resolve(config.certDir, certName),
     { cahKeysDir: opts.cahkeys }
   )
 

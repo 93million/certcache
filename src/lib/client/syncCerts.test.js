@@ -2,12 +2,12 @@
 
 const syncCerts = require('./syncCerts')
 const getLocalCertificates = require('../getLocalCertificates')
-const config = require('../../config')
 const httpRedirect = require('../httpRedirect')
 const getDomainsFromConfig = require('./getDomainsFromConfig')
 const obtainCert = require('./obtainCert')
 const yaml = require('yaml')
 const path = require('path')
+const getConfig = require('../getConfig')
 
 jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
@@ -15,15 +15,12 @@ jest.mock('./getDomainsFromConfig')
 jest.mock('./obtainCert')
 
 let mockOpts
+let config
 const certcacheCertDir = '/test/certcache/certs'
 const mockConfig = {
   certcacheHost: 'certcache.example.com',
   certcachePort: 54321,
   certcacheCertDir
-}
-
-for (const i in mockConfig) {
-  config[i] = mockConfig[i]
 }
 
 const generateMockCert = (tld, isTest = true, daysBeforeExpiry) => {
@@ -48,32 +45,13 @@ const mockLocalCerts = [
 ]
 mockLocalCerts.findCert = jest.fn()
 let mockCertsForRenewal
-const mockCertcacheDomains = [
-  {
-    cert_name: 'mail',
-    domains: ['mail.mcelderry.com'],
-    is_test: true
-  },
-  {
-    cert_name: 'web',
-    domains: [
-      'mcelderry.com',
-      'gitlab.mcelderry.com',
-      'switchd.mcelderry.com',
-      'webmail.mcelderry.com',
-      'www.mcelderry.com',
-      'foo.boo.coo'
-    ]
-  }
-]
 
 console.log = jest.fn()
 
-getDomainsFromConfig.mockReturnValue(mockCertcacheDomains)
-
 getLocalCertificates.mockReturnValue(mockLocalCerts)
 
-beforeEach(() => {
+beforeEach(async () => {
+  config = await getConfig()
   console.log.mockClear()
   mockOpts = {
     host: 'example.com',
@@ -86,7 +64,7 @@ beforeEach(() => {
 
   const certRenewEpoch = new Date()
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDays)
 
   mockCertsForRenewal = mockLocalCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
@@ -107,7 +85,7 @@ test(
         mockOpts.port,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
-        (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
+        mockLocalCert.issuerCommonName.startsWith('Fake'),
         path.dirname(mockLocalCert.certPath),
         { cahKeysDir: mockOpts.cahkeys }
       )
@@ -128,7 +106,7 @@ test(
         mockConfig.certcachePort,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
-        (mockLocalCert.issuerCommonName.indexOf('Fake') !== -1),
+        mockLocalCert.issuerCommonName.startsWith('Fake'),
         path.dirname(mockLocalCert.certPath),
         { cahKeysDir: mockOpts.cahkeys }
       )
@@ -152,11 +130,12 @@ test(
 test(
   'should parse domains passed in environment variable \'CERTCACHE_DOMAINS\'',
   async () => {
+    const mockCertcacheDomains = { test: 'object' }
+
     process.env.CERTCACHE_DOMAINS = yaml.stringify(mockCertcacheDomains)
 
     await syncCerts(mockOpts)
 
-    expect(getDomainsFromConfig)
-      .toBeCalledWith(mockCertcacheDomains)
+    expect(getDomainsFromConfig).toBeCalledWith(mockCertcacheDomains)
   }
 )

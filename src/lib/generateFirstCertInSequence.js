@@ -4,8 +4,7 @@ module.exports = async (
   certGenerators,
   commonName,
   altNames,
-  { isTest },
-  config
+  { isTest }
 ) => {
   return certGenerators.reduce(
     async (acc, certGenerator) => (
@@ -15,8 +14,7 @@ module.exports = async (
         await certGenerator.generateCert(
           commonName,
           altNames,
-          { isTest },
-          config
+          { isTest }
         )
       )
     ),

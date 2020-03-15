@@ -5,6 +5,7 @@ const clientAuthenticatedHttps = require('client-authenticated-https')
 const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const { Readable, Writable } = require('stream')
+const getConfig = require('../getConfig')
 
 jest.mock('client-authenticated-https')
 jest.mock('./actions')
@@ -13,7 +14,8 @@ let action
 const payload = { test: 'payload', other: 58008 }
 let response
 const mockActionReturnValue = { foo: 'bar', test: 123 }
-const mockOpts = { port: 1234 }
+const mockOpts = { }
+let mockConfig
 const listen = jest.fn()
 const writeHead = jest.fn()
 
@@ -59,12 +61,13 @@ actions.throwingFeedbackErrorAction.mockImplementation(() => {
   throw new FeedbackError(feedbackErrorMessage)
 })
 
-beforeEach(() => {
+beforeEach(async () => {
   actions.testAction.mockClear()
   console.error.mockClear()
   writeHead.mockClear()
   listen.mockClear()
   action = 'testAction'
+  mockConfig = await getConfig()
 })
 
 test(
@@ -145,6 +148,6 @@ test(
 
     await serve(mockOpts)
 
-    expect(listen).toBeCalledWith(mockOpts.port)
+    expect(listen).toBeCalledWith(mockConfig.server.port)
   }
 )

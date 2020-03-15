@@ -2,36 +2,40 @@ const generateCertName = require('../../lib/generateCertName')
 const getCertbotCertonlyArgs = require('./lib/getCertbotCertonlyArgs')
 const debug = require('debug')('certcache:generateCert')
 const execCertbot = require('./lib/execCertbot')
+const getConfig = require('../../lib/getConfig')
 
 const certsInGeneration = {}
 
-module.exports = async (commonName, altNames, { isTest }, certbotConfig) => {
-  const { certbotExec, certbotConfigDir } = certbotConfig
+module.exports = async (commonName, altNames, { isTest }) => {
   const certName = generateCertName(commonName, altNames, { isTest })
+  let certbotConfig
 
   if (certsInGeneration[certName] === undefined) {
-    const certbotArgs = getCertbotCertonlyArgs(
-      commonName,
-      certName,
-      altNames,
-      { isTest },
-      certbotConfig
-    )
+    certsInGeneration[certName] = (async () => {
+      const certbotConfig = (await getConfig()).server.backends.certbot
 
-    certsInGeneration[certName] = execCertbot(certbotExec, certbotArgs)
+      const certbotArgs = getCertbotCertonlyArgs(
+        commonName,
+        certName,
+        altNames,
+        { isTest },
+        certbotConfig
+      )
+      debug(
+        'Generating certificate by calling',
+        certbotConfig.certbotExec,
+        certbotArgs.join(' ')
+      )
 
-    debug(
-      'Generating certificate by calling',
-      certbotExec,
-      certbotArgs.join(' ')
-    )
+      await execCertbot(certbotConfig.certbotExec, certbotArgs)
+
+      return certbotConfig
+    })()
   }
 
-  let output
-
   try {
-    output = await certsInGeneration[certName]
-    debug('Generated cert successfully using certbot', output)
+    certbotConfig = await certsInGeneration[certName]
+    debug('Generated cert successfully using certbot')
   } catch (e) {
     debug('Cert generation failed using certbot', e)
     throw e
@@ -39,5 +43,5 @@ module.exports = async (commonName, altNames, { isTest }, certbotConfig) => {
     delete certsInGeneration[certName]
   }
 
-  return `${certbotConfigDir}/live/${certName}/cert.pem`
+  return `${certbotConfig.certbotConfigDir}/live/${certName}/cert.pem`
 }

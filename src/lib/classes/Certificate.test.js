@@ -19,8 +19,6 @@ const mockBundle = {
   privkey: Buffer.from('_mockPrivkey__')
 }
 
-// let mockTarBuffer
-
 getCertInfo.mockReturnValue(Promise.resolve({ testProp }))
 mockHandlers.getBundle.mockReturnValue(mockBundle)
 
@@ -60,7 +58,6 @@ describe('creates an archive', () => {
 
       expect(receivedExpandedFiles).toEqual({
         'chain.pem': mockBundle.chain,
-        'fullchain.pem': Buffer.concat([mockBundle.cert, mockBundle.chain]),
         'cert.pem': mockBundle.cert,
         'privkey.pem': mockBundle.privkey
       })

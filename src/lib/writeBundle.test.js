@@ -4,19 +4,19 @@ const writeBundle = require('./writeBundle')
 const tar = require('tar-stream')
 const fileExists = require('./helpers/fileExists')
 const mkdirRecursive = require('./helpers/mkdirRecursive')
-const { Writable } = require('stream')
-const config = require('../config')
-const certName = 'testcert.pem'
+const { Readable, Writable } = require('stream')
 const fs = require('fs')
 const zlib = require('zlib')
+const path = require('path')
 
 jest.mock('./helpers/fileExists')
 jest.mock('./helpers/mkdirRecursive')
 jest.mock('fs')
 
 const mockFiles = {}
+const mockCertDir = '/test/cert/dir'
 
-fs.createWriteStream.mockImplementation((path) => {
+fs.createWriteStream.mockImplementation((path, options = {}) => {
   const chunks = []
   const stream = new Writable({
     write: (chunk, encoding, callback) => {
@@ -25,19 +25,32 @@ fs.createWriteStream.mockImplementation((path) => {
     }
   })
 
-  delete mockFiles[path]
-
   stream.on('finish', () => {
-    mockFiles[path] = Buffer.concat(chunks)
+    const buffer = (options.flags === 'a')
+      ? Buffer.concat([mockFiles[path], Buffer.concat(chunks)])
+      : Buffer.concat(chunks)
+
+    mockFiles[path] = buffer
   })
 
   return stream
 })
 
+fs.createReadStream.mockImplementation((filePath) => {
+  const stream = new Readable({
+    read: () => {}
+  })
+
+  stream.push(mockBundle[path.basename(filePath)])
+  stream.push(null)
+
+  return stream
+})
+
 const mockBundle = {
-  'test-cert': Buffer.from('__test cert data__'),
-  'test-ca': Buffer.from('__test ca data__'),
-  'test-key': Buffer.from('__test key data__')
+  'cert.pem': Buffer.from('__test cert data__'),
+  'chain.pem': Buffer.from('__test ca data__'),
+  'privkey.pem': Buffer.from('__test key data__')
 }
 const mockTarChunks = []
 const pack = tar.pack()
@@ -73,15 +86,20 @@ beforeEach(() => {
 test(
   'should write the archive to the fs',
   async () => {
-    await writeBundle('/test/cert/dir', await tarArchivePromise)
+    await writeBundle(mockCertDir, await tarArchivePromise)
 
     expect(mockFiles).toEqual(
       Object.keys(mockBundle).reduce(
         (acc, key) => ({
           ...acc,
-          [`/test/cert/dir/${key}`]: mockBundle[key]
+          [`${mockCertDir}/${key}`]: mockBundle[key]
         }),
-        {}
+        {
+          [`${mockCertDir}/fullchain.pem`]: Buffer.concat([
+            mockBundle['cert.pem'],
+            mockBundle['chain.pem']
+          ])
+        }
       )
     )
   }
@@ -90,11 +108,12 @@ test(
 test(
   'create direrctory if it doesn\'t exist',
   async () => {
+    const mockCertPath = '/path/to/cert'
+
     fileExists.mockImplementation(() => Promise.resolve(false))
 
-    await writeBundle(`${config.certcacheCertDir}/${certName}`, await tarArchivePromise)
+    await writeBundle(mockCertPath, await tarArchivePromise)
 
-    expect(mkdirRecursive)
-      .toBeCalledWith(`${config.certcacheCertDir}/${certName}`)
+    expect(mkdirRecursive).toBeCalledWith(mockCertPath)
   }
 )

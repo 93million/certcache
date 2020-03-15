@@ -1,4 +1,3 @@
-const config = require('../../config')
 const serve = require('../../lib/server/serve')
 const { cahkeys } = require('./args')
 
@@ -9,7 +8,6 @@ module.exports = {
     cahkeys,
     port: {
       alias: 'p',
-      default: config.certcachePort,
       description: 'Port to run Certcache server'
     }
   },

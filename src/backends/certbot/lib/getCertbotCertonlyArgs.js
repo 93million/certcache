@@ -3,16 +3,14 @@ module.exports = (
   certName,
   altNames,
   { isTest },
-  certbotConfig
-) => {
-  const {
+  {
     certbotConfigDir,
     certbotLogsDir,
     certbotWorkDir,
-    certbotHttpAuthPort,
-    letsencryptEmail
-  } = certbotConfig
-  if (letsencryptEmail === undefined) {
+    email
+  }
+) => {
+  if (email === undefined) {
     throw new Error([
       'Missing email address to obtain letsencrypt certificates.',
       'Please provide env CERTCACHE_LETSENCRYPT_EMAIL'
@@ -32,7 +30,7 @@ module.exports = (
     `--cert-name`,
     certName,
     `-m`,
-    letsencryptEmail,
+    email,
     `--config-dir`,
     certbotConfigDir,
     `--logs-dir`,
@@ -44,11 +42,6 @@ module.exports = (
 
   if (isTest) {
     certbotArgs.push('--test-cert')
-  }
-
-  if (certbotHttpAuthPort !== undefined) {
-    certbotArgs.push('--http-01-port')
-    certbotArgs.push(certbotHttpAuthPort)
   }
 
   return certbotArgs

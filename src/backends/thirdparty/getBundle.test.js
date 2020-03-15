@@ -3,8 +3,8 @@
 const getBundle = require('./getBundle')
 const CertFinder = require('./lib/CertFinder')
 
-jest.mock('fs')
 jest.mock('./lib/CertFinder')
+jest.mock('../../lib/getConfig')
 
 const mockCertContents = '_test_cert_'
 const mockChainContents = ['_test_chain_1', '_test_chain_2']

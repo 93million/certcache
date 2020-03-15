@@ -1,5 +1,5 @@
 const getLocalCertificates = require('../getLocalCertificates')
-const config = require('../../config')
+const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
 const yaml = require('yaml')
 const getDomainsFromConfig = require('./getDomainsFromConfig')
@@ -8,10 +8,11 @@ const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
 
 module.exports = async (opts) => {
+  const config = (await getConfig()).client
   const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
     ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
     : []
-  const certcacheCertDir = config.certcacheCertDir
+  const certcacheCertDir = path.resolve(config.certDir)
   debug('Searching for local certs in', certcacheCertDir)
   const certs = await getLocalCertificates(certcacheCertDir)
   debug('Local certs:', certs)
@@ -31,16 +32,19 @@ module.exports = async (opts) => {
   )
   const certRenewEpoch = new Date()
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewalDays)
 
   const certsForRenewal = certs
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
-  debug(`Local certs that expiring in next ${config.renewDaysBefore} days:`, certsForRenewal)
+  debug(
+    `Local certs that expiring in next ${config.renewalDays} days:`,
+    certsForRenewal
+  )
 
   const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
-  const host = opts.host || config.certcacheHost
-  const port = opts.port || config.certcachePort
+  const host = opts.host || config.host
+  const port = opts.port || config.port
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -52,7 +56,7 @@ module.exports = async (opts) => {
     issuerCommonName,
     certPath
   }) => {
-    const isTest = (issuerCommonName.indexOf('Fake') !== -1)
+    const isTest = issuerCommonName.startsWith('Fake')
 
     return obtainCert(
       host,
@@ -61,7 +65,7 @@ module.exports = async (opts) => {
       altNames,
       isTest,
       path.dirname(certPath),
-      { cahKeysDir: opts.cahkeys }
+      { cahKeysDir: opts.cahkeys, days: config.renewalDays }
     )
   }))
 
@@ -72,7 +76,7 @@ module.exports = async (opts) => {
       domains[0],
       domains,
       isTest,
-      `${config.certcacheCertDir}/${certName}`
+      path.resolve(config.certDir, certName)
     )
   ))
 

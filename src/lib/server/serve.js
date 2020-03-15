@@ -2,10 +2,12 @@ const clientAuthenticatedHttps = require('client-authenticated-https')
 const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const debug = require('debug')('certcache:server')
+const getConfig = require('../getConfig')
 
-module.exports = async (opts) => {
+module.exports = async () => {
+  const config = (await getConfig()).server
   const server = await clientAuthenticatedHttps.createServer(
-    { cahKeysDir: opts.cahkeys },
+    { cahKeysDir: config.cahKeysDir },
     (req, res) => {
       const data = []
 
@@ -44,7 +46,7 @@ module.exports = async (opts) => {
     }
   )
 
-  server.listen(opts.port)
+  server.listen(config.port)
 }
 
 const callAction = (action, payload, req) => {

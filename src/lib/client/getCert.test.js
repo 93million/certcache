@@ -1,48 +1,34 @@
 /* global jest test expect beforeEach */
 
+const path = require('path')
 const getCert = require('./getCert')
-const requestCert = require('../requestCert')
 const httpRedirect = require('../httpRedirect')
-const config = require('../../config')
 const obtainCert = require('./obtainCert')
+const getConfig = (require('../getConfig'))
 
-jest.mock('../requestCert')
 jest.mock('../httpRedirect')
 jest.mock('./obtainCert')
+jest.mock('../getConfig')
 
 let mockOpts
-let mockResponse
-const mockConfig = {
-  certcacheHost: 'bar.com',
-  certcachePort: 54321
-}
-
-for (const i in mockConfig) {
-  config[i] = mockConfig[i]
-}
-
-requestCert.mockImplementation(() => {
-  return Promise.resolve(JSON.stringify(mockResponse))
-})
+let mockConfig
 
 console.error = jest.fn()
 console.log = jest.fn()
 
-beforeEach(() => {
-  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
+beforeEach(async () => {
   mockOpts = {
-    'cert-name': 'test-cert-name',
     domains: 'example.com,test.example.com,foo.example.com',
-    host: 'example.com',
-    port: 12345,
+    cahkeys: '/path/to/cahkeys',
     'test-cert': true,
-    cahkeys: '/path/to/cahkeys'
+    'cert-name': 'testcert'
   }
-  requestCert.mockClear()
+  mockConfig = await getConfig()
   console.error.mockClear()
   console.log.mockClear()
   httpRedirect.start.mockClear()
   httpRedirect.stop.mockClear()
+  obtainCert.mockClear()
 })
 
 test(
@@ -53,12 +39,12 @@ test(
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockOpts.host,
-      mockOpts.port,
+      mockConfig.client.host,
+      mockConfig.client.port,
       mockDomainsArr[0],
       mockDomainsArr.slice(1),
       mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
+      path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
       { cahKeysDir: mockOpts.cahkeys }
     )
   }
@@ -80,12 +66,12 @@ test(
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockConfig.certcacheHost,
-      mockConfig.certcachePort,
+      mockConfig.client.host,
+      mockConfig.client.port,
       commonName,
       altNames,
       mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${commonName}`,
+      path.resolve(mockConfig.client.certDir, commonName),
       { cahKeysDir: mockOpts.cahkeys }
     )
   }
@@ -98,7 +84,7 @@ test(
 
     await getCert(mockOpts)
 
-    expect(httpRedirect.start).toBeCalledWith(mockOpts['http-redirect-url'])
+    expect(httpRedirect.start).toBeCalledWith(mockConfig.client.httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalled()
   }
 )
@@ -112,12 +98,12 @@ test(
 
     expect(obtainCert)
       .toBeCalledWith(
-        mockOpts.host,
-        mockOpts.port,
+        mockConfig.client.host,
+        mockConfig.client.port,
         mockDomainsArr[0],
         mockDomainsArr.slice(1),
         mockOpts['test-cert'],
-        `${config.certcacheCertDir}/${mockOpts['cert-name']}`,
+        path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
         { cahKeysDir: mockOpts.cahkeys }
       )
   }
