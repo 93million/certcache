@@ -1,0 +1,10 @@
+{
+  "server": {
+    "backends": {
+      "certbot": {
+        "email": "tm_certbot@mcelderry.co.uk",
+        "domains": ["~(.*\\.)?.ngrok.io$"]
+      }
+    }
+  }
+}

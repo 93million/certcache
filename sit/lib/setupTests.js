@@ -10,8 +10,18 @@ const {
   testServerDir,
   testSkelDir
 } = require('../filepaths')
+const startNgrok = require('./startNgrok')
 
-const execFile = promisify(childProcess.execFile)
+const execFile = promisify((cmd, a2, a3, a4) => {
+  const args = (Array.isArray(a2)) ? a2 : []
+  const callback = [a2, a3, a4].find((arg) => (typeof arg === 'function'))
+
+  childProcess.execFile(cmd, args, (err, stdin, stderr) => {
+    if (callback !== undefined) {
+      callback((err || stderr), stdin)
+    }
+  })
+})
 
 module.exports = async () => {
   // delete testing dir
@@ -32,9 +42,15 @@ module.exports = async () => {
   // create test certs
   await execFile(path.resolve(__dirname, '..', 'bin', 'createca.sh'))
   await execFile(
-    path.resolve(__dirname, '..', 'bin', 'createca.sh'),
+    path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
     ['-n', 'test.example.com']
   )
+
+  // start ngrok
+  const { info: ngrok, process: ngrokProcess } = await startNgrok([
+    'http',
+    '80'
+  ])
 
   // start certcache server
   const serveProcess = childProcess.execFile(
@@ -43,8 +59,12 @@ module.exports = async () => {
     { cwd: testServerDir }
   )
 
-  return async () => {
-    serveProcess.kill()
-    await fse.emptyDir(testDir)
+  return {
+    cleanup: async () => {
+      serveProcess.kill()
+      ngrokProcess.kill()
+      await fse.emptyDir(testDir)
+    },
+    ngrok
   }
 }

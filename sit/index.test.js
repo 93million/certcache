@@ -12,15 +12,13 @@ const { cliCmd, testClientDir, testServerCahkeysDir } = require('./filepaths')
 const execFile = promisify(childProcess.execFile)
 const readFile = promisify(fs.readFile)
 
-let cleanup
+let setup
 
 beforeAll(async () => {
-  cleanup = await setupTests()
+  setup = await setupTests()
 })
 
-afterAll(async () => {
-  await cleanup()
-})
+afterAll(() => setup.cleanup())
 
 describe(
   'certcache server',
@@ -47,7 +45,7 @@ describe(
   'certcache client',
   () => {
     test(
-      'should get certificate from server',
+      'should get 3rd party certificate from server',
       async () => {
         const commonName = 'test.example.com'
 
@@ -60,19 +58,54 @@ describe(
             '-d',
             commonName,
             '--cert-name',
-            'testcert'
+            'thirdparty'
           ],
           { cwd: testClientDir }
         )
         const pem = await readFile(path.resolve(
           testClientDir,
           'certs',
-          'testcert',
+          'thirdparty',
           'cert.pem'
         ))
         const cert = Certificate.fromPEM(pem)
 
         expect(cert.subject.commonName).toBe(commonName)
+      }
+    )
+    test(
+      'should generate certificates using certbot',
+      async () => {
+        const ngrokDomain = setup
+          .ngrok
+          .tunnels
+          .find(({ proto }) => proto === 'http')
+          .public_url
+          .replace('http://', '')
+
+        await execFile(
+          cliCmd,
+          [
+            'get',
+            '-h',
+            'localhost',
+            '-d',
+            ngrokDomain,
+            '--cert-name',
+            'certbot',
+            '--test-cert'
+          ],
+          { cwd: testClientDir }
+        )
+        const pem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'certbot',
+          'cert.pem'
+        ))
+        const cert = Certificate.fromPEM(pem)
+
+        expect(cert.subject.commonName).toBe(ngrokDomain)
       }
     )
   }
