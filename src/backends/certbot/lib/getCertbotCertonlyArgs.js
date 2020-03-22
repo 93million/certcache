@@ -13,7 +13,8 @@ module.exports = (
   if (email === undefined) {
     throw new Error([
       'Missing email address to obtain letsencrypt certificates.',
-      'Please provide env CERTCACHE_LETSENCRYPT_EMAIL'
+      'Please provide env CERTCACHE_CERTBOT_EMAIL, pass in using cli',
+      'arg --email or put in config.json at server.backends.certbot.email'
     ].join(' '))
   }
 
