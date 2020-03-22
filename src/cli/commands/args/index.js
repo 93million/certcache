@@ -4,7 +4,6 @@ module.exports = {
     description: 'Path to cahkeys directory. Alternativly use env CERTCACHE_CAH_KEYS_DIR'
   },
   days: {
-    alias: 'd',
     description: 'Number of days to renew certificate before expiry'
   },
   httpRedirectUrl: {

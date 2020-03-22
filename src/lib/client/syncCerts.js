@@ -7,7 +7,7 @@ const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
 
-module.exports = async (opts) => {
+module.exports = async () => {
   const config = (await getConfig()).client
   const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
     ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
@@ -42,9 +42,7 @@ module.exports = async (opts) => {
     certsForRenewal
   )
 
-  const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
-  const host = opts.host || config.host
-  const port = opts.port || config.port
+  const { httpRedirectUrl, host, port } = config
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -65,7 +63,7 @@ module.exports = async (opts) => {
       altNames,
       isTest,
       path.dirname(certPath),
-      { cahKeysDir: opts.cahkeys, days: config.renewalDays }
+      { cahKeysDir: config.cahkeys, days: config.renewalDays }
     )
   }))
 

@@ -1,5 +1,5 @@
 const getCert = require('../../lib/client/getCert')
-const { cahkeys, host, httpRedirectUrl, port } = require('./args')
+const { cahkeys, days, host, httpRedirectUrl, port } = require('./args')
 
 module.exports = {
   cmd: 'get',
@@ -9,6 +9,7 @@ module.exports = {
     'cert-name': {
       description: 'Certificate name (used for certificate directory name)'
     },
+    days,
     domains: {
       alias: 'd',
       description: 'List of comma-separated domain domains',

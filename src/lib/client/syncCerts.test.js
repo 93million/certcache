@@ -13,15 +13,11 @@ jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
 jest.mock('./getDomainsFromConfig')
 jest.mock('./obtainCert')
+jest.mock('../getConfig')
 
 let mockOpts
 let config
 const certcacheCertDir = '/test/certcache/certs'
-const mockConfig = {
-  certcacheHost: 'certcache.example.com',
-  certcachePort: 54321,
-  certcacheCertDir
-}
 
 const generateMockCert = (tld, isTest = true, daysBeforeExpiry) => {
   const notAfter = new Date()
@@ -102,8 +98,8 @@ test(
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(obtainCert).toBeCalledWith(
-        mockConfig.certcacheHost,
-        mockConfig.certcachePort,
+        config.certcacheHost,
+        config.certcachePort,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
         mockLocalCert.issuerCommonName.startsWith('Fake'),
@@ -119,7 +115,14 @@ test(
   async () => {
     const httpRedirectUrl = 'https://certcache.example.com'
 
-    mockOpts = { 'http-redirect-url': httpRedirectUrl }
+    getConfig.mockReturnValueOnce(Promise.resolve({
+      ...config,
+      client: {
+        ...config.client,
+        httpRedirectUrl
+      }
+    }))
+
     await syncCerts(mockOpts)
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)

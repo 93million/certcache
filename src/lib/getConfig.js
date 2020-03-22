@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { promisify } = require('util')
-const defaults = require('../config/defaults')
+const getConfig = require('../config/getConfig')
 const getBackends = require('./getBackends')
 const fileExists = require('./helpers/fileExists')
 
@@ -13,22 +13,25 @@ const yargs = require('yargs')
 let config
 
 const load = async () => {
+  const bare = { client: {}, server: { backends: {} } }
   const localConfig = await fileExists(localConfigPath)
-    ? JSON.parse(await readFile(localConfigPath))
-    : { server: { backends: {} } }
+    ? { ...bare, ...JSON.parse(await readFile(localConfigPath)) }
+    : bare
   const backends = await getBackends()
   const argv = yargs.argv
+  const env = process.env
+  const baseConfig = getConfig({ argv, env, file: localConfig })
 
   return {
-    ...defaults,
+    ...baseConfig,
     server: {
-      ...defaults.server,
+      ...baseConfig.server,
       backends: Object.keys(backends).reduce(
         (acc, key) => {
           const file = localConfig.server.backends[key] || {}
 
           if (backends[key].getConfig !== undefined) {
-            acc[key] = backends[key].getConfig({ argv, env: process.env, file })
+            acc[key] = backends[key].getConfig({ argv, env, file })
           }
 
           return acc
