@@ -7,6 +7,7 @@ const fileExists = require('../../lib/helpers/fileExists')
 jest.mock('./lib/CertFinder')
 jest.mock('../../lib/classes/Certificate')
 jest.mock('../../lib/helpers/fileExists')
+jest.mock('../../lib/getConfig')
 
 const commonName = 'foo.example.com'
 const altNames = ['foo.example.com', 'test.example.com']
