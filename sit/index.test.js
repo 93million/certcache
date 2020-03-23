@@ -108,5 +108,99 @@ describe(
         expect(cert.subject.commonName).toBe(ngrokDomain)
       }
     )
+
+    test(
+      'should cache certificates after generation',
+      async () => {
+        const ngrokDomain = setup
+          .ngrok
+          .tunnels
+          .find(({ proto }) => proto === 'http')
+          .public_url
+          .replace('http://', '')
+        const origPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'certbot',
+          'cert.pem'
+        ))
+        const origCert = Certificate.fromPEM(origPem)
+
+        await execFile(
+          cliCmd,
+          [
+            'get',
+            '-h',
+            'localhost',
+            '-d',
+            ngrokDomain,
+            '--cert-name',
+            'certbot',
+            '--test-cert'
+          ],
+          { cwd: testClientDir }
+        )
+
+        const newPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'certbot',
+          'cert.pem'
+        ))
+        const newCert = Certificate.fromPEM(newPem)
+
+        expect(newCert.serialNumber).toBe(origCert.serialNumber)
+      }
+    )
+
+    test(
+      'should generate new certificates expiring after specified amount of days',
+      async () => {
+        const ngrokDomain = setup
+          .ngrok
+          .tunnels
+          .find(({ proto }) => proto === 'http')
+          .public_url
+          .replace('http://', '')
+        const origPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'certbot',
+          'cert.pem'
+        ))
+        const origCert = Certificate.fromPEM(origPem)
+        const origCertExpires = origCert.validTo
+        const msPerDay = 1000 * 60 * 60 * 24
+        const daysBeforeExpiry = (origCertExpires.getTime() - Date.now()) /
+          msPerDay
+
+        await execFile(
+          cliCmd,
+          [
+            'get',
+            '-h',
+            'localhost',
+            '-d',
+            ngrokDomain,
+            '--cert-name',
+            'certbot',
+            '--test-cert',
+            '--days',
+            String(Math.ceil(daysBeforeExpiry) + 1)
+          ],
+          { cwd: testClientDir }
+        )
+
+        const newPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'certbot',
+          'cert.pem'
+        ))
+        const newCert = Certificate.fromPEM(newPem)
+
+        expect(newCert.serialNumber).not.toBe(origCert.serialNumber)
+      }
+    )
   }
 )
