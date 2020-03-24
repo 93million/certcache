@@ -1,7 +1,6 @@
 /* global jest test expect beforeEach */
 
 const getCert = require('./getCert')
-const CertLocator = require('../../classes/CertLocator')
 const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
 const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
@@ -28,9 +27,7 @@ getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
 const req = {
   connection: { getPeerCertificate }
 }
-const mockCertLocators = [
-  { getLocalCerts }
-]
+const mockCertLocators = [{ getLocalCerts }]
 
 beforeEach(() => {
   mockCert = {
@@ -40,7 +37,6 @@ beforeEach(() => {
     commonName: 'example.com',
     issuerCommonName: 'Super good issuer'
   }
-  CertLocator.mockClear()
   generateFirstCertInSequence.mockReset()
   generateFirstCertInSequence.mockImplementation(() => {
     return Promise.resolve(mockCert)
@@ -57,14 +53,11 @@ beforeEach(() => {
 
 getLocalCerts.mockReturnValue(Promise.resolve({ findCert }))
 
-jest.mock('../../classes/CertLocator')
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
 jest.mock('../../clientPermittedAccessToCerts')
 jest.mock('../../getCertLocators')
 jest.mock('../../getCertGeneratorsForDomains')
-
-CertLocator.mockImplementation(() => ({ getLocalCerts }))
 
 test.skip(
   'should load cert generators in order defined in config',

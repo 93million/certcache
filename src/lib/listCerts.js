@@ -1,5 +1,4 @@
 const path = require('path')
-const CertLocator = require('../lib/classes/CertLocator')
 const getBackends = require('./getBackends')
 const getLocalCertificates = require('./getLocalCertificates')
 const getConfig = require('./getConfig')
@@ -28,10 +27,8 @@ module.exports = async (opts) => {
   const filteredLocators = (opts.backends === undefined)
     ? locators
     : locators.filter((backend) => opts.backends.split(',').includes(backend))
-  const certLocators = filteredLocators
-    .map((locator) => new CertLocator(backends[locator]))
   const localCerts = await Promise.all(
-    certLocators.map(async (certLocator) => certLocator.getLocalCerts())
+    filteredLocators.map((locator) => backends[locator].getLocalCerts())
   )
   const clientCerts = await getLocalCertificates(path.resolve(config.client.certDir))
 
