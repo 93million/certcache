@@ -13,9 +13,16 @@ const execFile = promisify(childProcess.execFile)
 const readFile = promisify(fs.readFile)
 
 let setup
+let ngrokDomain
 
 beforeAll(async () => {
   setup = await setupTests()
+  ngrokDomain = setup
+    .ngrok
+    .tunnels
+    .find(({ proto }) => proto === 'http')
+    .public_url
+    .replace('http://', '')
 })
 
 afterAll(() => setup.cleanup())
@@ -76,13 +83,6 @@ describe(
     test(
       'should generate certificates using certbot',
       async () => {
-        const ngrokDomain = setup
-          .ngrok
-          .tunnels
-          .find(({ proto }) => proto === 'http')
-          .public_url
-          .replace('http://', '')
-
         await execFile(
           cliCmd,
           [
@@ -112,12 +112,6 @@ describe(
     test(
       'should cache certificates after generation',
       async () => {
-        const ngrokDomain = setup
-          .ngrok
-          .tunnels
-          .find(({ proto }) => proto === 'http')
-          .public_url
-          .replace('http://', '')
         const origPem = await readFile(path.resolve(
           testClientDir,
           'certs',
@@ -156,12 +150,6 @@ describe(
     test(
       'should generate new certificates expiring after specified amount of days',
       async () => {
-        const ngrokDomain = setup
-          .ngrok
-          .tunnels
-          .find(({ proto }) => proto === 'http')
-          .public_url
-          .replace('http://', '')
         const origPem = await readFile(path.resolve(
           testClientDir,
           'certs',
