@@ -22,7 +22,7 @@ module.exports = ({ argv, env, file }) => {
       env.CERTCACHE_CERTBOT_DOMAINS.split(',')
     ) ||
       file.domains,
-    email: argv.email ||
+    email: argv['certbot-email'] ||
       env.CERTCACHE_CERTBOT_EMAIL ||
       file.email
   }

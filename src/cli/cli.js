@@ -4,6 +4,18 @@ const yargs = require('yargs')
 const commands = require('./commands')
 const getBackends = require('../lib/getBackends')
 
+const addCommandGroup = (command, group) => {
+  return Object.keys(command).reduce(
+    (acc, cmd) => {
+      return {
+        ...acc,
+        [cmd]: { ...command[cmd], group }
+      }
+    },
+    {}
+  )
+}
+
 const handleExec = async () => {
   const backends = await getBackends()
 
@@ -15,9 +27,16 @@ const handleExec = async () => {
         const { cmd, desc, handler } = commands[key]
         let builder = commands[key].builder
 
-        Object.values(backends).forEach(({ commandArgs = {} }) => {
+        Object.keys(backends).forEach((backend) => {
+          const { commandArgs = {} } = backends[backend]
+
           if (commandArgs[key] !== undefined) {
-            builder = { ...builder, ...commandArgs[key] }
+            const extendedArgs = addCommandGroup(
+              commandArgs[key],
+              `Backend: ${backend}`
+            )
+
+            builder = { ...extendedArgs, ...builder }
           }
         })
 
