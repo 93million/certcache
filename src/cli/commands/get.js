@@ -17,13 +17,7 @@ module.exports = {
     },
     host,
     'http-redirect-url': httpRedirectUrl,
-    port,
-    'test-cert': {
-      alias: 't',
-      boolean: true,
-      default: false,
-      description: 'Generate a test certificate'
-    }
+    port
   },
   handler: (argv) => {
     getCert(argv).catch((e) => {
