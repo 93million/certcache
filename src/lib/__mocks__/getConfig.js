@@ -8,11 +8,11 @@ getConfig.mockReturnValue(Promise.resolve({
     backends: {
       certbot: {
         email: 'test@example.com',
-        domains: ['/.*\\.example.com$/'],
-        certbotLogsDir: '',
-        certbotWorkDir: '',
-        certbotExec: 'certbot',
-        certbotConfigDir: '/path/to/config/dir'
+        domains: ['~.*\\.example.com$', 'test.93million.com'],
+        certbotConfigDir: '/path/to/config/dir',
+        certbotLogsDir: '/path/to/logs/dir',
+        certbotWorkDir: '/path/to/work/dir',
+        certbotExec: 'certbot'
       },
       thirdparty: {
         certDir: '/path/to/cert/dir'
