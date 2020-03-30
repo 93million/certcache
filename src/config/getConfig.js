@@ -3,6 +3,9 @@ const yaml = require('yaml')
 
 module.exports = ({ argv, env, file }) => ({
   client: {
+    domains: (env.CERTCACHE_DOMAINS && yaml.parse(env.CERTCACHE_DOMAINS)) ||
+      file.client.domains ||
+      defaults.client.domains,
     host: argv.host ||
       env.CERTCACHE_HOST ||
       file.client.host ||
@@ -26,7 +29,12 @@ module.exports = ({ argv, env, file }) => ({
     port: env.CERTCACHE_PORT || file.server.port || defaults.server.port,
     auth: (env.CERTCACHE_AUTH && yaml.parse(env.CERTCACHE_AUTH)) ||
       file.server.auth ||
-      defaults.server.auth
+      defaults.server.auth,
+    clientRestrictions: (
+      env.CERTCACHE_CLIENT_CERT_RESTRICTIONS &&
+      yaml.parse(env.CERTCACHE_CLIENT_CERT_RESTRICTIONS)
+    ) ||
+      file.server.clientRestrictions
   },
   cahKeysDir: argv.cahkeys ||
     env.CERTCACHE_CAH_KEYS_DIR ||

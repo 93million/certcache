@@ -7,4 +7,4 @@
 /node_modules
 /sit/coverage
 /sit/skel/server/backends/thirdparty/
-/sit/tests
+/sit/test

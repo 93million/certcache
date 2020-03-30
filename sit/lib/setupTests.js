@@ -45,6 +45,10 @@ module.exports = async () => {
     path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
     ['-n', 'test.example.com']
   )
+  await execFile(
+    path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
+    ['-n', 'foo.example.com']
+  )
 
   // start ngrok
   const { info: ngrok, process: ngrokProcess } = await startNgrok([

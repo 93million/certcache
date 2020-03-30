@@ -1,5 +1,6 @@
 module.exports = {
   client: {
+    domains: [],
     host: 'localhost',
     port: 4433,
     certDir: 'certs',

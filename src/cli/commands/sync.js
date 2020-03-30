@@ -7,7 +7,7 @@ module.exports = {
   builder: { cahkeys, 'http-redirect-url': httpRedirectUrl, host, port },
   handler: (argv) => {
     syncCerts(argv).catch((e) => {
-      console.error(e)
+      console.error(e.message)
       process.exit(1)
     })
   }

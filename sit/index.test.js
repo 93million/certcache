@@ -8,6 +8,7 @@ const loadKey = require('client-authenticated-https/lib/loadKey')
 const { Certificate } = require('@fidm/x509')
 const setupTests = require('./lib/setupTests')
 const { cliCmd, testClientDir, testServerCahkeysDir } = require('./filepaths')
+const yaml = require('yaml')
 
 const execFile = promisify(childProcess.execFile)
 const readFile = promisify(fs.readFile)
@@ -188,6 +189,47 @@ describe(
         const newCert = Certificate.fromPEM(newPem)
 
         expect(newCert.serialNumber).not.toBe(origCert.serialNumber)
+      }
+    )
+
+    test(
+      'should sync certificates for domains listed in CERTCACHE_DOMAINS env var',
+      async () => {
+        const mockCertcacheDomains = [
+          { domains: ['test.example.com'], cert_name: 'envvar1' },
+          { domains: ['foo.example.com'], cert_name: 'envvar2' }
+        ]
+        await execFile(
+          cliCmd,
+          ['sync'],
+          {
+            cwd: testClientDir,
+            env: {
+              ...process.env,
+              CERTCACHE_DOMAINS: yaml.stringify(mockCertcacheDomains)
+            }
+          }
+        )
+
+        const envvar1Pem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'envvar1',
+          'cert.pem'
+        ))
+        const envvar1Cert = Certificate.fromPEM(envvar1Pem)
+        const envvar2Pem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'envvar2',
+          'cert.pem'
+        ))
+        const envvar2Cert = Certificate.fromPEM(envvar2Pem)
+
+        expect(envvar1Cert.subject.commonName)
+          .toBe(mockCertcacheDomains[0].domains[0])
+        expect(envvar2Cert.subject.commonName)
+          .toBe(mockCertcacheDomains[1].domains[0])
       }
     )
   }

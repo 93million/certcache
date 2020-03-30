@@ -135,6 +135,14 @@ test(
   async () => {
     const mockCertcacheDomains = { test: 'object' }
 
+    getConfig.mockReturnValueOnce(Promise.resolve({
+      ...config,
+      client: {
+        ...config.client,
+        domains: mockCertcacheDomains
+      }
+    }))
+
     process.env.CERTCACHE_DOMAINS = yaml.stringify(mockCertcacheDomains)
 
     await syncCerts(mockOpts)

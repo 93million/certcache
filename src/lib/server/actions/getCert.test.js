@@ -6,6 +6,7 @@ const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
 const getCertLocators = require('../../getCertLocators')
 const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
+const getConfig = require('../../getConfig')
 
 const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
@@ -29,7 +30,7 @@ const req = {
 }
 const mockCertLocators = [{ getLocalCerts }]
 
-beforeEach(() => {
+beforeEach(async () => {
   mockCert = {
     getArchive: () => Promise.resolve(mockArchive),
     notAfter: date90DaysAway,
@@ -58,6 +59,7 @@ jest.mock('../../generateFirstCertInSequence')
 jest.mock('../../clientPermittedAccessToCerts')
 jest.mock('../../getCertLocators')
 jest.mock('../../getCertGeneratorsForDomains')
+jest.mock('../../getConfig')
 
 test.skip(
   'should load cert generators in order defined in config',
@@ -153,7 +155,7 @@ test(
 test(
   'should throw error when client cannot access cert',
   async () => {
-    process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
+    getConfig.mockReturnValueOnce({ server: { clientRestrictions: [] } })
 
     clientPermittedAccessToCerts.mockReturnValue(false)
 

@@ -1,94 +1,143 @@
 const getLocalCertificates = require('../getLocalCertificates')
 const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
-const yaml = require('yaml')
 const getDomainsFromConfig = require('./getDomainsFromConfig')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
+const arrayItemsMatch = require('../helpers/arrayItemsMatch')
+const copyCert = require('../helpers/copyCert')
+const fileExists = require('../helpers/fileExists')
 
 module.exports = async () => {
   const config = (await getConfig()).client
-  const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
-    ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
-    : []
-  const certcacheCertDir = path.resolve(config.certDir)
-  debug('Searching for local certs in', certcacheCertDir)
-  const certs = await getLocalCertificates(certcacheCertDir)
-  debug('Local certs:', certs)
-  const configDomainsWithoutCert = configDomains
-    .filter(({ domains, isTest }) => {
-      return certs.findCert(
-        {
-          commonName: domains[0],
-          altNames: domains
-        },
-        { isTest: (isTest === true) }
-      ) === undefined
-    })
-  debug(
-    'Certs in CERTCACHE_DOMAINS not in local cert dir:',
-    configDomainsWithoutCert
-  )
+  const {
+    cahkeys,
+    certDir,
+    domains,
+    httpRedirectUrl,
+    host,
+    port,
+    renewalDays
+  } = config
+  const certcacheCertDir = path.resolve(certDir)
+  const localCerts = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewalDays)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + renewalDays)
 
-  const certsForRenewal = certs
+  const certsForRenewal = localCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
-  debug(
-    `Local certs that expiring in next ${config.renewalDays} days:`,
-    certsForRenewal
-  )
+  const configDomains = getDomainsFromConfig(domains)
+  const configDomainsFileExistsSearch = (await Promise.all(configDomains.map(
+    ({ certName }) => fileExists(path.resolve(certDir, certName))
+  )))
+  const configDomainsNotOnFs = configDomains.filter((_, i) => (
+    configDomainsFileExistsSearch[i] === false
+  ))
+  debug('Searching for local certs in', certcacheCertDir)
+  const configDomainsForRenewal = []
+  const certsToCopyWhenReceived = []
 
-  const { httpRedirectUrl, host, port } = config
+  await Promise.all(configDomainsNotOnFs.map(
+    async ({ domains, isTest, certName }) => {
+      const findCert = ({
+        commonName, altNames, issuerCommonName
+      }) => {
+        return (
+          commonName === domains[0] &&
+          (
+            arrayItemsMatch(altNames, domains) ||
+            (altNames.length === 0 && domains.length === 1)
+          ) &&
+          issuerCommonName.startsWith('Fake') === (isTest === true)
+        )
+      }
+      const certsForRenewalSearch = certsForRenewal.find(findCert)
+      const localCertsSearch = localCerts.find(findCert)
+
+      if (localCertsSearch !== undefined) {
+        if (certsForRenewalSearch === undefined) {
+          await copyCert(
+            path.dirname(localCertsSearch.certPath),
+            path.resolve(certDir, certName)
+          )
+        } else {
+          certsToCopyWhenReceived.push([
+            certsForRenewalSearch.certPath,
+            path.resolve(certDir, certName)
+          ])
+        }
+      } else {
+        configDomainsForRenewal.push({
+          commonName: domains[0],
+          altnames: domains,
+          isTest,
+          certDir: path.resolve(certDir, certName)
+        })
+      }
+    }
+  ))
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
   }
 
-  const certRenewalPromise = Promise.all(certsForRenewal.map(async ({
-    commonName,
-    altNames,
-    issuerCommonName,
-    certPath
-  }) => {
-    const isTest = issuerCommonName.startsWith('Fake')
+  const certsToRequest = [
+    ...configDomainsForRenewal,
+    ...certsForRenewal.map(({ certPath, issuerCommonName, ...cert }) => ({
+      ...cert,
+      certDir: path.dirname(certPath),
+      isTest: issuerCommonName.startsWith('Fake')
+    }))
+  ]
 
-    return obtainCert(
-      host,
-      port,
-      commonName,
-      altNames,
-      isTest,
-      path.dirname(certPath),
-      { cahKeysDir: config.cahkeys, days: config.renewalDays }
-    )
-  }))
+  const obtainCertErrors = []
 
-  const configDomainPromise = Promise.all(configDomainsWithoutCert.map(
-    async ({ domains, isTest, certName }) => obtainCert(
-      host,
-      port,
-      domains[0],
-      domains,
-      isTest,
-      path.resolve(config.certDir, certName)
-    )
-  ))
-
-  await certRenewalPromise
-  await configDomainPromise
+  await Promise.all(
+    certsToRequest.map(async ({ altNames, certDir, commonName, isTest }) => {
+      try {
+        await obtainCert(
+          host,
+          port,
+          commonName,
+          altNames,
+          isTest,
+          certDir,
+          { cahKeysDir: cahkeys, days: renewalDays }
+        )
+      } catch (e) {
+        obtainCertErrors.push(e.message)
+      }
+    })
+  )
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.stop()
   }
 
-  console.log([
-    certsForRenewal.length + configDomainsWithoutCert.length,
+  await Promise.all(certsToCopyWhenReceived.map(([fromDir, toDir]) => {
+    return copyCert(fromDir, toDir)
+  }))
+
+  const numRequested = certsForRenewal.length + configDomainsForRenewal.length
+  const numTotal = localCerts.length + configDomainsForRenewal.length
+  const numFailed = obtainCertErrors.length
+  const msg = [
+    numRequested,
     'of',
-    certs.length + configDomainsWithoutCert.length,
-    'certs synced'
-  ].join(' '))
+    numTotal,
+    'certs requested.',
+    numFailed,
+    'failed.',
+    numRequested - numFailed,
+    'completed.'
+  ]
+
+  console.log(msg.join(' '))
+
+  if (obtainCertErrors.length !== 0) {
+    throw new Error(obtainCertErrors.join('\n'))
+  }
 }

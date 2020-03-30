@@ -6,7 +6,7 @@ module.exports = async (
   host,
   port,
   commonName,
-  altNames,
+  altNames = [],
   // TODO move isTest into optionals with cahKeysDir
   isTest,
   certDirPath,
@@ -31,10 +31,12 @@ module.exports = async (
   } else {
     let message = `Error renewing certificate ${certDirPath}`
 
+    message += ` (${domains.join(',')})`
+
     debug(`Error obtaining bundle`, responseObj)
 
     if (responseObj.error !== undefined) {
-      message += ` - message: '${responseObj.error}'`
+      message += `. Message from server: '${responseObj.error}'`
     }
 
     throw new Error(message)

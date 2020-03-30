@@ -1,47 +1,36 @@
 const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
 const FeedbackError = require('../../FeedbackError')
 const debug = require('debug')('certcache:server/actions/getCert')
-const yaml = require('yaml')
 const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
 const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
 const getCertLocators = require('../../getCertLocators')
 const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
+const getConfig = require('../../getConfig')
 
-module.exports = async (payload, { req }) => {
-  const { isTest, domains, notAfter: notAfterTs } = payload
-  const clientCertCommonName = req.connection.getPeerCertificate().subject.CN
-  const days = payload.days || 30
-  const notAfter = (notAfterTs === undefined)
-    ? new Date()
-    : new Date(notAfterTs)
-  const certRenewDate = new Date()
-  certRenewDate.setDate(certRenewDate.getDate() + days)
+const checkRestrictions = async (clientName, domains) => {
+  const config = await getConfig()
 
-  if (process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS !== undefined) {
-    const clientCertRestrictions =
-      yaml.parse(process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS)
-
+  if (config.server.clientRestrictions !== undefined) {
     if (!clientPermittedAccessToCerts(
-      clientCertRestrictions,
-      clientCertCommonName,
+      config.server.clientRestrictions,
+      clientName,
       domains
     )) {
       throw new FeedbackError([
         'Client',
-        clientCertCommonName,
+        clientName,
         'does not have permission to generate the requested certs'
       ].join(' '))
     }
   }
+}
 
-  const commonName = domains[0]
-  const altNames = domains
-
-  debug('Request for certificate', domains, 'is test', isTest)
-
+const findLocatCert = async (commonName, altNames, isTest, days) => {
   const certLocators = await getCertLocators()
-  const certGenerators = await getCertGeneratorsForDomains(domains)
+  const certRenewDate = new Date()
+
+  certRenewDate.setDate(certRenewDate.getDate() + days)
 
   const localCertSearch = await Promise
     .all(certLocators.map(
@@ -67,7 +56,7 @@ module.exports = async (payload, { req }) => {
               arrayItemsMatch(certAltNames, altNames) ||
               (certAltNames.length === 0 && altNames.length === 1)
             ) &&
-            certNotAfter.getTime() > notAfter.getTime()
+            certNotAfter.getTime() > certRenewDate.getTime()
           )
         })
 
@@ -75,33 +64,31 @@ module.exports = async (payload, { req }) => {
       }
     ))
 
-  const localCert = localCertSearch
-    .find((localCert) => (localCert !== undefined))
+  return localCertSearch.find((localCert) => (localCert !== undefined))
+}
 
-  let cert
+module.exports = async (payload, { req }) => {
+  const { isTest, domains, days = 30 } = payload
+  const clientName = req.connection.getPeerCertificate().subject.CN
+  const commonName = domains[0]
+  const altNames = domains
 
-  if (
-    localCert !== undefined &&
-    localCert.notAfter.getTime() >= certRenewDate.getTime()
-  ) {
-    debug('Found matching cert locally', domains)
-    cert = localCert
-  } else {
+  await checkRestrictions(clientName, domains)
+  debug('Request for certificate', domains, 'is test', isTest)
+
+  const certGenerators = await getCertGeneratorsForDomains(domains)
+
+  let cert = await findLocatCert(commonName, altNames, isTest, days)
+
+  if (cert === undefined) {
     debug('No local certificate found - executing cert generators', domains)
-    try {
-      cert = await generateFirstCertInSequence(
-        certGenerators,
-        commonName,
-        altNames,
-        { isTest }
-      )
-    } catch (e) {
-      if (localCert !== undefined) {
-        cert = localCert
-      } else {
-        throw e
-      }
-    }
+
+    cert = await generateFirstCertInSequence(
+      certGenerators,
+      commonName,
+      altNames,
+      { isTest }
+    )
   }
 
   if (cert === undefined) {
