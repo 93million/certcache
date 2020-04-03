@@ -3,13 +3,13 @@ const debug = require('debug')('certcache:requestCert')
 
 module.exports = (
   { host, port, cahKeysDir },
-  { domains, isTest, notAfter, days } = {}
+  { domains, meta, notAfter, days } = {}
 ) => {
   const postData = JSON.stringify({
     action: 'getCert',
     days,
     domains,
-    isTest,
+    meta,
     notAfter
   })
   const options = {

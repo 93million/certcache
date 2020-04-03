@@ -35,9 +35,13 @@ getConfig.mockReturnValue(Promise.resolve({
     httpRedirectUrl: 'http://certcache.example.com',
     certDir: 'certs',
     domains: [
-      { domains: ['test.example.com'], cert_name: 'filecert1' },
-      { domains: ['foo.example.com'], cert_name: 'filecert2' }
-    ]
+      { domains: ['test.example.com'], certName: 'filecert1' },
+      { domains: ['foo.example.com'], certName: 'filecert2' }
+    ],
+    backends: {
+      certbot: {},
+      thirdparty: {}
+    }
   }
 }))
 

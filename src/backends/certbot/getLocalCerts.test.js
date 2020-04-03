@@ -39,13 +39,16 @@ Certificate.fromPath
 
 fileExists.mockImplementation((path) => filePaths.includes(path))
 const expectedHandler = {
-  getLocalCerts: expect.any(Function),
   canGenerateDomains: expect.any(Function),
   commandArgs: expect.any(Object),
+  filterCert: expect.any(Function),
   generateCert: expect.any(Function),
   getBundle: expect.any(Function),
   getConfig: expect.any(Function),
-  getExtras: expect.any(Function)
+  getLocalCerts: expect.any(Function),
+  getMetaFromCert: expect.any(Function),
+  getMetaFromConfig: expect.any(Function),
+  getMetaFromSyncItem: expect.any(Function)
 }
 
 test(

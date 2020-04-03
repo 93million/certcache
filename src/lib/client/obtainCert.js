@@ -7,8 +7,7 @@ module.exports = async (
   port,
   commonName,
   altNames = [],
-  // TODO move isTest into optionals with cahKeysDir
-  isTest,
+  meta,
   certDirPath,
   { cahKeysDir, days }
 ) => {
@@ -17,12 +16,12 @@ module.exports = async (
   console.log([
     `Requesting certificate CN=${commonName}`,
     `SAN=${JSON.stringify(domains)}`,
-    isTest ? 'test' : 'live'
+    `meta=${JSON.stringify(meta)}`
   ].join(' '))
 
   const response = await requestCert(
     { cahKeysDir, host, port },
-    { days, domains, isTest }
+    { days, domains, meta }
   )
   const responseObj = JSON.parse(response)
 

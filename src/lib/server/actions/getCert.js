@@ -26,7 +26,7 @@ const checkRestrictions = async (clientName, domains) => {
   }
 }
 
-const findLocatCert = async (commonName, altNames, isTest, days) => {
+const findLocalCert = async (commonName, altNames, meta, days) => {
   const certLocators = await getCertLocators()
   const certRenewDate = new Date()
 
@@ -36,27 +36,32 @@ const findLocatCert = async (commonName, altNames, isTest, days) => {
     .all(certLocators.map(
       async (certLocator) => {
         const localCerts = await certLocator.getLocalCerts()
+        const filterCert = (
+          certLocator.filterCert !== undefined &&
+          meta[certLocator.id] !== undefined
+        )
+          ? certLocator.filterCert(meta[certLocator.id])
+          : () => true
 
         localCerts.sort((a, b) => {
           return (a.notAfter.getTime() > b.notAfter.getTime()) ? -1 : 1
         })
 
-        const matchingCerts = localCerts.find(({
-          altNames: certAltNames,
-          commonName: certCommonName,
-          issuerCommonName,
-          notAfter: certNotAfter
-        }) => {
-          const certIsTest = issuerCommonName.startsWith('Fake')
+        const matchingCerts = localCerts.find((cert) => {
+          const {
+            altNames: certAltNames,
+            commonName: certCommonName,
+            notAfter: certNotAfter
+          } = cert
 
           return (
-            certIsTest === (isTest === true) &&
             certCommonName === commonName &&
             (
               arrayItemsMatch(certAltNames, altNames) ||
               (certAltNames.length === 0 && altNames.length === 1)
             ) &&
-            certNotAfter.getTime() > certRenewDate.getTime()
+            certNotAfter.getTime() > certRenewDate.getTime() &&
+            filterCert(cert)
           )
         })
 
@@ -68,17 +73,17 @@ const findLocatCert = async (commonName, altNames, isTest, days) => {
 }
 
 module.exports = async (payload, { req }) => {
-  const { isTest, domains, days = 30 } = payload
+  const { meta, domains, days = 30 } = payload
   const clientName = req.connection.getPeerCertificate().subject.CN
   const commonName = domains[0]
   const altNames = domains
 
   await checkRestrictions(clientName, domains)
-  debug('Request for certificate', domains, 'is test', isTest)
+  debug('Request for certificate', domains, 'meta', meta)
 
   const certGenerators = await getCertGeneratorsForDomains(domains)
 
-  let cert = await findLocatCert(commonName, altNames, isTest, days)
+  let cert = await findLocalCert(commonName, altNames, meta, days)
 
   if (cert === undefined) {
     debug('No local certificate found - executing cert generators', domains)
@@ -87,7 +92,7 @@ module.exports = async (payload, { req }) => {
       certGenerators,
       commonName,
       altNames,
-      { isTest }
+      meta
     )
   }
 

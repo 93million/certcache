@@ -11,8 +11,8 @@ const getConfig = require('../../getConfig')
 const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
 const altNames = [domains[0], ...domains.slice(1)]
-const isTest = false
-const payload = { domains, isTest }
+const meta = { isTest: false }
+const payload = { domains, meta }
 const getLocalCerts = jest.fn()
 const findCert = jest.fn()
 const date90DaysAway = new Date()
@@ -73,7 +73,7 @@ test.skip(
   async () => {
     await getCert(payload, { req })
 
-    expect(findCert).toBeCalledWith(commonName, altNames, { isTest })
+    expect(findCert).toBeCalledWith(commonName, altNames, meta)
   }
 )
 
@@ -81,15 +81,15 @@ test.skip(
   'when provided only 1 domain, should search for local certs using only common name when unable to find certs with matching alt names',
   async () => {
     const commonName = 'test.example.com'
-    const payload = { domains: [commonName], isTest }
+    const payload = { domains: [commonName], meta }
 
     findCert.mockReset()
     findCert.mockReturnValue(undefined)
 
     await getCert(payload, { req })
 
-    expect(findCert.mock.calls[0]).toEqual([commonName, [commonName], { isTest }])
-    expect(findCert.mock.calls[1]).toEqual([commonName, [], { isTest }])
+    expect(findCert.mock.calls[0]).toEqual([commonName, [commonName], meta])
+    expect(findCert.mock.calls[1]).toEqual([commonName, [], meta])
   }
 )
 
@@ -102,7 +102,7 @@ test(
     await getCert(payload, { req })
 
     expect(generateFirstCertInSequence)
-      .toBeCalledWith(expect.any(Array), commonName, altNames, { isTest })
+      .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
   }
 )
 
@@ -132,12 +132,7 @@ test(
     await getCert(payload, { req })
 
     expect(generateFirstCertInSequence)
-      .toBeCalledWith(
-        expect.any(Array),
-        commonName,
-        altNames,
-        { isTest }
-      )
+      .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
   }
 )
 

@@ -81,7 +81,7 @@ test(
         mockOpts.port,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
-        mockLocalCert.issuerCommonName.startsWith('Fake'),
+        { isTest: mockLocalCert.issuerCommonName.startsWith('Fake') },
         path.dirname(mockLocalCert.certPath),
         { cahKeysDir: mockOpts.cahkeys }
       )

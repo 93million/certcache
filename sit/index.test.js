@@ -196,8 +196,8 @@ describe(
       'should sync certificates for domains listed in CERTCACHE_DOMAINS env var',
       async () => {
         const mockCertcacheDomains = [
-          { domains: ['test.example.com'], cert_name: 'envvar1' },
-          { domains: ['foo.example.com'], cert_name: 'envvar2' }
+          { domains: ['test.example.com'], certName: 'envvar1' },
+          { domains: ['foo.example.com'], certName: 'envvar2' }
         ]
         await execFile(
           cliCmd,

@@ -13,7 +13,9 @@ module.exports = async () => {
     backends = (await readdir(backendsDir)).reduce(
       async (acc, filename) => {
         if ((await stat(path.resolve(backendsDir, filename))).isDirectory()) {
-          (await acc)[filename] = require(path.resolve(backendsDir, filename))
+          const backend = require(path.resolve(backendsDir, filename));
+
+          (await acc)[filename] = { ...backend, id: filename }
         }
 
         return acc

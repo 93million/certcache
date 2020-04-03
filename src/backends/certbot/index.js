@@ -1,9 +1,12 @@
 module.exports = {
   canGenerateDomains: require('./canGenerateDomains'),
   commandArgs: require('./commandArgs'),
+  filterCert: require('./filterCert'),
   generateCert: require('./generateCert'),
   getBundle: require('./getBundle'),
-  getLocalCerts: require('./getLocalCerts'),
   getConfig: require('./getConfig'),
-  getExtras: require('./getExtras')
+  getMetaFromCert: require('./getMetaFromCert'),
+  getMetaFromConfig: require('./getMetaFromConfig'),
+  getMetaFromSyncItem: require('./getMetaFromSyncItem'),
+  getLocalCerts: require('./getLocalCerts')
 }

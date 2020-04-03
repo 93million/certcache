@@ -1,11 +1,6 @@
 const Certificate = require('./classes/Certificate')
 
-module.exports = async (
-  certGenerators,
-  commonName,
-  altNames,
-  { isTest }
-) => {
+module.exports = async (certGenerators, commonName, altNames, meta) => {
   return certGenerators.reduce(
     async (acc, certGenerator) => (
       (await acc) ||
@@ -14,7 +9,7 @@ module.exports = async (
         await certGenerator.generateCert(
           commonName,
           altNames,
-          { isTest }
+          meta[certGenerator.id] || {}
         )
       )
     ),

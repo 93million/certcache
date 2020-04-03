@@ -7,7 +7,7 @@ const { Readable, Writable } = require('stream')
 const host = 'certcache.example.com'
 const port = 12345
 const domains = ['secure.example.com', 'secret.example.com']
-const isTest = true
+const meta = { isTest: true }
 const mockResponse = 'test certcache response data'
 let requestData
 const mockErrorMessage = '__test error message__'
@@ -49,17 +49,17 @@ beforeEach(() => {
 test(
   'should send a request for the certificate to the certcache server',
   async () => {
-    await requestCert({ host, port }, { domains, isTest })
+    await requestCert({ host, port }, { domains, meta })
 
     expect(JSON.parse(requestData))
-      .toEqual({ action: 'getCert', domains, isTest })
+      .toEqual({ action: 'getCert', domains, meta })
   }
 )
 
 test(
   'should return the data returned by the certcache server in a promise',
   async () => {
-    const response = await requestCert({ host, port }, domains, isTest)
+    const response = await requestCert({ host, port }, { domains, meta })
 
     await expect(response).toBe(mockResponse)
   }
@@ -70,7 +70,7 @@ test(
   async () => {
     setUpRequestMockImplementation(true)
 
-    await expect(requestCert({ host, port }, domains, isTest))
+    await expect(requestCert({ host, port }, { domains, meta }))
       .rejects
       .toThrow()
   }

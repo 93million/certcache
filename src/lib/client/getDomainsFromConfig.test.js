@@ -10,13 +10,13 @@ const isTest1 = false
 const isTest2 = true
 const config1 = {
   domains: expectedDomains1,
-  cert_name: certName1,
-  is_test: isTest1
+  certName: certName1,
+  isTest: isTest1
 }
 const config2 = {
   domains: expectedDomains2,
-  cert_name: certName2,
-  is_test: isTest2
+  certName: certName2,
+  isTest: isTest2
 }
 
 test(
@@ -29,12 +29,10 @@ test(
       .toEqual([
         {
           domains: expectedDomains1,
-          isTest: false,
           certName: expectedDomains1[0]
         },
         {
           domains: expectedDomains2,
-          isTest: false,
           certName: expectedDomains2[0]
         }
       ])
@@ -51,12 +49,10 @@ test(
       .toEqual([
         {
           domains: expectedDomains1,
-          isTest: false,
           certName: expectedDomains1[0]
         },
         {
           domains: expectedDomains2,
-          isTest: false,
           certName: expectedDomains2[0]
         }
       ])
@@ -107,9 +103,9 @@ test(
 )
 
 test(
-  'should name cert when no cert_name property is present in object',
+  'should name cert when no certName property is present in object',
   () => {
-    const { cert_name: certName, ...config } = config1
+    const { certName, ...config } = config1
 
     expect(getDomainsFromConfig([config]))
       .toEqual([

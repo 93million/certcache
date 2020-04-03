@@ -2,13 +2,22 @@ const path = require('path')
 const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
+const getMetaFromConfig =
+  require('../getMetaFromBackendFunction')('getMetaFromConfig')
 
 module.exports = async (opts) => {
-  const config = (await getConfig()).client
-  const { host, port, httpRedirectUrl, renewalDays } = config
+  const config = (await getConfig())
+  const {
+    certDir,
+    host,
+    port,
+    httpRedirectUrl,
+    renewalDays
+  } = config.client
   const domains = opts.domains.split(',')
   const [commonName, ...altNames] = domains
   const certName = opts['cert-name'] || commonName
+  const meta = await getMetaFromConfig(config)
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -19,8 +28,8 @@ module.exports = async (opts) => {
     port,
     commonName,
     altNames,
-    opts['test-cert'],
-    path.resolve(config.certDir, certName),
+    meta,
+    path.resolve(certDir, certName),
     { cahKeysDir: opts.cahkeys, days: renewalDays }
   )
 

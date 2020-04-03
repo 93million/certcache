@@ -5,9 +5,12 @@ const getDomainsFromConfig = require('./getDomainsFromConfig')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
-const arrayItemsMatch = require('../helpers/arrayItemsMatch')
 const copyCert = require('../helpers/copyCert')
 const fileExists = require('../helpers/fileExists')
+const getMetaFromCert =
+  require('../getMetaFromBackendFunction')('getMetaFromCert')
+const getMetaFromSyncItem =
+  require('../getMetaFromBackendFunction')('getMetaFromSyncItem')
 
 module.exports = async () => {
   const config = (await getConfig()).client
@@ -37,48 +40,14 @@ module.exports = async () => {
     configDomainsFileExistsSearch[i] === false
   ))
   debug('Searching for local certs in', certcacheCertDir)
-  const configDomainsForRenewal = []
   const certsToCopyWhenReceived = []
 
-  await Promise.all(configDomainsNotOnFs.map(
-    async ({ domains, isTest, certName }) => {
-      const findCert = ({
-        commonName, altNames, issuerCommonName
-      }) => {
-        return (
-          commonName === domains[0] &&
-          (
-            arrayItemsMatch(altNames, domains) ||
-            (altNames.length === 0 && domains.length === 1)
-          ) &&
-          issuerCommonName.startsWith('Fake') === (isTest === true)
-        )
-      }
-      const certsForRenewalSearch = certsForRenewal.find(findCert)
-      const localCertsSearch = localCerts.find(findCert)
-
-      if (localCertsSearch !== undefined) {
-        if (certsForRenewalSearch === undefined) {
-          await copyCert(
-            path.dirname(localCertsSearch.certPath),
-            path.resolve(certDir, certName)
-          )
-        } else {
-          certsToCopyWhenReceived.push([
-            certsForRenewalSearch.certPath,
-            path.resolve(certDir, certName)
-          ])
-        }
-      } else {
-        configDomainsForRenewal.push({
-          commonName: domains[0],
-          altnames: domains,
-          isTest,
-          certDir: path.resolve(certDir, certName)
-        })
-      }
-    }
-  ))
+  const configDomainsForRenewal = configDomainsNotOnFs.map((configDomain) => ({
+    commonName: configDomain.domains[0],
+    altnames: configDomain.domains,
+    meta: getMetaFromSyncItem(configDomain),
+    certDir: path.resolve(certDir, configDomain.certName)
+  }))
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -86,24 +55,24 @@ module.exports = async () => {
 
   const certsToRequest = [
     ...configDomainsForRenewal,
-    ...certsForRenewal.map(({ certPath, issuerCommonName, ...cert }) => ({
+    ...certsForRenewal.map((cert) => ({
       ...cert,
-      certDir: path.dirname(certPath),
-      isTest: issuerCommonName.startsWith('Fake')
+      certDir: path.dirname(cert.certPath),
+      meta: getMetaFromCert(cert)
     }))
   ]
 
   const obtainCertErrors = []
 
   await Promise.all(
-    certsToRequest.map(async ({ altNames, certDir, commonName, isTest }) => {
+    certsToRequest.map(async ({ altNames, certDir, commonName, meta }) => {
       try {
         await obtainCert(
           host,
           port,
           commonName,
           altNames,
-          isTest,
+          meta,
           certDir,
           { cahKeysDir: cahkeys, days: renewalDays }
         )

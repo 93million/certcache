@@ -20,7 +20,7 @@ const mockHost = 'certcache.example.com'
 const mockPort = 54321
 const mockCommonName = 'example.com'
 const mockAltNames = ['test.example.com', 'foo.example.com']
-const mockIsTest = true
+const mockMeta = { isTest: true }
 const mockCertDirPath = '/test/path/certs/example.com'
 const mockCahKeysDir = '/test/path/cahkeys'
 
@@ -41,14 +41,14 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
+      mockMeta,
       mockCertDirPath,
       { cahKeysDir: mockCahKeysDir }
     )
 
     expect(requestCert).toBeCalledWith(
       { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
-      { domains: [mockCommonName, ...mockAltNames], isTest: mockIsTest }
+      { domains: [mockCommonName, ...mockAltNames], meta: mockMeta }
     )
   }
 )
@@ -61,7 +61,7 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
+      mockMeta,
       mockCertDirPath,
       { cahKeysDir: mockCahKeysDir }
     )
@@ -83,7 +83,7 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
+      mockMeta,
       mockCertDirPath,
       { cahKeysDir: mockCahKeysDir }
     ))
@@ -104,7 +104,7 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
+      mockMeta,
       mockCertDirPath,
       { cahKeysDir: mockCahKeysDir }
     ))
@@ -121,7 +121,7 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest === false,
+      mockMeta,
       mockCertDirPath,
       { cahKeysDir: mockCahKeysDir }
     )

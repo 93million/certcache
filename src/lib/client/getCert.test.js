@@ -12,6 +12,7 @@ jest.mock('../getConfig')
 
 let mockOpts
 let mockConfig
+const mockMeta = { certbot: { isTest: expect.any(Boolean) } }
 
 console.error = jest.fn()
 console.log = jest.fn()
@@ -20,7 +21,6 @@ beforeEach(async () => {
   mockOpts = {
     domains: 'example.com,test.example.com,foo.example.com',
     cahkeys: '/path/to/cahkeys',
-    'test-cert': true,
     'cert-name': 'testcert'
   }
   mockConfig = await getConfig()
@@ -43,7 +43,7 @@ test(
       mockConfig.client.port,
       mockDomainsArr[0],
       mockDomainsArr.slice(1),
-      mockOpts['test-cert'],
+      mockMeta,
       path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
       { cahKeysDir: mockOpts.cahkeys }
     )
@@ -70,7 +70,7 @@ test(
       mockConfig.client.port,
       commonName,
       altNames,
-      mockOpts['test-cert'],
+      mockMeta,
       path.resolve(mockConfig.client.certDir, commonName),
       { cahKeysDir: mockOpts.cahkeys }
     )
@@ -102,7 +102,7 @@ test(
         mockConfig.client.port,
         mockDomainsArr[0],
         mockDomainsArr.slice(1),
-        mockOpts['test-cert'],
+        mockMeta,
         path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
         { cahKeysDir: mockOpts.cahkeys }
       )

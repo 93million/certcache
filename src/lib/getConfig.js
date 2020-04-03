@@ -13,32 +13,45 @@ const yargs = require('yargs')
 let config
 
 const load = async () => {
-  const bare = { client: {}, server: { backends: {} } }
-  const localConfig = await fileExists(localConfigPath)
-    ? { ...bare, ...JSON.parse(await readFile(localConfigPath)) }
-    : bare
+  const baseStructure = { client: { backends: {} }, server: { backends: {} } }
+  const localFileConfig = await fileExists(localConfigPath)
+    ? JSON.parse(await readFile(localConfigPath))
+    : undefined
+  const localConfig = (localFileConfig !== undefined)
+    ? {
+      ...baseStructure,
+      client: { ...baseStructure.client, ...localFileConfig.client },
+      server: { ...baseStructure.server, ...localFileConfig.server }
+    }
+    : baseStructure
   const backends = await getBackends()
   const argv = yargs.argv
   const env = process.env
   const baseConfig = getConfig({ argv, env, file: localConfig })
 
+  const backendConfigs = Object.keys(backends).reduce(
+    (acc, key) => {
+      const file = {
+        client: localConfig.client.backends[key] || {},
+        server: localConfig.server.backends[key] || {}
+      }
+
+      if (backends[key].getConfig !== undefined) {
+        const { client, server } = backends[key].getConfig({ argv, env, file })
+
+        acc.client[key] = client
+        acc.server[key] = server
+      }
+
+      return acc
+    },
+    { client: {}, server: {} }
+  )
+
   return {
     ...baseConfig,
-    server: {
-      ...baseConfig.server,
-      backends: Object.keys(backends).reduce(
-        (acc, key) => {
-          const file = localConfig.server.backends[key] || {}
-
-          if (backends[key].getConfig !== undefined) {
-            acc[key] = backends[key].getConfig({ argv, env, file })
-          }
-
-          return acc
-        },
-        {}
-      )
-    }
+    client: { ...baseConfig.client, backends: backendConfigs.client },
+    server: { ...baseConfig.server, backends: backendConfigs.server }
   }
 }
 

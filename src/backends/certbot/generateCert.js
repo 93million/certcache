@@ -1,4 +1,4 @@
-const generateCertName = require('../../lib/generateCertName')
+const generateCertName = require('./lib/generateCertName')
 const getCertbotCertonlyArgs = require('./lib/getCertbotCertonlyArgs')
 const debug = require('debug')('certcache:generateCert')
 const execCertbot = require('./lib/execCertbot')
@@ -6,8 +6,8 @@ const getConfig = require('../../lib/getConfig')
 
 const certsInGeneration = {}
 
-module.exports = async (commonName, altNames, { isTest }) => {
-  const certName = generateCertName(commonName, altNames, { isTest })
+module.exports = async (commonName, altNames, meta) => {
+  const certName = generateCertName(commonName, altNames, meta)
   let certbotConfig
 
   if (certsInGeneration[certName] === undefined) {
@@ -18,7 +18,7 @@ module.exports = async (commonName, altNames, { isTest }) => {
         commonName,
         certName,
         altNames,
-        { isTest },
+        meta,
         certbotConfig
       )
       debug(

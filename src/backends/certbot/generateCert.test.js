@@ -2,7 +2,7 @@
 
 const childProcess = require('child_process')
 const generateCert = require('./generateCert')
-const generateCertName = require('../../lib/generateCertName')
+const generateCertName = require('./lib/generateCertName')
 const getConfig = require('../../lib/getConfig')
 
 jest.mock('child_process')
@@ -24,8 +24,8 @@ test(
   'should not create duplicate requests for the same certificate',
   async () => {
     await Promise.all([
-      generateCert(commonName, altNames, true),
-      generateCert(commonName, altNames, true)
+      generateCert(commonName, altNames, { isTest: true }),
+      generateCert(commonName, altNames, { isTest: true })
     ])
 
     expect(childProcess.execFile).toBeCalledTimes(1)

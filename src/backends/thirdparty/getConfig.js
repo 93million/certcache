@@ -1,9 +1,15 @@
 const defaults = {
-  certDir: 'backends/thirdparty'
+  server: {
+    certDir: 'backends/thirdparty'
+  }
 }
 
 module.exports = ({ argv, env, file }) => {
   return {
-    certDir: env.CERTCACHE_THIRDPARTY_DIR || file.certDir || defaults.certDir
+    server: {
+      certDir: env.CERTCACHE_THIRDPARTY_DIR ||
+        file.server.certDir ||
+        defaults.server.certDir
+    }
   }
 }
