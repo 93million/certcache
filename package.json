@@ -1,7 +1,7 @@
 {
   "name": "certcache",
   "version": "1.4.0",
-  "description": "Server that caches certbot keys and certificates to mitigate fair use policies",
+  "description": "TLS certificate server that generates, caches and deploys SSL/TLS certificates",
   "main": "index.js",
   "bin": "src/cli/cli.js",
   "scripts": {
