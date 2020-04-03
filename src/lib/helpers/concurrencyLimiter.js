@@ -29,7 +29,7 @@ module.exports = (fn, concurrency) => {
         reject(val)
       }
       const callback = () => {
-        fn(..._args).then(complete, error)
+        Promise.resolve(fn(..._args)).then(complete, error)
       }
 
       stack.push(callback)
