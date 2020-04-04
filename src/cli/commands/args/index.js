@@ -7,7 +7,7 @@ module.exports = {
     description: 'Number of days to renew certificate before expiry'
   },
   httpRedirectUrl: {
-    description: 'Address of a Certcache server to redirect HTTP-01 ACME challenges to'
+    description: 'Address of a Certcache server to redirect challenges to when Certcache client server is recipient of HTTP-01 ACME challenges'
   },
   host: {
     alias: 'h',

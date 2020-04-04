@@ -21,7 +21,8 @@ module.exports = ({ argv, env, file }) => ({
       env.CERTCACHE_DAYS_RENEWAL ||
       file.client.renewalDays ||
       defaults.client.renewalDays,
-    syncInterval: env.CERTCACHE_SYNC_INTERVAL ||
+    syncInterval: argv.interval ||
+      env.CERTCACHE_SYNC_INTERVAL ||
       file.client.syncInterval ||
       defaults.client.syncInterval
   },
