@@ -40,7 +40,8 @@ const findLocalCert = async (commonName, altNames, meta, days) => {
           certLocator.filterCert !== undefined &&
           meta[certLocator.id] !== undefined
         )
-          ? certLocator.filterCert(meta[certLocator.id])
+          ? certLocator
+            .filterCert({ commonName, altNames, meta: meta[certLocator.id] })
           : () => true
 
         localCerts.sort((a, b) => {

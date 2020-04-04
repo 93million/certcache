@@ -1,5 +1,3 @@
-module.exports = ({ isTest }) => ({ issuerCommonName }) => {
-  return (
-    issuerCommonName.startsWith('Fake LE ') === (isTest === true)
-  )
+module.exports = ({ meta: { isTest } }) => ({ issuerCommonName }) => {
+  return (issuerCommonName.startsWith('Fake LE ') === (isTest === true))
 }
