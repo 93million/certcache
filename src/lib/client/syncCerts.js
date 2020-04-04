@@ -1,7 +1,7 @@
 const getLocalCertificates = require('../getLocalCertificates')
 const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
-const getDomainsFromConfig = require('./getDomainsFromConfig')
+const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
@@ -9,15 +9,15 @@ const copyCert = require('../helpers/copyCert')
 const fileExists = require('../helpers/fileExists')
 const getMetaFromCert =
   require('../getMetaFromBackendFunction')('getMetaFromCert')
-const getMetaFromSyncItem =
-  require('../getMetaFromBackendFunction')('getMetaFromSyncItem')
+const getMetaFromCertDefinition =
+  require('../getMetaFromBackendFunction')('getMetaFromCertDefinition')
 
 module.exports = async () => {
   const config = (await getConfig()).client
   const {
     cahkeys,
     certDir,
-    domains,
+    certs,
     httpRedirectUrl,
     host,
     port,
@@ -32,20 +32,20 @@ module.exports = async () => {
   const certsForRenewal = localCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
-  const configDomains = getDomainsFromConfig(domains)
-  const configDomainsFileExistsSearch = (await Promise.all(configDomains.map(
+  const certDefinitions = normaliseCertDefinitions(certs)
+  const certDefinitionsFileExistsSearch = (await Promise.all(certDefinitions.map(
     ({ certName }) => fileExists(path.resolve(certDir, certName))
   )))
-  const configDomainsNotOnFs = configDomains.filter((_, i) => (
-    configDomainsFileExistsSearch[i] === false
+  const certDefinitionsNotOnFs = certDefinitions.filter((_, i) => (
+    certDefinitionsFileExistsSearch[i] === false
   ))
   debug('Searching for local certs in', certcacheCertDir)
   const certsToCopyWhenReceived = []
 
-  const configDomainsForRenewal = configDomainsNotOnFs.map((configDomain) => ({
+  const certDefinitionsForRenewal = certDefinitionsNotOnFs.map((configDomain) => ({
     commonName: configDomain.domains[0],
     altnames: configDomain.domains,
-    meta: getMetaFromSyncItem(configDomain),
+    meta: getMetaFromCertDefinition(configDomain),
     certDir: path.resolve(certDir, configDomain.certName)
   }))
 
@@ -54,7 +54,7 @@ module.exports = async () => {
   }
 
   const certsToRequest = [
-    ...configDomainsForRenewal,
+    ...certDefinitionsForRenewal,
     ...certsForRenewal.map((cert) => ({
       ...cert,
       certDir: path.dirname(cert.certPath),
@@ -90,8 +90,8 @@ module.exports = async () => {
     return copyCert(fromDir, toDir)
   }))
 
-  const numRequested = certsForRenewal.length + configDomainsForRenewal.length
-  const numTotal = localCerts.length + configDomainsForRenewal.length
+  const numRequested = certsForRenewal.length + certDefinitionsForRenewal.length
+  const numTotal = localCerts.length + certDefinitionsForRenewal.length
   const numFailed = obtainCertErrors.length
   const msg = [
     numRequested,

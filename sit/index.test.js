@@ -193,7 +193,7 @@ describe(
     )
 
     test(
-      'should sync certificates for domains listed in CERTCACHE_DOMAINS env var',
+      'should sync certificates for domains listed in CERTCACHE_CERTS env var',
       async () => {
         const mockCertcacheDomains = [
           { domains: ['test.example.com'], certName: 'envvar1' },
@@ -206,7 +206,7 @@ describe(
             cwd: testClientDir,
             env: {
               ...process.env,
-              CERTCACHE_DOMAINS: yaml.stringify(mockCertcacheDomains)
+              CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains)
             }
           }
         )

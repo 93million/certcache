@@ -47,8 +47,8 @@ const expectedHandler = {
   getConfig: expect.any(Function),
   getLocalCerts: expect.any(Function),
   getMetaFromCert: expect.any(Function),
-  getMetaFromConfig: expect.any(Function),
-  getMetaFromSyncItem: expect.any(Function)
+  getMetaFromCertDefinition: expect.any(Function),
+  getMetaFromConfig: expect.any(Function)
 }
 
 test(

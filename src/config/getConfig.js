@@ -3,9 +3,12 @@ const yaml = require('yaml')
 
 module.exports = ({ argv, env, file }) => ({
   client: {
-    domains: (env.CERTCACHE_DOMAINS && yaml.parse(env.CERTCACHE_DOMAINS)) ||
-      file.client.domains ||
-      defaults.client.domains,
+    certDir: env.CERTCACHE_CERTS_DIR ||
+      file.client.certDir ||
+      defaults.client.certDir,
+    certs: (env.CERTCACHE_CERTS && yaml.parse(env.CERTCACHE_CERTS)) ||
+      file.client.certs ||
+      defaults.client.certs,
     host: argv.host ||
       env.CERTCACHE_HOST ||
       file.client.host ||
@@ -14,16 +17,13 @@ module.exports = ({ argv, env, file }) => ({
       env.CERTCACHE_PORT ||
       file.client.port ||
       defaults.client.port,
-    certDir: env.CERTCACHE_CERTS_DIR ||
-      file.client.certDir ||
-      defaults.client.certDir,
-    syncInterval: env.CERTCACHE_SYNC_INTERVAL ||
-      file.client.syncInterval ||
-      defaults.client.syncInterval,
     renewalDays: argv.days ||
       env.CERTCACHE_DAYS_RENEWAL ||
       file.client.renewalDays ||
-      defaults.client.renewalDays
+      defaults.client.renewalDays,
+    syncInterval: env.CERTCACHE_SYNC_INTERVAL ||
+      file.client.syncInterval ||
+      defaults.client.syncInterval
   },
   server: {
     port: env.CERTCACHE_PORT || file.server.port || defaults.server.port,

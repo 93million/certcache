@@ -5,8 +5,8 @@ module.exports = {
   generateCert: require('./generateCert'),
   getBundle: require('./getBundle'),
   getConfig: require('./getConfig'),
+  getLocalCerts: require('./getLocalCerts'),
   getMetaFromCert: require('./getMetaFromCert'),
   getMetaFromConfig: require('./getMetaFromConfig'),
-  getMetaFromSyncItem: require('./getMetaFromSyncItem'),
-  getLocalCerts: require('./getLocalCerts')
+  getMetaFromCertDefinition: require('./getMetaFromCertDefinition')
 }

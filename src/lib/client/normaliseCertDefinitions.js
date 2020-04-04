@@ -1,5 +1,5 @@
-module.exports = (domainsConfig) => {
-  return domainsConfig.map((item) => {
+module.exports = (certDefinitions) => {
+  return certDefinitions.map((item) => {
     if (typeof item === 'string') {
       item = item.split(',')
     }

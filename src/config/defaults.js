@@ -1,11 +1,11 @@
 module.exports = {
   client: {
-    domains: [],
+    certDir: 'certs',
+    certs: [],
     host: 'localhost',
     port: 4433,
-    certDir: 'certs',
-    syncInterval: 60 * 60 * 6,
-    renewalDays: 30
+    renewalDays: 30,
+    syncInterval: 60 * 60 * 6
   },
   server: {
     port: 4433

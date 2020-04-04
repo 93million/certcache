@@ -1,6 +1,6 @@
 /* global test expect */
 
-const getDomainsFromConfig = require('./getDomainsFromConfig')
+const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 
 const expectedDomains1 = ['example.com', 'test.example.com']
 const expectedDomains2 = ['test2.example.com', 'test3.example.com', 'test4.example.com']
@@ -22,7 +22,7 @@ const config2 = {
 test(
   'should handle a 1-dimensional array of comma-separated domains',
   () => {
-    expect(getDomainsFromConfig([
+    expect(normaliseCertDefinitions([
       expectedDomains1.join(','),
       expectedDomains2.join(',')
     ]))
@@ -42,7 +42,7 @@ test(
 test(
   'should handle a 2-dimensional array of domains',
   () => {
-    expect(getDomainsFromConfig([
+    expect(normaliseCertDefinitions([
       expectedDomains1,
       expectedDomains2
     ]))
@@ -62,7 +62,7 @@ test(
 test(
   'should handle an array of objects containins an array of domains',
   () => {
-    expect(getDomainsFromConfig([config1, config2]))
+    expect(normaliseCertDefinitions([config1, config2]))
       .toEqual([
         { certName: certName1, isTest: isTest1, domains: expectedDomains1 },
         { certName: certName2, isTest: isTest2, domains: expectedDomains2 }
@@ -73,7 +73,7 @@ test(
 test(
   'should handle an array of objects containing comma-separated domains',
   () => {
-    expect(getDomainsFromConfig([
+    expect(normaliseCertDefinitions([
       { ...config1, domains: expectedDomains1.join(',') },
       { ...config2, domains: expectedDomains2.join(',') }
     ]))
@@ -87,7 +87,7 @@ test(
 test(
   'should ignore leading/trailing spaces in domains',
   () => {
-    expect(getDomainsFromConfig([
+    expect(normaliseCertDefinitions([
       { ...config1, domains: expectedDomains1.join(', ') },
       { ...config2, domains: [...expectedDomains2, ' foo.com '] }
     ]))
@@ -107,7 +107,7 @@ test(
   () => {
     const { certName, ...config } = config1
 
-    expect(getDomainsFromConfig([config]))
+    expect(normaliseCertDefinitions([config]))
       .toEqual([
         {
           certName: expectedDomains1[0],

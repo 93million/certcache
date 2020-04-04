@@ -3,7 +3,7 @@
 const syncCerts = require('./syncCerts')
 const getLocalCertificates = require('../getLocalCertificates')
 const httpRedirect = require('../httpRedirect')
-const getDomainsFromConfig = require('./getDomainsFromConfig')
+const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const yaml = require('yaml')
 const path = require('path')
@@ -11,7 +11,7 @@ const getConfig = require('../getConfig')
 
 jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
-jest.mock('./getDomainsFromConfig')
+jest.mock('./normaliseCertDefinitions')
 jest.mock('./obtainCert')
 jest.mock('../getConfig')
 
@@ -65,8 +65,8 @@ beforeEach(async () => {
   mockCertsForRenewal = mockLocalCerts
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
-  delete process.env.CERTCACHE_DOMAINS
-  getDomainsFromConfig.mockClear()
+  delete process.env.CERTCACHE_CERTS
+  normaliseCertDefinitions.mockClear()
   obtainCert.mockClear()
 })
 
@@ -131,22 +131,23 @@ test(
 )
 
 test(
-  'should parse domains passed in environment variable \'CERTCACHE_DOMAINS\'',
+  'should parse domains passed in environment variable \'CERTCACHE_CERTS\'',
   async () => {
-    const mockCertcacheDomains = { test: 'object' }
+    const mockCertcacheCertDefinitions = { test: 'object' }
 
     getConfig.mockReturnValueOnce(Promise.resolve({
       ...config,
       client: {
         ...config.client,
-        domains: mockCertcacheDomains
+        certs: mockCertcacheCertDefinitions
       }
     }))
 
-    process.env.CERTCACHE_DOMAINS = yaml.stringify(mockCertcacheDomains)
+    process.env.CERTCACHE_CERTS = yaml.stringify(mockCertcacheCertDefinitions)
 
     await syncCerts(mockOpts)
 
-    expect(getDomainsFromConfig).toBeCalledWith(mockCertcacheDomains)
+    expect(normaliseCertDefinitions)
+      .toBeCalledWith(mockCertcacheCertDefinitions)
   }
 )

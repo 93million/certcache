@@ -34,7 +34,7 @@ getConfig.mockReturnValue(Promise.resolve({
     port: 4433,
     httpRedirectUrl: 'http://certcache.example.com',
     certDir: 'certs',
-    domains: [
+    certs: [
       { domains: ['test.example.com'], certName: 'filecert1' },
       { domains: ['foo.example.com'], certName: 'filecert2' }
     ],
