@@ -94,14 +94,14 @@ module.exports = async () => {
   const numTotal = localCerts.length + certDefinitionsForRenewal.length
   const numFailed = obtainCertErrors.length
   const msg = [
-    numRequested,
-    'of',
     numTotal,
-    'certs requested.',
-    numFailed,
-    'failed.',
+    'certs:',
+    numRequested,
+    'requested.',
     numRequested - numFailed,
-    'completed.'
+    'transfered.',
+    numFailed,
+    'failed.'
   ]
 
   console.log(msg.join(' '))
