@@ -124,11 +124,11 @@ Currently only HTTP-01 challenge type is supported so wildcards are not yet avai
 
 Start Certcache server.
 
-You need to provide an email address for use with Let's Encrypt. Please change the value of `CERTCACHE_LETSENCRYPT_EMAIL` to the address you use with LetEncrypt
+You need to provide an email address for use with Let's Encrypt. Please change the value of `CERTCACHE_CERTBOT_EMAIL` to the address you use with LetEncrypt
 
 ```
 cd ~/certcache-demo/server
-CERTCACHE_LETSENCRYPT_EMAIL=test@example.com certcache serve
+CERTCACHE_CERTBOT_EMAIL=test@example.com certcache serve
 ```
 
 Request a certificate from Certcache client:
@@ -245,7 +245,7 @@ Certificates in Certcache are stored using the same format as Let's Encrypt cert
 
 4 files exist in each directory:
 
-* `chain.pem`: certificate authority chain 
+* `chain.pem`: certificate authority chain
 * `cert.pem`: x509 certificate
 * `privkey.pem`: private key
 * `fullchain.pem`: certificate + CA chain
