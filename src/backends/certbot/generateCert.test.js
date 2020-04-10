@@ -9,7 +9,7 @@ jest.mock('child_process')
 jest.mock('../../lib/getConfig')
 
 const commonName = 'test.example.com'
-const altNames = ['test.example.com', 'test1.example.com', 'foo.jimmy.bar']
+const altNames = ['test.example.com', 'test1.example.com', 'test.93million.com']
 let certbotConfig
 
 beforeEach(async () => {
@@ -35,8 +35,8 @@ test(
 test(
   'should return path to newly generated certificate',
   async () => {
-    const certPath = await generateCert(commonName, altNames, true)
-    const certName = generateCertName(commonName, altNames, true)
+    const certPath = await generateCert(commonName, altNames, { isTest: true })
+    const certName = generateCertName(commonName, altNames, { isTest: true })
 
     expect(certPath)
       .toBe(`${certbotConfig.certbotConfigDir}/live/${certName}/cert.pem`)
@@ -51,8 +51,8 @@ test(
       callback(new Error('certbot exited with error'), null)
     })
 
-    await expect(generateCert(commonName, altNames, true))
+    await expect(generateCert(commonName, altNames, { isTest: true }))
       .rejects
-      .toThrow()
+      .toThrow('certbot exited with error')
   }
 )

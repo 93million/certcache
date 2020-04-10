@@ -2,6 +2,7 @@ const childProcess = require('child_process')
 const path = require('path')
 const util = require('util')
 const { cahkeys } = require('./args')
+const getConfig = require('../../lib/getConfig')
 
 const execFile = util.promisify(childProcess.execFile)
 
@@ -16,17 +17,26 @@ module.exports = {
       required: true
     }
   },
-  handler: (argv) => {
-    const execScript = path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'client-authenticated-https')
+  handler: async (argv) => {
+    const execScript = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'node_modules',
+      '.bin',
+      'client-authenticated-https'
+    )
+    const { cahKeysDir } = (await getConfig())
 
     execFile(
       execScript,
-      ['create-key', '--server', '--keydir', argv.cahkeys, '--name', argv.name]
+      ['create-key', '--server', '--keydir', cahKeysDir, '--name', argv.name]
     )
       .then(() => {
         execFile(
           execScript,
-          ['create-key', '--keydir', argv.cahkeys, '--name', 'client']
+          ['create-key', '--keydir', cahKeysDir, '--name', 'client']
         )
       })
       .catch((err) => {

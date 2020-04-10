@@ -1,11 +1,4 @@
 {
-  "client": {
-    "host": "localhost",
-    "port": 4433,
-    "certDir": "certs",
-    "syncInterval": 21600,
-    "renewalDays": 30
-  },
   "server": {
     "port": 4433,
     "auth": [
@@ -20,8 +13,17 @@
     ],
     "backends": {
       "certbot": {
-        "email": "tm_certbot@mcelderry.co.uk",
-        "domains": ["~(.*\\.)?.ngrok.io$"]
+        "domains": [
+          {
+            "domain": "~(.*\\.)?.ngrok.io$",
+            "challenges": ["http-01"]
+          },
+          {
+            "domain": "~(.*\\.)?.93million.com$",
+            "challenges": ["dns-01", "http-01"]
+          }
+        ],
+        "email": "test@example.com"
       }
     }
   }

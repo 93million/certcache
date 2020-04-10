@@ -1,4 +1,4 @@
-const reDomain = require('./regexps/reDomain')
+const reDefinition = require('./regexps/reDefinition')
 
 module.exports = (clientCertRestrictions, clientName, domains) => (
   domains.reduce(
@@ -9,7 +9,7 @@ module.exports = (clientCertRestrictions, clientName, domains) => (
           acc &&
           domains.reduce(
             (acc, domain) => {
-              const reDomainMatch = domain.match(reDomain)
+              const reDomainMatch = domain.match(reDefinition)
               const domainMatch = (reDomainMatch !== null)
                 ? new RegExp(reDomainMatch[1]).test(certDomain)
                 : (domain === certDomain)

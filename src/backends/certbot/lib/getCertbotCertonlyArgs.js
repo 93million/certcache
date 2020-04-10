@@ -1,14 +1,10 @@
 module.exports = (
   commonName,
-  certName,
   altNames,
+  certName,
   { isTest },
-  {
-    certbotConfigDir,
-    certbotLogsDir,
-    certbotWorkDir,
-    email
-  }
+  { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+  extraArgs
 ) => {
   if (email === undefined) {
     throw new Error([
@@ -24,7 +20,6 @@ module.exports = (
     'certonly',
     '--non-interactive',
     '--break-my-certs',
-    '--standalone',
     '--agree-tos',
     '--no-eff-email',
     `-d`,
@@ -39,7 +34,8 @@ module.exports = (
     certbotLogsDir,
     `--work-dir`,
     certbotWorkDir,
-    '--force-renewal'
+    '--force-renewal',
+    ...extraArgs
   ]
 
   if (isTest) {

@@ -1,9 +1,12 @@
+const yaml = require('yaml')
+
 const defaults = {
   server: {
     certbotConfigDir: 'backends/certbot/config',
     certbotExec: 'certbot',
     certbotLogsDir: 'backends/certbot/logs',
-    certbotWorkDir: 'backends/certbot/work'
+    certbotWorkDir: 'backends/certbot/work',
+    defaultChallenge: 'http-01'
   },
   client: {
     'test-cert': false
@@ -29,9 +32,19 @@ module.exports = ({ argv, env, file }) => {
         defaults.server.certbotLogsDir,
       certbotWorkDir: file.server.certbotWorkDir ||
         defaults.server.certbotWorkDir,
+      challenges: (
+        env.CERTCACHE_CERTBOT_CHALLENGES &&
+        env.CERTCACHE_CERTBOT_CHALLENGES.split(',')
+      ) ||
+        file.server.challenges ||
+        defaults.server.challenges,
+      defaultChallenge: argv['certbot-default-challenge'] ||
+        env.CERTCACHE_CERTBOT_DEFAULT_CHALLENGE ||
+        file.server.defaultChallenge ||
+        defaults.server.defaultChallenge,
       domains: (
         env.CERTCACHE_CERTBOT_DOMAINS &&
-        env.CERTCACHE_CERTBOT_DOMAINS.split(',')
+        yaml.parse(env.CERTCACHE_CERTBOT_DOMAINS)
       ) ||
         file.server.domains,
       email: argv['certbot-email'] ||

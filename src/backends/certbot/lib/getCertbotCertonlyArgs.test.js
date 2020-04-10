@@ -9,18 +9,20 @@ const email = 'test@example.com'
 const certbotConfigDir = '/test/certbot/config/'
 const certbotLogsDir = '/test/certbot/logs/'
 const certbotWorkDir = '/test/certbot/work/'
+const extraArgs = ['--foo', 'faa']
 
 const certbotArgsArr = getCertbotCertonlyArgs(
   commonName,
-  certName,
   altNames,
+  certName,
   { isTest: true },
   {
     certbotConfigDir,
     certbotLogsDir,
     certbotWorkDir,
     email
-  }
+  },
+  extraArgs
 )
 
 const certbotArgs = certbotArgsArr.join(' ')
@@ -77,15 +79,16 @@ test(
   () => {
     const certbotArgsNoTest = getCertbotCertonlyArgs(
       commonName,
-      certName,
       altNames,
-      false,
+      certName,
+      { isTest: false },
       {
         certbotConfigDir,
         certbotLogsDir,
         certbotWorkDir,
         email
-      }
+      },
+      extraArgs
     ).join(' ')
 
     expect(certbotArgsNoTest).not.toContain('--test-cert')
@@ -98,14 +101,11 @@ test(
     const getCertbotCertonlyArgsWithMissingEmail = () => {
       getCertbotCertonlyArgs(
         commonName,
-        certName,
         altNames,
-        false,
-        {
-          certbotConfigDir,
-          certbotLogsDir,
-          certbotWorkDir
-        }
+        certName,
+        { isTest: false },
+        { certbotConfigDir, certbotLogsDir, certbotWorkDir },
+        extraArgs
       )
     }
 
@@ -118,15 +118,11 @@ test(
   () => {
     const certbotArgs = getCertbotCertonlyArgs(
       commonName,
-      certName,
       [...altNames, commonName],
-      false,
-      {
-        certbotConfigDir,
-        certbotLogsDir,
-        certbotWorkDir,
-        email
-      }
+      certName,
+      { isTest: false },
+      { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+      extraArgs
     )
 
     const domainRepeatCounts = certbotArgs[certbotArgs.indexOf('-d') + 1]
@@ -136,5 +132,21 @@ test(
       ).length)
 
     expect(Math.max(...domainRepeatCounts)).toBe(1)
+  }
+)
+
+test(
+  'should add any extra args supplied',
+  () => {
+    const certbotArgs = getCertbotCertonlyArgs(
+      'foo.93million.com',
+      [],
+      certName,
+      { isTest: false },
+      { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+      extraArgs
+    )
+
+    expect(certbotArgs).toEqual(expect.arrayContaining(extraArgs))
   }
 )

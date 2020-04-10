@@ -13,16 +13,15 @@ const getMetaFromCertDefinition =
   require('../getMetaFromBackendFunction')('getMetaFromCertDefinition')
 
 module.exports = async () => {
-  const config = (await getConfig()).client
+  const config = (await getConfig())
   const {
-    cahkeys,
     certDir,
     certs,
     httpRedirectUrl,
     host,
     port,
     renewalDays
-  } = config
+  } = config.client
   const certcacheCertDir = path.resolve(certDir)
   const localCerts = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
@@ -42,12 +41,14 @@ module.exports = async () => {
   debug('Searching for local certs in', certcacheCertDir)
   const certsToCopyWhenReceived = []
 
-  const certDefinitionsForRenewal = certDefinitionsNotOnFs.map((configDomain) => ({
-    commonName: configDomain.domains[0],
-    altnames: configDomain.domains,
-    meta: getMetaFromCertDefinition(configDomain),
-    certDir: path.resolve(certDir, configDomain.certName)
-  }))
+  const certDefinitionsForRenewal = await Promise.all(
+    certDefinitionsNotOnFs.map(async (configDomain) => ({
+      commonName: configDomain.domains[0],
+      altnames: configDomain.domains,
+      meta: await getMetaFromCertDefinition(configDomain),
+      certDir: path.resolve(certDir, configDomain.certName)
+    }))
+  )
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -55,11 +56,11 @@ module.exports = async () => {
 
   const certsToRequest = [
     ...certDefinitionsForRenewal,
-    ...certsForRenewal.map((cert) => ({
+    ...await Promise.all(certsForRenewal.map(async (cert) => ({
       ...cert,
       certDir: path.dirname(cert.certPath),
-      meta: getMetaFromCert(cert)
-    }))
+      meta: await getMetaFromCert(cert)
+    })))
   ]
 
   const obtainCertErrors = []
@@ -74,7 +75,7 @@ module.exports = async () => {
           altNames,
           meta,
           certDir,
-          { cahKeysDir: cahkeys, days: renewalDays }
+          { cahKeysDir: config.cahKeysDir, days: renewalDays }
         )
       } catch (e) {
         obtainCertErrors.push(e.message)

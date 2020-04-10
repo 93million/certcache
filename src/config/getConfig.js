@@ -39,6 +39,6 @@ module.exports = ({ argv, env, file }) => ({
   },
   cahKeysDir: argv.cahkeys ||
     env.CERTCACHE_CAH_KEYS_DIR ||
-    file.cahkeys ||
-    defaults.cahkeys
+    file.cahKeysDir ||
+    defaults.cahKeysDir
 })

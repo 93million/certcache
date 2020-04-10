@@ -3,6 +3,8 @@ const getCertbotCertonlyArgs = require('./lib/getCertbotCertonlyArgs')
 const debug = require('debug')('certcache:generateCert')
 const execCertbot = require('./lib/execCertbot')
 const getConfig = require('../../lib/getConfig')
+const getChallengeFromDomains = require('./lib/getChallengeFromDomains')
+const FeedbackError = require('../../lib/FeedbackError')
 
 const certsInGeneration = {}
 
@@ -12,14 +14,29 @@ module.exports = async (commonName, altNames, meta) => {
 
   if (certsInGeneration[certName] === undefined) {
     certsInGeneration[certName] = (async () => {
+      const domains = Array.from(new Set([commonName, ...altNames]))
       const certbotConfig = (await getConfig()).server.backends.certbot
+      const challenge = getChallengeFromDomains(
+        certbotConfig.domains,
+        domains,
+        certbotConfig.defaultChallenge
+      )
+
+      if (challenge === undefined) {
+        throw new FeedbackError([
+          'Unable to find common certbot challenge that can generate requested',
+          'comination of domains:',
+          domains.join(', ')
+        ].join(' '))
+      }
 
       const certbotArgs = getCertbotCertonlyArgs(
         commonName,
-        certName,
         altNames,
+        certName,
         meta,
-        certbotConfig
+        certbotConfig,
+        challenge.certonlyArgs
       )
       debug(
         'Generating certificate by calling',

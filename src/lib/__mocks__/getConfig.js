@@ -7,12 +7,19 @@ getConfig.mockReturnValue(Promise.resolve({
   server: {
     backends: {
       certbot: {
-        email: 'test@example.com',
-        domains: ['~.*\\.example.com$', 'test.93million.com'],
         certbotConfigDir: '/path/to/config/dir',
+        certbotExec: 'certbot',
         certbotLogsDir: '/path/to/logs/dir',
         certbotWorkDir: '/path/to/work/dir',
-        certbotExec: 'certbot'
+        defaultChallenge: 'http-01',
+        domains: [
+          {
+            domain: '~.*\\.example.com$',
+            challenges: ['dns-01', 'http-01']
+          },
+          'test.93million.com'
+        ],
+        email: 'test@example.com'
       },
       thirdparty: {
         certDir: '/path/to/cert/dir'

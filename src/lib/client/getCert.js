@@ -30,7 +30,7 @@ module.exports = async (opts) => {
     altNames,
     meta,
     path.resolve(certDir, certName),
-    { cahKeysDir: opts.cahkeys, days: renewalDays }
+    { cahKeysDir: config.cahKeysDir, days: renewalDays }
   )
 
   if (httpRedirectUrl !== undefined) {

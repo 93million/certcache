@@ -8,8 +8,11 @@ module.exports = {
     }
   },
   serve: {
+    'certbot-default-challenge': {
+      description: 'Default challenge to use when obtaining certificates using Certbot'
+    },
     'certbot-email': {
-      description: 'Email to use when obtain certificates using Certbot'
+      description: 'Email to use when obtaining certificates using Certbot'
     }
   }
 }
