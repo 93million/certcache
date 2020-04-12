@@ -6,7 +6,8 @@ const defaults = {
     certbotExec: 'certbot',
     certbotLogsDir: 'backends/certbot/logs',
     certbotWorkDir: 'backends/certbot/work',
-    defaultChallenge: 'http-01'
+    defaultChallenge: 'http-01',
+    domains: []
   },
   client: {
     'test-cert': false
@@ -46,7 +47,8 @@ module.exports = ({ argv, env, file }) => {
         env.CERTCACHE_CERTBOT_DOMAINS &&
         yaml.parse(env.CERTCACHE_CERTBOT_DOMAINS)
       ) ||
-        file.server.domains,
+        file.server.domains ||
+        defaults.server.domains,
       email: argv['certbot-email'] ||
         env.CERTCACHE_CERTBOT_EMAIL ||
         file.server.email
