@@ -5,5 +5,6 @@ module.exports = {
   info: require('./info'),
   ls: require('./ls'),
   serve: require('./serve'),
-  sync: require('./sync')
+  sync: require('./sync'),
+  test: require('./testCmd')
 }
