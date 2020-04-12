@@ -1,16 +1,6 @@
 {
   "server": {
     "port": 4433,
-    "auth": [
-      {
-        "domains": ["~.*\\.mcelderry.com"],
-        "allow": ["dev", "client"]
-      },
-      {
-        "domains": ["test.mcelderry.com"],
-        "deny": ["dev"]
-      }
-    ],
     "backends": {
       "certbot": {
         "domains": [
@@ -22,8 +12,7 @@
             "domain": "~(.*\\.)?.93million.com$",
             "challenges": ["dns-01", "http-01"]
           }
-        ],
-        "email": "test@example.com"
+        ]
       }
     }
   }
