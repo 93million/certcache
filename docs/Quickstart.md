@@ -156,13 +156,13 @@ Certificates authority chains are compiled recursively by searching through PEM 
 
 ### Listing certificates
 
-Certificates in Certcache server or client can be listed using the `list-certs` command.
+Certificates in Certcache server or client can be listed using the `ls` command.
 
 From the server:
 
 ```
 cd ~/certcache-demo/server
-certcache list-certs
+certcache ls
 ```
 
 You will see the server certificate listed in the `Backend: certbot` section showing how Certcache generated the certificate.
@@ -194,7 +194,7 @@ From the client:
 
 ```
 cd ~/certcache-demo/client
-certcache list-certs
+certcache ls
 ```
 
 You will see the server certificate listed in the `Client certs` section showing how Certcache generated the certificate.
@@ -225,7 +225,7 @@ End date:     Mon May 18 2020 15:57:07 GMT+0200 (Central European Summer Time)
 
 If you re-run the `get` command to get the same certificate again, you will notice it runs much faster. This is because the certificate is being served from the cache.
 
-From `~/certcache-demo/client`, try deleting the `certs` directory and now run the `list-certs` command. No certificates should be listed. Now re-run the same `get` command as before, followed by the `list-certs` command. The certifiate should reappear with the same start/end dates.
+From `~/certcache-demo/client`, try deleting the `certs` directory and now run the `ls` command. No certificates should be listed. Now re-run the same `get` command as before, followed by the `ls` command. The certifiate should reappear with the same start/end dates.
 
 As certificates are cached, `certcache` requests are not subject to the same rate limits as `certbot` using Let's Encrypt.
 

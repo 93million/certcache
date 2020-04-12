@@ -1,7 +1,7 @@
 const listCerts = require('../../lib/listCerts')
 
 module.exports = {
-  cmd: 'list-certs',
+  cmd: 'ls',
   desc: 'List certificates',
   builder: {
     backends: {
