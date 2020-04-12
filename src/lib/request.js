@@ -1,17 +1,12 @@
 const clientAuthenticatedHttps = require('client-authenticated-https')
-const debug = require('debug')('certcache:requestCert')
+const debug = require('debug')('certcache:request')
 
 module.exports = (
   { host, port, cahKeysDir },
-  { domains, meta, notAfter, days } = {}
+  action,
+  payload = {}
 ) => {
-  const postData = JSON.stringify({
-    action: 'getCert',
-    days,
-    domains,
-    meta,
-    notAfter
-  })
+  const postData = JSON.stringify({ action, ...payload })
   const options = {
     cahKeysDir,
     headers: { 'Content-Length': Buffer.from(postData).length },
@@ -30,9 +25,9 @@ module.exports = (
         res.on('end', () => {
           const res = response.join('')
 
-          debug('requestCert() response length', res.length)
+          debug('request() response length', res.length)
 
-          resolve(res)
+          resolve(JSON.parse(res))
         })
       })
       .then((req) => {
@@ -40,8 +35,8 @@ module.exports = (
           reject(e)
         })
 
-        debug('requestCert() request', options)
-        debug('requestCert() posting', postData)
+        debug('request() request', options)
+        debug('request() posting', postData)
         req.write(postData)
         req.end()
       })

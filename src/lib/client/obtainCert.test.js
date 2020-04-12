@@ -1,10 +1,10 @@
 /* global jest beforeEach test expect */
 
 const obtainCert = require('./obtainCert')
-const requestCert = require('../requestCert')
+const request = require('../request')
 const writeBundle = require('../writeBundle')
 
-jest.mock('../requestCert')
+jest.mock('../request')
 jest.mock('../writeBundle')
 
 console.error = jest.fn()
@@ -12,8 +12,8 @@ console.log = jest.fn()
 
 let mockResponse
 
-requestCert.mockImplementation(() => {
-  return Promise.resolve(JSON.stringify(mockResponse))
+request.mockImplementation(() => {
+  return Promise.resolve(mockResponse)
 })
 
 const mockHost = 'certcache.example.com'
@@ -27,7 +27,7 @@ const mockCahKeysDir = '/test/path/cahkeys'
 beforeEach(() => {
   console.error.mockClear()
   console.log.mockClear()
-  requestCert.mockClear()
+  request.mockClear()
   writeBundle.mockClear()
 
   mockResponse = { success: true, data: { bundle: 'foobar54321' } }
@@ -46,8 +46,9 @@ test(
       { cahKeysDir: mockCahKeysDir }
     )
 
-    expect(requestCert).toBeCalledWith(
+    expect(request).toBeCalledWith(
       { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      expect.any(String),
       { domains: [mockCommonName, ...mockAltNames], meta: mockMeta }
     )
   }

@@ -1,14 +1,15 @@
 /* global jest test expect beforeEach */
 
-const requestCert = require('./requestCert')
+const request = require('./request')
 const clientAuthenticatedHttps = require('client-authenticated-https')
 const { Readable, Writable } = require('stream')
 
 const host = 'certcache.example.com'
 const port = 12345
+const action = 'doSomething'
 const domains = ['secure.example.com', 'secret.example.com']
 const meta = { isTest: true }
-const mockResponse = 'test certcache response data'
+const mockResponse = { data: 'test certcache response data' }
 let requestData
 const mockErrorMessage = '__test error message__'
 
@@ -31,7 +32,7 @@ const setUpRequestMockImplementation = (shouldThrow) => {
         requestStream.emit('error', new Error(mockErrorMessage))
       } else {
         requestData = requestDataArr.join('')
-        responseStream.push(mockResponse)
+        responseStream.push(JSON.stringify(mockResponse))
         responseStream.push(null)
       }
     })
@@ -49,19 +50,19 @@ beforeEach(() => {
 test(
   'should send a request for the certificate to the certcache server',
   async () => {
-    await requestCert({ host, port }, { domains, meta })
+    await request({ host, port }, action, { domains, meta })
 
     expect(JSON.parse(requestData))
-      .toEqual({ action: 'getCert', domains, meta })
+      .toEqual({ action, domains, meta })
   }
 )
 
 test(
   'should return the data returned by the certcache server in a promise',
   async () => {
-    const response = await requestCert({ host, port }, { domains, meta })
+    const response = await request({ host, port }, action, { domains, meta })
 
-    await expect(response).toBe(mockResponse)
+    await expect(response).toEqual(mockResponse)
   }
 )
 
@@ -70,7 +71,7 @@ test(
   async () => {
     setUpRequestMockImplementation(true)
 
-    await expect(requestCert({ host, port }, { domains, meta }))
+    await expect(request({ host, port }, { domains, meta }))
       .rejects
       .toThrow()
   }

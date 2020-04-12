@@ -1,4 +1,4 @@
-const requestCert = require('../requestCert')
+const request = require('../request')
 const writeBundle = require('../writeBundle')
 const debug = require('debug')('certcache:obtainCert')
 
@@ -19,23 +19,23 @@ module.exports = async (
     `meta=${JSON.stringify(meta)}`
   ].join(' '))
 
-  const response = await requestCert(
+  const response = await request(
     { cahKeysDir, host, port },
+    'getCert',
     { days, domains, meta }
   )
-  const responseObj = JSON.parse(response)
 
-  if (responseObj.success === true) {
-    await writeBundle(certDirPath, responseObj.data.bundle)
+  if (response.success === true) {
+    await writeBundle(certDirPath, response.data.bundle)
   } else {
     let message = `Error renewing certificate ${certDirPath}`
 
     message += ` (${domains.join(',')})`
 
-    debug(`Error obtaining bundle`, responseObj)
+    debug(`Error obtaining bundle`, response)
 
-    if (responseObj.error !== undefined) {
-      message += `. Message from server: '${responseObj.error}'`
+    if (response.error !== undefined) {
+      message += `. Message from server: '${response.error}'`
     }
 
     throw new Error(message)
