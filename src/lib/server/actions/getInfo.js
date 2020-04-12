@@ -1,11 +1,11 @@
 const packageJson = require('../../../../package.json')
-const getBackends = require('../../getBackends')
+const getExtensions = require('../../getExtensions')
 
 module.exports = async () => {
-  const backends = await getBackends()
+  const extensions = await getExtensions()
 
   return {
-    backends: Object.values(backends).map(({ id }) => id),
+    extensions: Object.values(extensions).map(({ id }) => id),
     version: packageJson.version
   }
 }

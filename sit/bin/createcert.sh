@@ -3,7 +3,7 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_DIR="$DIR/../test/server/backends/thirdparty"
+OUTPUT_DIR="$DIR/../test/server/extensions/thirdparty"
 
 cleanup () {
   rm -f "$OUTPUT_DIR/$COMMON_NAME/csr.pem"

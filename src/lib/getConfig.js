@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 const { promisify } = require('util')
 const getConfig = require('../config/getConfig')
-const getBackends = require('./getBackends')
+const getExtensions = require('./getExtensions')
 const fileExists = require('./helpers/fileExists')
 
 const readFile = promisify(fs.readFile)
@@ -13,7 +13,7 @@ const yargs = require('yargs')
 let config
 
 const load = async () => {
-  const baseStructure = { client: { backends: {} }, server: { backends: {} } }
+  const baseStructure = { client: { extensions: {} }, server: { extensions: {} } }
   const localFileConfig = await fileExists(localConfigPath)
     ? JSON.parse(await readFile(localConfigPath))
     : undefined
@@ -24,20 +24,20 @@ const load = async () => {
       server: { ...baseStructure.server, ...localFileConfig.server }
     }
     : baseStructure
-  const backends = await getBackends()
+  const extensions = await getExtensions()
   const argv = yargs.argv
   const env = process.env
   const baseConfig = getConfig({ argv, env, file: localConfig })
 
-  const backendConfigs = Object.keys(backends).reduce(
+  const extensionConfigs = Object.keys(extensions).reduce(
     (acc, key) => {
       const file = {
-        client: localConfig.client.backends[key] || {},
-        server: localConfig.server.backends[key] || {}
+        client: localConfig.client.extensions[key] || {},
+        server: localConfig.server.extensions[key] || {}
       }
 
-      if (backends[key].getConfig !== undefined) {
-        const { client, server } = backends[key].getConfig({ argv, env, file })
+      if (extensions[key].getConfig !== undefined) {
+        const { client, server } = extensions[key].getConfig({ argv, env, file })
 
         acc.client[key] = client
         acc.server[key] = server
@@ -50,8 +50,8 @@ const load = async () => {
 
   return {
     ...baseConfig,
-    client: { ...baseConfig.client, backends: backendConfigs.client },
-    server: { ...baseConfig.server, backends: backendConfigs.server }
+    client: { ...baseConfig.client, extensions: extensionConfigs.client },
+    server: { ...baseConfig.server, extensions: extensionConfigs.server }
   }
 }
 

@@ -1,12 +1,12 @@
-const getBackends = require('./getBackends')
+const getExtensions = require('./getExtensions')
 
 module.exports = async (domains) => {
-  return Object.values(await getBackends()).reduce(
-    async (acc, backend) => (
-      backend.canGenerateDomains !== undefined &&
-      await backend.canGenerateDomains(domains)
+  return Object.values(await getExtensions()).reduce(
+    async (acc, extension) => (
+      extension.canGenerateDomains !== undefined &&
+      await extension.canGenerateDomains(domains)
     )
-      ? [...(await acc), backend]
+      ? [...(await acc), extension]
       : acc,
     Promise.resolve([])
   )

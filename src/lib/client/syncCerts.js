@@ -8,9 +8,9 @@ const debug = require('debug')('certcache:syncCerts')
 const copyCert = require('../helpers/copyCert')
 const fileExists = require('../helpers/fileExists')
 const getMetaFromCert =
-  require('../getMetaFromBackendFunction')('getMetaFromCert')
+  require('../getMetaFromExtensionFunction')('getMetaFromCert')
 const getMetaFromCertDefinition =
-  require('../getMetaFromBackendFunction')('getMetaFromCertDefinition')
+  require('../getMetaFromExtensionFunction')('getMetaFromCertDefinition')
 
 module.exports = async () => {
   const config = (await getConfig())

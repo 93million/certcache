@@ -1,5 +1,5 @@
 const path = require('path')
-const getBackends = require('./getBackends')
+const getExtensions = require('./getExtensions')
 const getLocalCertificates = require('./getLocalCertificates')
 const getConfig = require('./getConfig')
 
@@ -21,26 +21,27 @@ const outputCertInfo = ({
 }
 
 module.exports = async (opts) => {
-  const backends = await getBackends()
+  const extensions = await getExtensions()
   const config = await getConfig()
-  const locators = Object.keys(backends)
-  const filteredLocators = (opts.backends === undefined)
+  const locators = Object.keys(extensions)
+  const filteredLocators = (opts.extensions === undefined)
     ? locators
-    : locators.filter((backend) => opts.backends.split(',').includes(backend))
+    : locators.filter((extension) => opts.extensions.split(',').includes(extension))
   const localCerts = await Promise.all(
-    filteredLocators.map((locator) => backends[locator].getLocalCerts())
+    filteredLocators.map((locator) => extensions[locator].getLocalCerts())
   )
   const clientCerts = await getLocalCertificates(path.resolve(config.client.certDir))
+  const div = '======================'
 
   filteredLocators.forEach((locator, i) => {
-    console.log(`===================\nBackend: ${locator}\n===================`)
+    console.log(`${div}\nExtension: ${locator}\n${div}`)
     localCerts[i].forEach((cert) => {
       outputCertInfo(cert)
     })
     console.log('\n')
   })
 
-  console.log(`===================\nClient certs\n===================`)
+  console.log(`${div}\nClient certs\n${div}`)
   clientCerts.forEach((cert) => {
     outputCertInfo(cert)
   })

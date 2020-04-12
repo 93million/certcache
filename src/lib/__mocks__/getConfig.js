@@ -5,7 +5,7 @@ const getConfig = jest.fn()
 getConfig.mockReturnValue(Promise.resolve({
   cahKeysDir: '/path/to/cahkeys',
   server: {
-    backends: {
+    extensions: {
       certbot: {
         certbotConfigDir: '/path/to/config/dir',
         certbotExec: 'certbot',
@@ -45,7 +45,7 @@ getConfig.mockReturnValue(Promise.resolve({
       { domains: ['test.example.com'], certName: 'filecert1' },
       { domains: ['foo.example.com'], certName: 'filecert2' }
     ],
-    backends: {
+    extensions: {
       certbot: {},
       thirdparty: {}
     }

@@ -1,5 +1,5 @@
 const getConfig = require('../getConfig')
-const getBackends = require('../getBackends')
+const getExtensions = require('../getExtensions')
 const packageJson = require('../../../package.json')
 const request = require('../request')
 
@@ -20,15 +20,15 @@ const getSection = ([title, fields], maxTitleLength) => {
 
 const getInfo = async () => {
   const config = await getConfig()
-  const backends = await getBackends()
+  const extensions = await getExtensions()
   let fields = []
   const sections = []
 
   sections.push(['Certcache client', fields])
   fields.push(['Version', packageJson.version])
   fields.push([
-    'Backends',
-    Object.values(backends).map(({ id }) => id).join(', ')
+    'Extensions',
+    Object.values(extensions).map(({ id }) => id).join(', ')
   ])
   fields = []
   sections.push(['Certcache server', fields])
@@ -44,7 +44,7 @@ const getInfo = async () => {
       fields.push(['Error', error || 'received unsucessful response'])
     } else {
       fields.push(['Version', data.version])
-      fields.push(['Backends', data.backends.join(', ')])
+      fields.push(['Extensions', data.extensions.join(', ')])
     }
   } catch (e) {
     fields.push(['Error connecting', e.message])

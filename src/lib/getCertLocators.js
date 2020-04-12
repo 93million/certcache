@@ -1,5 +1,5 @@
-const getBackends = require('./getBackends')
+const getExtensions = require('./getExtensions')
 
 module.exports = async (domains, letsencryptDomains) => {
-  return Object.values(await getBackends())
+  return Object.values(await getExtensions())
 }

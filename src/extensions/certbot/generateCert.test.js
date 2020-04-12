@@ -17,7 +17,7 @@ beforeEach(async () => {
   childProcess.execFile.mockImplementation((exec, args, callback) => {
     callback(null, true)
   })
-  certbotConfig = (await getConfig()).server.backends.certbot
+  certbotConfig = (await getConfig()).server.extensions.certbot
 })
 
 test(

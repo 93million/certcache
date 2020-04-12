@@ -1,6 +1,6 @@
 const defaults = {
   server: {
-    certDir: 'backends/thirdparty'
+    certDir: 'extensions/thirdparty'
   }
 }
 

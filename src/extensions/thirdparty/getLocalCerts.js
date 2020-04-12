@@ -10,7 +10,7 @@ const getLocalCerts = async () => {
     handlers = require('.')
   }
 
-  const config = (await getConfig()).server.backends.thirdparty
+  const config = (await getConfig()).server.extensions.thirdparty
 
   if (await fileExists(config.certDir) === false) {
     return []

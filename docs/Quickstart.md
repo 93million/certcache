@@ -150,9 +150,9 @@ In this demo, both the server and the client are accessible on the same domain. 
 
 ### Using certificates from third party providers
 
-Third party certificates and keys can be placed in the directory `backends/thirdparty` in the server. Certificates and keys should be in PEM format. Certificates should have one of the the file extensions `.pem`, `.cer` or `.crt`, keys should use `.pem` or `.key`.
+Third party certificates and keys can be placed in the directory `extensions/thirdparty` in the server. Certificates and keys should be in PEM format. Certificates should have one of the the file extensions `.pem`, `.cer` or `.crt`, keys should use `.pem` or `.key`.
 
-Certificates authority chains are compiled recursively by searching through PEM files stores inside `backends/thirdparty`.
+Certificates authority chains are compiled recursively by searching through PEM files stores inside `extensions/thirdparty`.
 
 ### Listing certificates
 
@@ -165,13 +165,13 @@ cd ~/certcache-demo/server
 certcache ls
 ```
 
-You will see the server certificate listed in the `Backend: certbot` section showing how Certcache generated the certificate.
+You will see the server certificate listed in the `Extension: certbot` section showing how Certcache generated the certificate.
 
 ```
-===================
-Backend: certbot
-===================
-Path:         /Users/pommy/certcache-demo/server/backends/certbot/config/live/9972fc1ca6f8c7b3bab0f6b53b2ba052/cert.pem
+======================
+Extension: certbot
+======================
+Path:         /Users/pommy/certcache-demo/server/extensions/certbot/config/live/9972fc1ca6f8c7b3bab0f6b53b2ba052/cert.pem
 Common name:  59fdaa31.ngrok.io
 Alt names:    59fdaa31.ngrok.io
 Issuer:       Let's Encrypt Authority X3
@@ -180,14 +180,14 @@ End date:     Mon May 18 2020 15:57:07 GMT+0200 (Central European Summer Time)
 
 
 
-===================
-Backend: thirdparty
-===================
+======================
+Extension: thirdparty
+======================
 
 
-===================
+======================
 Client certs
-===================
+======================
 ```
 
 From the client:
@@ -200,19 +200,19 @@ certcache ls
 You will see the server certificate listed in the `Client certs` section showing how Certcache generated the certificate.
 
 ```
-===================
-Backend: certbot
-===================
+======================
+Extension: certbot
+======================
 
 
-===================
-Backend: thirdparty
-===================
+======================
+Extension: thirdparty
+======================
 
 
-===================
+======================
 Client certs
-===================
+======================
 Path:         /Users/pommy/certcache-demo/client/certs/example1234.ngrok.io/cert.pem
 Common name:  example1234.ngrok.io
 Alt names:    example1234.ngrok.io

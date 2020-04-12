@@ -2,7 +2,7 @@
 
 const yargs = require('yargs')
 const commands = require('./commands')
-const getBackends = require('../lib/getBackends')
+const getExtensions = require('../lib/getExtensions')
 
 const addCommandGroup = (command, group) => {
   return Object.keys(command).reduce(
@@ -17,7 +17,7 @@ const addCommandGroup = (command, group) => {
 }
 
 const handleExec = async () => {
-  const backends = await getBackends()
+  const extensions = await getExtensions()
 
   // eslint-disable-next-line
   Object
@@ -27,13 +27,13 @@ const handleExec = async () => {
         const { cmd, desc, handler } = commands[key]
         let builder = commands[key].builder
 
-        Object.keys(backends).forEach((backend) => {
-          const { commandArgs = {} } = backends[backend]
+        Object.keys(extensions).forEach((extension) => {
+          const { commandArgs = {} } = extensions[extension]
 
           if (commandArgs[key] !== undefined) {
             const extendedArgs = addCommandGroup(
               commandArgs[key],
-              `Backend: ${backend}`
+              `Extension: ${extension}`
             )
 
             builder = { ...extendedArgs, ...builder }

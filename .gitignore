@@ -2,9 +2,9 @@
 /.vscode
 /cahkeys
 /certs
-/backends
+/extensions
 /coverage
 /node_modules
 /sit/coverage
-/sit/skel/server/backends/thirdparty/
+/sit/skel/server/extensions/thirdparty/
 /sit/test

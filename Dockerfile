@@ -10,7 +10,7 @@ RUN apk update && \
   npm install -g /certcachesrc/
 
 VOLUME /certcache/cahkeys/
-VOLUME /certcache/backends/
+VOLUME /certcache/extensions/
 VOLUME /certcache/certs/
 
 EXPOSE 53

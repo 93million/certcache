@@ -3,7 +3,7 @@ const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
 const getMetaFromConfig =
-  require('../getMetaFromBackendFunction')('getMetaFromConfig')
+  require('../getMetaFromExtensionFunction')('getMetaFromConfig')
 
 module.exports = async (opts) => {
   const config = (await getConfig())
