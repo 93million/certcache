@@ -1,3 +1,4 @@
 module.exports = {
-  getCert: require('./getCert')
+  getCert: require('./getCert'),
+  getInfo: require('./getInfo')
 }
