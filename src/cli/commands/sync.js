@@ -1,6 +1,5 @@
-const getConfig = require('../../lib/getConfig')
 const defaultConfig = require('../../config/defaults')
-const syncCerts = require('../../lib/client/syncCerts')
+const syncPeriodically = require('../../lib/client/syncPeriodically')
 const { cahkeys, days, host, httpRedirectUrl, port } = require('./args')
 
 module.exports = {
@@ -10,7 +9,7 @@ module.exports = {
     cahkeys,
     days,
     forever: {
-      description: 'Continue to poll for new certificates from the Certcache server'
+      description: 'Sync certificates continuously with Certcache server'
     },
     host,
     'http-redirect-url': httpRedirectUrl,
@@ -21,20 +20,6 @@ module.exports = {
     }
   },
   handler: async (argv) => {
-    const config = (await getConfig()).client
-    const syncPeriodically = () => {
-      syncCerts(argv).catch((e) => {
-        console.error(e)
-
-        if (argv.forever !== true) {
-          process.exit(1)
-        }
-      })
-      if (argv.forever === true) {
-        setTimeout(syncPeriodically, 1000 * config.syncInterval)
-      }
-    }
-
-    syncPeriodically()
+    await syncPeriodically(argv, argv.forever)
   }
 }
