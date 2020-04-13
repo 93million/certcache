@@ -41,10 +41,10 @@ fileExists.mockImplementation((path) => filePaths.includes(path))
 const expectedHandler = {
   canGenerateDomains: expect.any(Function),
   commandArgs: expect.any(Object),
+  config: expect.any(Function),
   filterCert: expect.any(Function),
   generateCert: expect.any(Function),
   getBundle: expect.any(Function),
-  getConfig: expect.any(Function),
   getLocalCerts: expect.any(Function),
   getMetaFromCert: expect.any(Function),
   getMetaFromCertDefinition: expect.any(Function),

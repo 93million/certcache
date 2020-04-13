@@ -1,5 +1,5 @@
 module.exports = {
+  config: require('./config'),
   getBundle: require('./getBundle'),
-  getConfig: require('./getConfig'),
   getLocalCerts: require('./getLocalCerts')
 }

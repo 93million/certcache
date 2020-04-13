@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs')
 const { promisify } = require('util')
-const getConfig = require('../config/getConfig')
+const config = require('../config/config')
 const getExtensions = require('./getExtensions')
 const fileExists = require('./helpers/fileExists')
 
@@ -10,7 +10,7 @@ const readFile = promisify(fs.readFile)
 const localConfigPath = path.resolve(process.cwd(), 'config.json')
 const yargs = require('yargs')
 
-let config
+let cachedConfig
 
 const load = async () => {
   const baseStructure = { client: { extensions: {} }, server: { extensions: {} } }
@@ -27,7 +27,7 @@ const load = async () => {
   const extensions = await getExtensions()
   const argv = yargs.argv
   const env = process.env
-  const baseConfig = getConfig({ argv, env, file: localConfig })
+  const baseConfig = config({ argv, env, file: localConfig })
 
   const extensionConfigs = Object.keys(extensions).reduce(
     (acc, key) => {
@@ -36,8 +36,8 @@ const load = async () => {
         server: localConfig.server.extensions[key] || {}
       }
 
-      if (extensions[key].getConfig !== undefined) {
-        const { client, server } = extensions[key].getConfig({ argv, env, file })
+      if (extensions[key].config !== undefined) {
+        const { client, server } = extensions[key].config({ argv, env, file })
 
         acc.client[key] = client
         acc.server[key] = server
@@ -56,9 +56,9 @@ const load = async () => {
 }
 
 module.exports = async () => {
-  if (config === undefined) {
-    config = await load()
+  if (cachedConfig === undefined) {
+    cachedConfig = await load()
   }
 
-  return config
+  return cachedConfig
 }
