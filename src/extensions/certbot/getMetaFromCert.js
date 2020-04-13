@@ -1,3 +1,3 @@
-module.exports = ({ isserCommonName }) => {
-  return { isTest: isserCommonName.startWith('Fake LE ') }
+module.exports = ({ issuerCommonName }) => {
+  return { isTest: issuerCommonName.startsWith('Fake LE ') }
 }
