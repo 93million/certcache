@@ -7,6 +7,6 @@ module.exports = {
   getBundle: require('./getBundle'),
   getLocalCerts: require('./getLocalCerts'),
   getMetaFromCert: require('./getMetaFromCert'),
-  getMetaFromConfig: require('./getMetaFromConfig'),
-  getMetaFromCertDefinition: require('./getMetaFromCertDefinition')
+  getMetaFromCertDefinition: require('./getMetaFromCertDefinition'),
+  getMetaFromConfig: require('./getMetaFromConfig')
 }

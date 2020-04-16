@@ -7,36 +7,38 @@ const fileExists = require('./helpers/fileExists')
 
 const readFile = promisify(fs.readFile)
 
-const localConfigPath = path.resolve(process.cwd(), 'config.json')
+const fileConfigPath = path.resolve(process.cwd(), 'config.json')
 const yargs = require('yargs')
 
 let cachedConfig
 
 const load = async () => {
-  const baseStructure = { client: { extensions: {} }, server: { extensions: {} } }
-  const localFileConfig = await fileExists(localConfigPath)
-    ? JSON.parse(await readFile(localConfigPath))
+  const fileConfigBase = {
+    client: { extensions: {} },
+    server: { extensions: {} }
+  }
+  const localFileConfig = await fileExists(fileConfigPath)
+    ? JSON.parse(await readFile(fileConfigPath))
     : undefined
-  const localConfig = (localFileConfig !== undefined)
+  const fileConfig = (localFileConfig !== undefined)
     ? {
-      ...baseStructure,
-      client: { ...baseStructure.client, ...localFileConfig.client },
-      server: { ...baseStructure.server, ...localFileConfig.server }
+      ...fileConfigBase,
+      client: { ...fileConfigBase.client, ...localFileConfig.client },
+      server: { ...fileConfigBase.server, ...localFileConfig.server }
     }
-    : baseStructure
+    : fileConfigBase
   const extensions = await getExtensions()
   const argv = yargs.argv
   const env = process.env
-  const baseConfig = config({ argv, env, file: localConfig })
+  const mainConfig = config({ argv, env, file: fileConfig })
 
   const extensionConfigs = Object.keys(extensions).reduce(
     (acc, key) => {
-      const file = {
-        client: localConfig.client.extensions[key] || {},
-        server: localConfig.server.extensions[key] || {}
-      }
-
       if (extensions[key].config !== undefined) {
+        const file = {
+          client: fileConfig.client.extensions[key] || {},
+          server: fileConfig.server.extensions[key] || {}
+        }
         const { client, server } = extensions[key].config({ argv, env, file })
 
         acc.client[key] = client
@@ -49,9 +51,9 @@ const load = async () => {
   )
 
   return {
-    ...baseConfig,
-    client: { ...baseConfig.client, extensions: extensionConfigs.client },
-    server: { ...baseConfig.server, extensions: extensionConfigs.server }
+    ...mainConfig,
+    client: { ...mainConfig.client, extensions: extensionConfigs.client },
+    server: { ...mainConfig.server, extensions: extensionConfigs.server }
   }
 }
 

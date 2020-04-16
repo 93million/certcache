@@ -2,22 +2,57 @@
 
 const readFirstLine = require('./readFirstLine')
 const fs = require('fs')
-const { Readable } = require('stream')
+const EventEmitter = require('events')
 
 jest.mock('fs')
 
-const mockFirstLine = 'line 1'
-const mockSecondLine = 'line 2'
-const mockFileContents = [mockFirstLine, mockSecondLine].join('\n')
+const mockDataChunks = ['chunk 1', 'chun\nk 2', 'chunk 3', 'ch\nunk 4']
+const mockFirstLine = 'chunk 1chun'
 
 let readable
 
+class MockReadStream extends EventEmitter {
+  constructor (mockData, shouldThrow = false) {
+    super()
+    this.closed = false
+    this.mockData = mockData
+    this.shouldThrow = shouldThrow
+  }
+
+  close () {
+    this.closed = true
+    this.emit('close')
+  }
+
+  startData () {
+    let chunkNum = 0
+    const sendNextData = () => {
+      setImmediate(() => {
+        if (this.shouldThrow) {
+          this.emit('error', new Error('Unable to do my job'))
+        }
+        if (this.closed === false) {
+          this.emit('data', mockDataChunks[chunkNum++])
+
+          if (chunkNum === this.mockData.length) {
+            this.emit('close')
+          }
+
+          sendNextData()
+        }
+      })
+    }
+
+    sendNextData()
+  }
+}
+
 beforeEach(() => {
-  readable = new Readable({ read: () => {} })
-  readable.push(mockFileContents)
-  readable.close = () => { readable.emit('close') }
+  readable = new MockReadStream(mockDataChunks)
 
   fs.createReadStream.mockImplementation(() => {
+    readable.startData()
+
     return readable
   })
 })
@@ -36,11 +71,7 @@ test(
   async () => {
     const err = new Error('Unable to do my job')
 
-    readable = new Readable({
-      read: () => {
-        readable.emit('error', err)
-      }
-    })
+    readable = new MockReadStream(mockDataChunks, true)
 
     await expect(readFirstLine('/test/path/to.file'))
       .rejects

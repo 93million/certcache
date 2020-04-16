@@ -15,7 +15,6 @@ jest.mock('./normaliseCertDefinitions')
 jest.mock('./obtainCert')
 jest.mock('../getConfig')
 
-let mockOpts
 let config
 const certcacheCertDir = '/test/certcache/certs'
 
@@ -49,11 +48,6 @@ getLocalCertificates.mockReturnValue(mockLocalCerts)
 beforeEach(async () => {
   config = await getConfig()
   console.log.mockClear()
-  mockOpts = {
-    host: 'example.com',
-    port: 12345,
-    cahkeys: '/path/to/cahkeys'
-  }
 
   httpRedirect.start.mockClear()
   httpRedirect.stop.mockClear()
@@ -73,17 +67,17 @@ beforeEach(async () => {
 test(
   'should request certs using args from command-line when provided',
   async () => {
-    await syncCerts(mockOpts)
+    await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(obtainCert).toBeCalledWith(
-        mockOpts.host,
-        mockOpts.port,
+        config.host,
+        config.port,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
         { isTest: mockLocalCert.issuerCommonName.startsWith('Fake') },
         path.dirname(mockLocalCert.certPath),
-        { cahKeysDir: mockOpts.cahkeys }
+        { cahKeysDir: config.cahkeys }
       )
     })
   }
@@ -92,9 +86,7 @@ test(
 test(
   'should request certs using config when no command-line args provided',
   async () => {
-    mockOpts = { }
-
-    await syncCerts(mockOpts)
+    await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
       expect(obtainCert).toBeCalledWith(
@@ -104,7 +96,7 @@ test(
         mockLocalCert.altNames,
         mockLocalCert.issuerCommonName.startsWith('Fake'),
         path.dirname(mockLocalCert.certPath),
-        { cahKeysDir: mockOpts.cahkeys }
+        { cahKeysDir: config.cahkeys }
       )
     })
   }
@@ -123,7 +115,7 @@ test(
       }
     }))
 
-    await syncCerts(mockOpts)
+    await syncCerts()
 
     expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalledTimes(1)
@@ -145,9 +137,29 @@ test(
 
     process.env.CERTCACHE_CERTS = yaml.stringify(mockCertcacheCertDefinitions)
 
-    await syncCerts(mockOpts)
+    await syncCerts()
 
     expect(normaliseCertDefinitions)
       .toBeCalledWith(mockCertcacheCertDefinitions)
+  }
+)
+
+test(
+  'should throw an error comprising all errors encountered calling obtainCert()',
+  async () => {
+    const err1 = new Error('failed 1')
+    const err2 = new Error('failed 2')
+
+    obtainCert.mockImplementationOnce(() => {
+      throw err1
+    })
+
+    obtainCert.mockImplementationOnce(() => {
+      throw err2
+    })
+
+    await expect(syncCerts())
+      .rejects
+      .toThrow([err1.message, err2.message].join('\n'))
   }
 )

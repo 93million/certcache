@@ -25,7 +25,7 @@ getConfig.mockReturnValue(Promise.resolve({
         certDir: '/path/to/cert/dir'
       }
     },
-    'client-access': [
+    clientRestrictions: [
       {
         domains: ['/.*\\.example.com/'],
         allow: ['dev', 'client']
@@ -39,7 +39,6 @@ getConfig.mockReturnValue(Promise.resolve({
   client: {
     host: 'localhost',
     port: 4433,
-    httpRedirectUrl: 'http://certcache.example.com',
     certDir: 'certs',
     certs: [
       { domains: ['test.example.com'], certName: 'filecert1' },
@@ -48,7 +47,9 @@ getConfig.mockReturnValue(Promise.resolve({
     extensions: {
       certbot: {},
       thirdparty: {}
-    }
+    },
+    renewalDays: 30,
+    syncInterval: 60 * 60 * 6
   }
 }))
 

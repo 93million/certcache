@@ -8,6 +8,8 @@ module.exports = (domains, { defaultChallenge } = {}) => {
       domain = { domain }
     }
 
+    domain = { ...domain }
+
     if (domain.challenges === undefined && defaultChallenge !== undefined) {
       domain.challenges = [defaultChallenge]
     }

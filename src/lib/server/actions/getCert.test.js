@@ -7,52 +7,7 @@ const clientPermittedAccessToCerts =
 const getCertLocators = require('../../getCertLocators')
 const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
 const getConfig = require('../../getConfig')
-
-const domains = ['example.com', 'www.example.com', 'test.example.com']
-const commonName = domains[0]
-const altNames = [domains[0], ...domains.slice(1)]
-const meta = { isTest: false }
-const payload = { domains, meta }
-const getLocalCerts = jest.fn()
-const findCert = jest.fn()
-const date90DaysAway = new Date()
-date90DaysAway.setDate(date90DaysAway.getDate() + 90)
-
-const date1DayAway = new Date()
-date1DayAway.setDate(date1DayAway.getDate() + 1)
-const mockArchive = '__mockArchive__'
-
-let mockCert
-const getPeerCertificate = jest.fn()
-getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
-const req = {
-  connection: { getPeerCertificate }
-}
-const mockCertLocators = [{ getLocalCerts }]
-
-beforeEach(async () => {
-  mockCert = {
-    getArchive: () => Promise.resolve(mockArchive),
-    notAfter: date90DaysAway,
-    altNames: ['example.com', 'www.example.com', 'test.example.com'],
-    commonName: 'example.com',
-    issuerCommonName: 'Super good issuer'
-  }
-  generateFirstCertInSequence.mockReset()
-  generateFirstCertInSequence.mockImplementation(() => {
-    return Promise.resolve(mockCert)
-  })
-  clientPermittedAccessToCerts.mockClear()
-  clientPermittedAccessToCerts.mockReturnValue(true)
-  getCertLocators.mockReset()
-  getCertLocators.mockReturnValue(Promise.resolve(mockCertLocators))
-  getCertGeneratorsForDomains.mockReset()
-  getCertGeneratorsForDomains.mockReturnValue(Promise.resolve([]))
-  getLocalCerts.mockReset()
-  getLocalCerts.mockReturnValue(Promise.resolve([mockCert]))
-})
-
-getLocalCerts.mockReturnValue(Promise.resolve({ findCert }))
+const FeedbackError = require('../../FeedbackError')
 
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
@@ -61,43 +16,67 @@ jest.mock('../../getCertLocators')
 jest.mock('../../getCertGeneratorsForDomains')
 jest.mock('../../getConfig')
 
-test.skip(
-  'should load cert generators in order defined in config',
-  async () => {
-    await getCert(payload, { req })
-  }
-)
+const domains = ['example.com', 'www.example.com', 'test.example.com']
+const commonName = domains[0]
+const altNames = [domains[0], ...domains.slice(1)]
+const meta = { testExtension1: { isTest: false } }
+const payload = { domains, meta }
+const getLocalCerts = jest.fn()
+const filterCertGetter = jest.fn()
+const filterCert = jest.fn()
+filterCertGetter.mockReturnValue(filterCert)
 
-test.skip(
-  'should search for local certificates from data provided in payload',
-  async () => {
-    await getCert(payload, { req })
+filterCert.mockReturnValue(true)
 
-    expect(findCert).toBeCalledWith(commonName, altNames, meta)
-  }
-)
+const getDate = (daysAway) => {
+  const date = new Date()
 
-test.skip(
-  'when provided only 1 domain, should search for local certs using only common name when unable to find certs with matching alt names',
-  async () => {
-    const commonName = 'test.example.com'
-    const payload = { domains: [commonName], meta }
+  date.setDate(date.getDate() + daysAway)
 
-    findCert.mockReset()
-    findCert.mockReturnValue(undefined)
+  return date
+}
 
-    await getCert(payload, { req })
+const mockArchive = '__mockArchive__'
 
-    expect(findCert.mock.calls[0]).toEqual([commonName, [commonName], meta])
-    expect(findCert.mock.calls[1]).toEqual([commonName, [], meta])
-  }
-)
+const getPeerCertificate = jest.fn()
+getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
+const req = { connection: { getPeerCertificate } }
+const mockCertLocators = [{
+  filterCert: filterCertGetter,
+  getLocalCerts,
+  id: 'testExtension1'
+}]
+
+const mockCert = {
+  getArchive: () => Promise.resolve(mockArchive),
+  notAfter: getDate(90),
+  altNames: ['example.com', 'www.example.com', 'test.example.com'],
+  commonName: 'example.com',
+  issuerCommonName: 'Super good issuer'
+}
+
+generateFirstCertInSequence.mockImplementation(() => {
+  return Promise.resolve(mockCert)
+})
+
+getLocalCerts.mockReturnValue(Promise.resolve([mockCert]))
+getCertLocators.mockReturnValue(Promise.resolve(mockCertLocators))
+getCertGeneratorsForDomains.mockReturnValue(Promise.resolve([]))
+clientPermittedAccessToCerts.mockReturnValue(true)
+
+beforeEach(() => {
+  generateFirstCertInSequence.mockClear()
+  clientPermittedAccessToCerts.mockClear()
+  getCertLocators.mockClear()
+  getCertGeneratorsForDomains.mockClear()
+  filterCert.mockClear()
+  filterCertGetter.mockClear()
+})
 
 test(
   'should generate certificates when no matching local certificates are found',
   async () => {
-    getLocalCerts.mockReset()
-    getLocalCerts.mockReturnValue(Promise.resolve([]))
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
 
     await getCert(payload, { req })
 
@@ -109,24 +88,23 @@ test(
 test(
   'should throw error when no cert can be generated',
   async () => {
-    getLocalCerts.mockReset()
-    getLocalCerts.mockReturnValue(Promise.resolve([]))
-    generateFirstCertInSequence.mockReset()
-    generateFirstCertInSequence.mockImplementation(() => {
-      throw new Error('Unable to generate cert')
+    const err = new Error('Unable to generate cert')
+
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
+    generateFirstCertInSequence.mockImplementationOnce(() => {
+      throw err
     })
 
-    await expect(getCert(payload, { req })).rejects.toThrow()
+    await expect(getCert(payload, { req })).rejects.toThrow(err)
   }
 )
 
 test(
   'should renew certificates close to expiry',
   async () => {
-    getLocalCerts.mockReset()
-    getLocalCerts.mockReturnValue(Promise.resolve([{
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([{
       ...mockCert,
-      notAfter: date1DayAway
+      notAfter: getDate(1)
     }]))
 
     await getCert(payload, { req })
@@ -139,7 +117,10 @@ test(
 test(
   'should not renew certificates far from expiry',
   async () => {
-    mockCert = { ...mockCert, notAfter: date90DaysAway }
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([{
+      ...mockCert,
+      notAfter: getDate(90)
+    }]))
 
     await getCert(payload, { req })
 
@@ -152,7 +133,7 @@ test(
   async () => {
     getConfig.mockReturnValueOnce({ server: { clientRestrictions: [] } })
 
-    clientPermittedAccessToCerts.mockReturnValue(false)
+    clientPermittedAccessToCerts.mockReturnValueOnce(false)
 
     await expect(getCert(payload, { req }))
       .rejects
@@ -175,5 +156,134 @@ test(
     await expect(getCert(payload, { req })).resolves.toEqual({
       bundle: Buffer.from(mockArchive).toString('base64')
     })
+  }
+)
+
+test(
+  'should locate the certificate with the longest expiry when multiple certs exist for domain',
+  async () => {
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([
+      { ...mockCert, notAfter: getDate(10) },
+      { ...mockCert, notAfter: getDate(40) },
+      { ...mockCert,
+        notAfter: getDate(90),
+        getArchive: () => Promise.resolve('latest exrpiry cert')
+      },
+      { ...mockCert, notAfter: getDate(20) },
+      { ...mockCert, notAfter: getDate(30) }
+    ]))
+
+    await expect(getCert(payload, { req })).resolves.toEqual({
+      bundle: Buffer.from('latest exrpiry cert').toString('base64')
+    })
+  }
+)
+
+test(
+  'should throw a FeedbackError when no extension is able to locate or generate a cert for a domain',
+  async () => {
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
+
+    generateFirstCertInSequence.mockImplementationOnce(() => {
+      return Promise.resolve(undefined)
+    })
+
+    await expect(getCert(payload, { req }))
+      .rejects
+      .toThrow(
+        new FeedbackError('Unable to find or generate requested certificate')
+      )
+  }
+)
+
+test(
+  'should use extensions filterCert function to filter local certs',
+  async () => {
+    await getCert(payload, { req })
+
+    expect(filterCertGetter).toBeCalledWith({
+      commonName: mockCert.commonName,
+      altNames: mockCert.altNames,
+      meta: meta.testExtension1
+    })
+  }
+)
+
+test(
+  'should work with extensions that do not provide a filterCert function',
+  async () => {
+    const {
+      filterCert,
+      ...mockCertLocatorWithoutFilterCert
+    } = mockCertLocators[0]
+
+    getCertLocators.mockReturnValueOnce(Promise.resolve([
+      { ...mockCertLocatorWithoutFilterCert }
+    ]))
+
+    const cert = await getCert(payload, { req })
+
+    expect(filterCertGetter).not.toBeCalled()
+
+    expect(cert).toEqual({
+      bundle: Buffer.from(mockArchive).toString('base64')
+    })
+  }
+)
+
+test(
+  'should pass empty meta object to filterCert when no meta data present for extension',
+  async () => {
+    await getCert({ ...payload, meta: {} }, { req })
+
+    expect(filterCertGetter).toBeCalledWith({
+      commonName: mockCert.commonName,
+      altNames: mockCert.altNames,
+      meta: {}
+    })
+  }
+)
+
+test(
+  'should match certs with only common name and no alt names when 1 domain provided',
+  async () => {
+    generateFirstCertInSequence.mockImplementationOnce(() => {
+      return Promise.resolve(undefined)
+    })
+
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([
+      { ...mockCert, commonName: 'test.example.com', altNames: [] }
+    ]))
+
+    await expect(getCert(
+      { ...payload, domains: ['test.example.com'] },
+      { req }
+    ))
+      .resolves
+      .toEqual({ bundle: Buffer.from(mockArchive).toString('base64') })
+  }
+)
+
+test(
+  'should match certs with only common name and 1 alt name when 1 domain provided',
+  async () => {
+    generateFirstCertInSequence.mockImplementationOnce(() => {
+      return Promise.resolve(undefined)
+    })
+
+    getLocalCerts.mockReturnValueOnce(Promise.resolve([
+      {
+        ...mockCert,
+        commonName: 'test.example.com',
+        altNames: ['test.example.com']
+      }
+    ]))
+
+    await expect(getCert(
+      { ...payload, domains: ['test.example.com'] },
+      { req }
+    ))
+      .resolves
+      .toEqual({ bundle: Buffer.from(mockArchive).toString('base64') })
   }
 )

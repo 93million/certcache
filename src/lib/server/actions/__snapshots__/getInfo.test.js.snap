@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should output data to match snapshot 1`] = `
+Object {
+  "extensions": Array [
+    "certbot",
+    "thirdparty",
+  ],
+  "version": "1.4.0",
+}
+`;

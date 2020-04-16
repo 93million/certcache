@@ -131,3 +131,24 @@ test(
       .toContain(mockCommonName)
   }
 )
+
+test(
+  'should handle being invoked with undefined altNames',
+  async () => {
+    await obtainCert(
+      mockHost,
+      mockPort,
+      mockCommonName,
+      undefined,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    )
+
+    expect(request).toBeCalledWith(
+      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      expect.any(String),
+      { domains: [mockCommonName], meta: mockMeta }
+    )
+  }
+)

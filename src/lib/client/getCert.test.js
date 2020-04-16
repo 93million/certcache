@@ -45,7 +45,10 @@ test(
       mockDomainsArr.slice(1),
       mockMeta,
       path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
-      { cahKeysDir: mockConfig.cahKeysDir }
+      {
+        cahKeysDir: mockConfig.cahKeysDir,
+        days: mockConfig.client.renewalDays
+      }
     )
   }
 )
@@ -72,7 +75,10 @@ test(
       altNames,
       mockMeta,
       path.resolve(mockConfig.client.certDir, commonName),
-      { cahKeysDir: mockConfig.cahKeysDir }
+      {
+        cahKeysDir: mockConfig.cahKeysDir,
+        days: mockConfig.client.renewalDays
+      }
     )
   }
 )
@@ -80,11 +86,16 @@ test(
 test(
   'should start an http redirect server when requested',
   async () => {
-    mockOpts['http-redirect-url'] = 'https://certcache.example.com'
+    const httpRedirectUrl = 'https://certcache.example.com'
+
+    getConfig.mockReturnValueOnce({
+      ...mockConfig,
+      client: { ...mockConfig.client, httpRedirectUrl }
+    })
 
     await getCert(mockOpts)
 
-    expect(httpRedirect.start).toBeCalledWith(mockConfig.client.httpRedirectUrl)
+    expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalled()
   }
 )
@@ -104,7 +115,10 @@ test(
         mockDomainsArr.slice(1),
         mockMeta,
         path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
-        { cahKeysDir: mockConfig.cahKeysDir }
+        {
+          cahKeysDir: mockConfig.cahKeysDir,
+          days: mockConfig.client.renewalDays
+        }
       )
   }
 )

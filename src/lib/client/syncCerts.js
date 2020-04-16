@@ -5,7 +5,6 @@ const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
-const copyCert = require('../helpers/copyCert')
 const fileExists = require('../helpers/fileExists')
 const getMetaFromCert =
   require('../getMetaFromExtensionFunction')('getMetaFromCert')
@@ -39,7 +38,6 @@ module.exports = async () => {
     certDefinitionsFileExistsSearch[i] === false
   ))
   debug('Searching for local certs in', certcacheCertDir)
-  const certsToCopyWhenReceived = []
 
   const certDefinitionsForRenewal = await Promise.all(
     certDefinitionsNotOnFs.map(async (configDomain) => ({
@@ -86,10 +84,6 @@ module.exports = async () => {
   if (httpRedirectUrl !== undefined) {
     httpRedirect.stop()
   }
-
-  await Promise.all(certsToCopyWhenReceived.map(([fromDir, toDir]) => {
-    return copyCert(fromDir, toDir)
-  }))
 
   const numRequested = certsForRenewal.length + certDefinitionsForRenewal.length
   const numTotal = localCerts.length + certDefinitionsForRenewal.length

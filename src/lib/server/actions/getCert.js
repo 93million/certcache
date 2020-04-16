@@ -11,18 +11,19 @@ const getConfig = require('../../getConfig')
 const checkRestrictions = async (clientName, domains) => {
   const config = await getConfig()
 
-  if (config.server.clientRestrictions !== undefined) {
-    if (!clientPermittedAccessToCerts(
+  if (
+    config.server.clientRestrictions !== undefined &&
+    clientPermittedAccessToCerts(
       config.server.clientRestrictions,
       clientName,
       domains
-    )) {
-      throw new FeedbackError([
-        'Client',
-        clientName,
-        'does not have permission to generate the requested certs'
-      ].join(' '))
-    }
+    ) === false
+  ) {
+    throw new FeedbackError([
+      'Client',
+      clientName,
+      'does not have permission to generate the requested certs'
+    ].join(' '))
   }
 }
 
@@ -36,12 +37,12 @@ const findLocalCert = async (commonName, altNames, meta, days) => {
     .all(certLocators.map(
       async (certLocator) => {
         const localCerts = await certLocator.getLocalCerts()
-        const filterCert = (
-          certLocator.filterCert !== undefined &&
-          meta[certLocator.id] !== undefined
-        )
-          ? certLocator
-            .filterCert({ commonName, altNames, meta: meta[certLocator.id] })
+        const filterCert = (certLocator.filterCert !== undefined)
+          ? certLocator.filterCert({
+            commonName,
+            altNames,
+            meta: meta[certLocator.id] || {}
+          })
           : () => true
 
         localCerts.sort((a, b) => {

@@ -33,12 +33,6 @@ module.exports = ({ argv, env, file }) => {
         defaults.server.certbotLogsDir,
       certbotWorkDir: file.server.certbotWorkDir ||
         defaults.server.certbotWorkDir,
-      challenges: (
-        env.CERTCACHE_CERTBOT_CHALLENGES &&
-        env.CERTCACHE_CERTBOT_CHALLENGES.split(',')
-      ) ||
-        file.server.challenges ||
-        defaults.server.challenges,
       defaultChallenge: argv['certbot-default-challenge'] ||
         env.CERTCACHE_CERTBOT_DEFAULT_CHALLENGE ||
         file.server.defaultChallenge ||
