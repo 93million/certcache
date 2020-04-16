@@ -4,16 +4,14 @@ const getCert = require('./getCert')
 const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
 const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
-const getCertLocators = require('../../getCertLocators')
-const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
+const getExtensionsForDomains = require('../../getExtensionsForDomains')
 const getConfig = require('../../getConfig')
 const FeedbackError = require('../../FeedbackError')
 
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
 jest.mock('../../clientPermittedAccessToCerts')
-jest.mock('../../getCertLocators')
-jest.mock('../../getCertGeneratorsForDomains')
+jest.mock('../../getExtensionsForDomains')
 jest.mock('../../getConfig')
 
 const domains = ['example.com', 'www.example.com', 'test.example.com']
@@ -41,7 +39,7 @@ const mockArchive = '__mockArchive__'
 const getPeerCertificate = jest.fn()
 getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
 const req = { connection: { getPeerCertificate } }
-const mockCertLocators = [{
+const mockExtensions = [{
   filterCert: filterCertGetter,
   getLocalCerts,
   id: 'testExtension1'
@@ -60,15 +58,13 @@ generateFirstCertInSequence.mockImplementation(() => {
 })
 
 getLocalCerts.mockReturnValue(Promise.resolve([mockCert]))
-getCertLocators.mockReturnValue(Promise.resolve(mockCertLocators))
-getCertGeneratorsForDomains.mockReturnValue(Promise.resolve([]))
+getExtensionsForDomains.mockReturnValue(Promise.resolve(mockExtensions))
 clientPermittedAccessToCerts.mockReturnValue(true)
 
 beforeEach(() => {
   generateFirstCertInSequence.mockClear()
   clientPermittedAccessToCerts.mockClear()
-  getCertLocators.mockClear()
-  getCertGeneratorsForDomains.mockClear()
+  getExtensionsForDomains.mockClear()
   filterCert.mockClear()
   filterCertGetter.mockClear()
 })
@@ -214,11 +210,11 @@ test(
   async () => {
     const {
       filterCert,
-      ...mockCertLocatorWithoutFilterCert
-    } = mockCertLocators[0]
+      ...mockExtensionWithoutFilterCert
+    } = mockExtensions[0]
 
-    getCertLocators.mockReturnValueOnce(Promise.resolve([
-      { ...mockCertLocatorWithoutFilterCert }
+    getExtensionsForDomains.mockReturnValueOnce(Promise.resolve([
+      { ...mockExtensionWithoutFilterCert }
     ]))
 
     const cert = await getCert(payload, { req })

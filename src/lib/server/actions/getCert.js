@@ -4,8 +4,7 @@ const debug = require('debug')('certcache:server/actions/getCert')
 const clientPermittedAccessToCerts =
   require('../../clientPermittedAccessToCerts')
 const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
-const getCertLocators = require('../../getCertLocators')
-const getCertGeneratorsForDomains = require('../../getCertGeneratorsForDomains')
+const getExtensionsForDomains = require('../../getExtensionsForDomains')
 const getConfig = require('../../getConfig')
 
 const checkRestrictions = async (clientName, domains) => {
@@ -27,49 +26,53 @@ const checkRestrictions = async (clientName, domains) => {
   }
 }
 
-const findLocalCert = async (commonName, altNames, meta, days) => {
-  const certLocators = await getCertLocators()
+const findLocalCertFromExtensions = async (
+  extensions,
+  commonName,
+  altNames,
+  meta,
+  days
+) => {
   const certRenewDate = new Date()
 
   certRenewDate.setDate(certRenewDate.getDate() + days)
 
-  const localCertSearch = await Promise
-    .all(certLocators.map(
-      async (certLocator) => {
-        const localCerts = await certLocator.getLocalCerts()
-        const filterCert = (certLocator.filterCert !== undefined)
-          ? certLocator.filterCert({
-            commonName,
-            altNames,
-            meta: meta[certLocator.id] || {}
-          })
-          : () => true
-
-        localCerts.sort((a, b) => {
-          return (a.notAfter.getTime() > b.notAfter.getTime()) ? -1 : 1
+  const localCertSearch = await Promise.all(extensions.map(
+    async (certLocator) => {
+      const localCerts = await certLocator.getLocalCerts()
+      const filterCert = (certLocator.filterCert !== undefined)
+        ? certLocator.filterCert({
+          commonName,
+          altNames,
+          meta: meta[certLocator.id] || {}
         })
+        : () => true
 
-        const matchingCerts = localCerts.find((cert) => {
-          const {
-            altNames: certAltNames,
-            commonName: certCommonName,
-            notAfter: certNotAfter
-          } = cert
+      localCerts.sort((a, b) => {
+        return (a.notAfter.getTime() > b.notAfter.getTime()) ? -1 : 1
+      })
 
-          return (
-            certCommonName === commonName &&
-            (
-              arrayItemsMatch(certAltNames, altNames) ||
-              (certAltNames.length === 0 && altNames.length === 1)
-            ) &&
-            certNotAfter.getTime() > certRenewDate.getTime() &&
-            filterCert(cert)
-          )
-        })
+      const matchingCerts = localCerts.find((cert) => {
+        const {
+          altNames: certAltNames,
+          commonName: certCommonName,
+          notAfter: certNotAfter
+        } = cert
 
-        return matchingCerts
-      }
-    ))
+        return (
+          certCommonName === commonName &&
+          (
+            arrayItemsMatch(certAltNames, altNames) ||
+            (certAltNames.length === 0 && altNames.length === 1)
+          ) &&
+          certNotAfter.getTime() > certRenewDate.getTime() &&
+          filterCert(cert)
+        )
+      })
+
+      return matchingCerts
+    }
+  ))
 
   return localCertSearch.find((localCert) => (localCert !== undefined))
 }
@@ -83,15 +86,21 @@ module.exports = async (payload, { req }) => {
   await checkRestrictions(clientName, domains)
   debug('Request for certificate', domains, 'meta', meta)
 
-  const certGenerators = await getCertGeneratorsForDomains(domains)
+  const extensions = await getExtensionsForDomains(domains)
 
-  let cert = await findLocalCert(commonName, altNames, meta, days)
+  let cert = await findLocalCertFromExtensions(
+    extensions,
+    commonName,
+    altNames,
+    meta,
+    days
+  )
 
   if (cert === undefined) {
     debug('No local certificate found - executing cert generators', domains)
 
     cert = await generateFirstCertInSequence(
-      certGenerators,
+      extensions,
       commonName,
       altNames,
       meta
