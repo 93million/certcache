@@ -11,10 +11,6 @@ module.exports = {
   },
   host: {
     alias: 'h',
-    description: 'Hostname of Certcache Server'
-  },
-  port: {
-    alias: 'p',
-    description: 'Port to connect to Certcache server'
+    description: 'Hostname of upstream Certcache Server. Include portname in format <hostname>:<port>'
   }
 }

@@ -3,7 +3,7 @@
 const yaml = require('yaml')
 
 const config = require('./config')
-const file = { client: {}, server: {} }
+const file = { extensions: {}, server: {} }
 
 test(
   'should parse yaml CERTCACHE_CERTBOT_DOMAINS',
@@ -11,7 +11,6 @@ test(
     const mockDomains = { test: 'domain', bar: 432 }
     const env = { CERTCACHE_CERTBOT_DOMAINS: yaml.stringify(mockDomains) }
 
-    expect(config({ argv: {}, env, file }).server.domains)
-      .toEqual(mockDomains)
+    expect(config({ argv: {}, env, file }).domains).toEqual(mockDomains)
   }
 )

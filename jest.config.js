@@ -1,4 +1,5 @@
 module.exports = {
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['sit']
+  testPathIgnorePatterns: ['sit'],
+  clearMocks: true
 }

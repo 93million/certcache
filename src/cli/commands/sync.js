@@ -15,7 +15,7 @@ module.exports = {
     'http-redirect-url': httpRedirectUrl,
     port,
     interval: {
-      default: defaultConfig.client.syncInterval / 60,
+      default: defaultConfig.syncInterval / 60,
       description: 'Num minutes between polling for certificates'
     }
   },

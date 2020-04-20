@@ -26,11 +26,12 @@ module.exports = async (opts) => {
   const locators = Object.keys(extensions)
   const filteredLocators = (opts.extensions === undefined)
     ? locators
-    : locators.filter((extension) => opts.extensions.split(',').includes(extension))
+    : locators
+      .filter((extension) => opts.extensions.split(',').includes(extension))
   const localCerts = await Promise.all(
     filteredLocators.map((locator) => extensions[locator].getLocalCerts())
   )
-  const clientCerts = await getLocalCertificates(path.resolve(config.client.certDir))
+  const clientCerts = await getLocalCertificates(path.resolve(config.certDir))
   const div = '======================'
 
   filteredLocators.forEach((locator, i) => {

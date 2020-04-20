@@ -5,6 +5,7 @@ const getCert = require('./getCert')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
 const getConfig = (require('../getConfig'))
+const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
 
 jest.mock('../httpRedirect')
 jest.mock('./obtainCert')
@@ -24,30 +25,26 @@ beforeEach(async () => {
     'cert-name': 'testcert'
   }
   mockConfig = await getConfig()
-  console.error.mockClear()
-  console.log.mockClear()
-  httpRedirect.start.mockClear()
-  httpRedirect.stop.mockClear()
-  obtainCert.mockClear()
 })
 
 test(
   'should request certs using args from command-line when provided',
   async () => {
     const mockDomainsArr = mockOpts.domains.split(',')
+    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockConfig.client.host,
-      mockConfig.client.port,
+      host,
+      port,
       mockDomainsArr[0],
       mockDomainsArr.slice(1),
       mockMeta,
-      path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
+      path.resolve(mockConfig.certDir, mockOpts['cert-name']),
       {
         cahKeysDir: mockConfig.cahKeysDir,
-        days: mockConfig.client.renewalDays
+        days: mockConfig.renewalDays
       }
     )
   }
@@ -65,19 +62,20 @@ test(
 
     const mockDomainsArr = mockOpts.domains.split(',')
     const [commonName, ...altNames] = mockDomainsArr
+    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockConfig.client.host,
-      mockConfig.client.port,
+      host,
+      port,
       commonName,
       altNames,
       mockMeta,
-      path.resolve(mockConfig.client.certDir, commonName),
+      path.resolve(mockConfig.certDir, commonName),
       {
         cahKeysDir: mockConfig.cahKeysDir,
-        days: mockConfig.client.renewalDays
+        days: mockConfig.renewalDays
       }
     )
   }
@@ -90,7 +88,7 @@ test(
 
     getConfig.mockReturnValueOnce({
       ...mockConfig,
-      client: { ...mockConfig.client, httpRedirectUrl }
+      httpRedirectUrl
     })
 
     await getCert(mockOpts)
@@ -106,18 +104,19 @@ test(
     await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
+    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
 
     expect(obtainCert)
       .toBeCalledWith(
-        mockConfig.client.host,
-        mockConfig.client.port,
+        host,
+        port,
         mockDomainsArr[0],
         mockDomainsArr.slice(1),
         mockMeta,
-        path.resolve(mockConfig.client.certDir, mockOpts['cert-name']),
+        path.resolve(mockConfig.certDir, mockOpts['cert-name']),
         {
           cahKeysDir: mockConfig.cahKeysDir,
-          days: mockConfig.client.renewalDays
+          days: mockConfig.renewalDays
         }
       )
   }

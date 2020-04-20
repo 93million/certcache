@@ -1,14 +1,9 @@
 module.exports = {
-  client: {
-    certDir: 'certs',
-    certs: [],
-    host: 'localhost',
-    port: 4433,
-    renewalDays: 30,
-    syncInterval: 60 * 60 * 6
-  },
-  server: {
-    port: 4433
-  },
-  cahKeysDir: 'cahkeys'
+  cahKeysDir: 'cahkeys',
+  certDir: 'certs',
+  certs: [],
+  renewalDays: 30,
+  server: { port: 4433 },
+  syncInterval: 60 * 60 * 6,
+  upstream: 'localhost'
 }

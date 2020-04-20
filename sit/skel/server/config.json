@@ -1,19 +1,12 @@
 {
-  "server": {
-    "port": 4433,
-    "extensions": {
-      "certbot": {
-        "domains": [
-          {
-            "domain": "~(.*\\.)?.ngrok.io$",
-            "challenges": ["http-01"]
-          },
-          {
-            "domain": "~(.*\\.)?.93million.com$",
-            "challenges": ["dns-01", "http-01"]
-          }
-        ]
-      }
+  "extensions": {
+    "certbot": {
+      "domains": [
+        {
+          "domain": "~(.*\\.)?.ngrok.io$",
+          "challenges": ["http-01"]
+        }
+      ]
     }
   }
 }

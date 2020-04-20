@@ -11,7 +11,7 @@ const setTimeoutPromise = (callback, ms) => new Promise((resolve) => {
 })
 
 const syncPeriodically = async (argv, forever) => {
-  const config = (await getConfig()).client
+  const config = (await getConfig())
 
   await syncCerts(argv)
     .catch((e) => {

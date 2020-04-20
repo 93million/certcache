@@ -2,6 +2,7 @@ const getConfig = require('../getConfig')
 const getExtensions = require('../getExtensions')
 const packageJson = require('../../../package.json')
 const request = require('../request')
+const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
 
 const getField = ([title, val], maxTitleLength) => {
   return (val === undefined)
@@ -32,11 +33,12 @@ const getInfo = async () => {
   ])
   fields = []
   sections.push(['Certcache server', fields])
-  fields.push(['Server host', config.client.host])
-  fields.push(['Server port', config.client.port])
+  fields.push(['Server host', config.host])
+  fields.push(['Server port', config.port])
 
   try {
-    const { cahKeysDir, client: { host, port } } = config
+    const { cahKeysDir, upstream } = config
+    const { host, port } = normaliseUpstreamConfig(upstream)
     const response = await request({ cahKeysDir, host, port }, 'getInfo')
     const { error, data } = response
 

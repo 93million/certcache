@@ -1,4 +1,4 @@
-/* global jest test expect beforeEach */
+/* global jest test expect */
 
 const CertFinder = require('./CertFinder')
 const readdirRecursive = require('./readdirRecursive')
@@ -138,10 +138,6 @@ const convertCertFileToExpected = (file) => ({
 const convertKeyFileToExpected = (file) => ({
   toASN1: expect.any(Function),
   keyPath: `${certDir}/${file.filename}`
-})
-
-beforeEach(() => {
-  readdirRecursive.mockClear()
 })
 
 test(

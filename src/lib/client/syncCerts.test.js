@@ -47,10 +47,6 @@ getLocalCertificates.mockReturnValue(mockLocalCerts)
 
 beforeEach(async () => {
   config = await getConfig()
-  console.log.mockClear()
-
-  httpRedirect.start.mockClear()
-  httpRedirect.stop.mockClear()
 
   const certRenewEpoch = new Date()
 
@@ -60,8 +56,6 @@ beforeEach(async () => {
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
   delete process.env.CERTCACHE_CERTS
-  normaliseCertDefinitions.mockClear()
-  obtainCert.mockClear()
 })
 
 test(
@@ -107,13 +101,7 @@ test(
   async () => {
     const httpRedirectUrl = 'https://certcache.example.com'
 
-    getConfig.mockReturnValueOnce(Promise.resolve({
-      ...config,
-      client: {
-        ...config.client,
-        httpRedirectUrl
-      }
-    }))
+    getConfig.mockReturnValueOnce(Promise.resolve({ ...config, httpRedirectUrl }))
 
     await syncCerts()
 
@@ -129,10 +117,7 @@ test(
 
     getConfig.mockReturnValueOnce(Promise.resolve({
       ...config,
-      client: {
-        ...config.client,
-        certs: mockCertcacheCertDefinitions
-      }
+      certs: mockCertcacheCertDefinitions
     }))
 
     process.env.CERTCACHE_CERTS = yaml.stringify(mockCertcacheCertDefinitions)

@@ -25,11 +25,6 @@ const mockCertDirPath = '/test/path/certs/example.com'
 const mockCahKeysDir = '/test/path/cahkeys'
 
 beforeEach(() => {
-  console.error.mockClear()
-  console.log.mockClear()
-  request.mockClear()
-  writeBundle.mockClear()
-
   mockResponse = { success: true, data: { bundle: 'foobar54321' } }
 })
 

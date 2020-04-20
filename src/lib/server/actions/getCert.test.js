@@ -1,4 +1,4 @@
-/* global jest test expect beforeEach */
+/* global jest test expect */
 
 const getCert = require('./getCert')
 const generateFirstCertInSequence = require('../../generateFirstCertInSequence')
@@ -60,14 +60,6 @@ generateFirstCertInSequence.mockImplementation(() => {
 getLocalCerts.mockReturnValue(Promise.resolve([mockCert]))
 getExtensionsForDomains.mockReturnValue(Promise.resolve(mockExtensions))
 clientPermittedAccessToCerts.mockReturnValue(true)
-
-beforeEach(() => {
-  generateFirstCertInSequence.mockClear()
-  clientPermittedAccessToCerts.mockClear()
-  getExtensionsForDomains.mockClear()
-  filterCert.mockClear()
-  filterCertGetter.mockClear()
-})
 
 test(
   'should generate certificates when no matching local certificates are found',

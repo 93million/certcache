@@ -3,7 +3,7 @@
 const yaml = require('yaml')
 
 const config = require('./config')
-const file = { client: {}, server: {} }
+const file = { extensions: {}, server: {} }
 
 test(
   'should parse yaml CERTCACHE_CERTS',
@@ -11,19 +11,8 @@ test(
     const mockCerts = { test: 'item', foo: 123 }
     const env = { CERTCACHE_CERTS: yaml.stringify(mockCerts) }
 
-    expect(config({ argv: {}, env, file }).client.certs)
+    expect(config({ argv: {}, env, file }).certs)
       .toEqual(mockCerts)
-  }
-)
-
-test(
-  'should parse yaml CERTCACHE_AUTH',
-  () => {
-    const mockAuth = { test: 'item', bar: 432 }
-    const env = { CERTCACHE_AUTH: yaml.stringify(mockAuth) }
-
-    expect(config({ argv: {}, env, file }).server.auth)
-      .toEqual(mockAuth)
   }
 )
 

@@ -13,19 +13,12 @@ const yargs = require('yargs')
 let cachedConfig
 
 const load = async () => {
-  const fileConfigBase = {
-    client: { extensions: {} },
-    server: { extensions: {} }
-  }
+  const fileConfigBase = { extensions: {}, server: {} }
   const localFileConfig = await fileExists(fileConfigPath)
     ? JSON.parse(await readFile(fileConfigPath))
     : undefined
   const fileConfig = (localFileConfig !== undefined)
-    ? {
-      ...fileConfigBase,
-      client: { ...fileConfigBase.client, ...localFileConfig.client },
-      server: { ...fileConfigBase.server, ...localFileConfig.server }
-    }
+    ? { ...fileConfigBase, ...localFileConfig }
     : fileConfigBase
   const extensions = await getExtensions()
   const argv = yargs.argv
@@ -35,30 +28,21 @@ const load = async () => {
   const extensionConfigs = Object.keys(extensions).reduce(
     (acc, key) => {
       if (extensions[key].config !== undefined) {
-        const file = {
-          client: fileConfig.client.extensions[key] || {},
-          server: fileConfig.server.extensions[key] || {}
-        }
-        const { client, server } = extensions[key].config({ argv, env, file })
+        const file = fileConfig.extensions[key] || {}
 
-        acc.client[key] = client
-        acc.server[key] = server
+        acc[key] = extensions[key].config({ argv, env, file })
       }
 
       return acc
     },
-    { client: {}, server: {} }
+    {}
   )
 
-  return {
-    ...mainConfig,
-    client: { ...mainConfig.client, extensions: extensionConfigs.client },
-    server: { ...mainConfig.server, extensions: extensionConfigs.server }
-  }
+  return { ...mainConfig, extensions: extensionConfigs }
 }
 
-module.exports = async () => {
-  if (cachedConfig === undefined) {
+module.exports = async ({ noCache } = {}) => {
+  if (cachedConfig === undefined || noCache === true) {
     cachedConfig = await load()
   }
 

@@ -40,8 +40,6 @@ fs.mkdir.mockImplementation((path, callback) => {
 })
 
 beforeEach(() => {
-  fs.mkdir.mockClear()
-
   dirList = [
     '/',
     '/dir1',

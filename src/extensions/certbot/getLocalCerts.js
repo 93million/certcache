@@ -8,7 +8,7 @@ const Certificate = require('../../lib/classes/Certificate')
 let handlers
 
 const getLocalCerts = async () => {
-  const config = (await getConfig()).server.extensions.certbot
+  const config = (await getConfig()).extensions.certbot
   const certDir = path.resolve(config.certbotConfigDir, 'live')
   const dirItems = await readdir(certDir).catch(() => [])
   const certPaths = dirItems.map((item) => `${certDir}/${item}/cert.pem`)

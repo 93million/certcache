@@ -62,10 +62,6 @@ actions.throwingFeedbackErrorAction.mockImplementation(() => {
 })
 
 beforeEach(async () => {
-  actions.testAction.mockClear()
-  console.error.mockClear()
-  writeHead.mockClear()
-  listen.mockClear()
   action = 'testAction'
   mockConfig = await getConfig()
 })

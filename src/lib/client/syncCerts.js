@@ -10,6 +10,7 @@ const getMetaFromCert =
   require('../getMetaFromExtensionFunction')('getMetaFromCert')
 const getMetaFromCertDefinition =
   require('../getMetaFromExtensionFunction')('getMetaFromCertDefinition')
+const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
 
 module.exports = async () => {
   const config = (await getConfig())
@@ -17,13 +18,13 @@ module.exports = async () => {
     certDir,
     certs,
     httpRedirectUrl,
-    host,
-    port,
-    renewalDays
-  } = config.client
+    renewalDays,
+    upstream
+  } = config
   const certcacheCertDir = path.resolve(certDir)
   const localCerts = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
+  const { host, port } = normaliseUpstreamConfig(upstream)
 
   certRenewEpoch.setDate(certRenewEpoch.getDate() + renewalDays)
 
