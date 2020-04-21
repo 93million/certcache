@@ -13,6 +13,9 @@ module.exports = ({ argv, env, file }) => {
     certs: (env.CERTCACHE_CERTS && yaml.parse(env.CERTCACHE_CERTS)) ||
       file.certs ||
       defaults.certs,
+    httpRedirectUrl: argv.httpRedirectUrl ||
+      process.env.CERTCACHE_HTTP_REDIRECT_URL ||
+      file.httpRedirectUrl,
     renewalDays: argv.days ||
       env.CERTCACHE_DAYS_RENEWAL ||
       file.renewalDays ||
