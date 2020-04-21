@@ -125,12 +125,17 @@ test(
 
     await expect(getCert(payload, { req }))
       .rejects
-      .toThrow('Client foo does not have permission to generate the requested certs')
+      .toThrow(
+        'Client foo does not have permission to generate the requested certs'
+      )
   }
 )
 
 test(
-  'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but client has permission',
+  [
+    'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but',
+    'client has permission'
+  ].join(' '),
   async () => {
     process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
 
@@ -148,7 +153,10 @@ test(
 )
 
 test(
-  'should locate the certificate with the longest expiry when multiple certs exist for domain',
+  [
+    'should locate the certificate with the longest expiry when multiple certs',
+    'exist for domain'
+  ].join(' '),
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([
       { ...mockCert, notAfter: getDate(10) },
@@ -168,7 +176,10 @@ test(
 )
 
 test(
-  'should throw a FeedbackError when no extension is able to locate or generate a cert for a domain',
+  [
+    'should throw a FeedbackError when no extension is able to locate or',
+    'generate a cert for a domain'
+  ].join(' '),
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
 
@@ -220,7 +231,10 @@ test(
 )
 
 test(
-  'should pass empty meta object to filterCert when no meta data present for extension',
+  [
+    'should pass empty meta object to filterCert when no meta data present for',
+    'extension'
+  ].join(' '),
   async () => {
     await getCert({ ...payload, meta: {} }, { req })
 
@@ -233,7 +247,10 @@ test(
 )
 
 test(
-  'should match certs with only common name and no alt names when 1 domain provided',
+  [
+    'should match certs with only common name and no alt names when 1 domain',
+    'provided'
+  ].join(' '),
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {
       return Promise.resolve(undefined)
@@ -253,7 +270,10 @@ test(
 )
 
 test(
-  'should match certs with only common name and 1 alt name when 1 domain provided',
+  [
+    'should match certs with only common name and 1 alt name when 1 domain',
+    'provided'
+  ].join(' '),
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {
       return Promise.resolve(undefined)

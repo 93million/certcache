@@ -7,7 +7,8 @@ const execFile = util.promisify(childProcess.execFile)
 
 module.exports = {
   cmd: 'add-client [name]',
-  desc: 'Create access keys to allow certcache clients to access certcache server',
+  desc:
+    'Create access keys to allow certcache clients to access certcache server',
   builder: (yargs) => {
     yargs.positional('name', {
       describe: 'Name of the client key',
@@ -16,7 +17,15 @@ module.exports = {
     yargs.option('cahkeys', cahkeys)
   },
   handler: (argv) => {
-    const execScript = path.resolve(__dirname, '..', '..', '..', 'node_modules', '.bin', 'client-authenticated-https')
+    const execScript = path.resolve(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'node_modules',
+      '.bin',
+      'client-authenticated-https'
+    )
 
     execFile(
       execScript,

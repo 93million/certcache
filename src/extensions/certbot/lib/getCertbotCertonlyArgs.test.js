@@ -4,7 +4,12 @@ const getCertbotCertonlyArgs = require('./getCertbotCertonlyArgs')
 
 const commonName = 'example.com'
 const certName = 'abcd1234'
-const altNames = ['www.example.com', 'foo.example.com', 'abcd.1234', 'example.com']
+const altNames = [
+  'www.example.com',
+  'foo.example.com',
+  'abcd.1234',
+  'example.com'
+]
 const email = 'test@example.com'
 const certbotConfigDir = '/test/certbot/config/'
 const certbotLogsDir = '/test/certbot/logs/'

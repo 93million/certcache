@@ -47,6 +47,8 @@ test('should get local certificates', async () => {
 test(
   'should return a blank array when certificate diretcory doesn\'t exist',
   async () => {
-    await expect(getLocalCertificates('/dir/that/doesnt/exist')).resolves.toHaveLength(0)
+    await expect(getLocalCertificates('/dir/that/doesnt/exist'))
+      .resolves
+      .toHaveLength(0)
   }
 )

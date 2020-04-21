@@ -10,7 +10,11 @@ const mockCertContents = '_test_cert_'
 const mockChainContents = ['_test_chain_1', '_test_chain_2']
 const mockPrivkeyContents = '_test_privkey_'
 const commonName = 'test.93million.com'
-const altNames = ['test.93million.com', 'www.93million.com', 'foo.93million.com']
+const altNames = [
+  'test.93million.com',
+  'www.93million.com',
+  'foo.93million.com'
+]
 const issuerCommonName = 'Test Cert Issuer'
 const mockCertObj = { commonName, altNames, issuerCommonName }
 

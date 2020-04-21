@@ -101,7 +101,10 @@ test(
   async () => {
     const httpRedirectUrl = 'https://certcache.example.com'
 
-    getConfig.mockReturnValueOnce(Promise.resolve({ ...config, httpRedirectUrl }))
+    getConfig.mockReturnValueOnce(Promise.resolve({
+      ...config,
+      httpRedirectUrl
+    }))
 
     await syncCerts()
 
@@ -130,7 +133,7 @@ test(
 )
 
 test(
-  'should throw an error comprising all errors encountered calling obtainCert()',
+  'should throw error comprising all errors encountered calling obtainCert()',
   async () => {
     const err1 = new Error('failed 1')
     const err2 = new Error('failed 2')

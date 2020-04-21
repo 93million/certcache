@@ -32,9 +32,11 @@ module.exports = async () => {
     .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
 
   const certDefinitions = normaliseCertDefinitions(certs)
-  const certDefinitionsFileExistsSearch = (await Promise.all(certDefinitions.map(
-    ({ certName }) => fileExists(path.resolve(certDir, certName))
-  )))
+  const certDefinitionsFileExistsSearch = (
+    await Promise.all(certDefinitions.map(({ certName }) => fileExists(
+      path.resolve(certDir, certName)
+    )))
+  )
   const certDefinitionsNotOnFs = certDefinitions.filter((_, i) => (
     certDefinitionsFileExistsSearch[i] === false
   ))

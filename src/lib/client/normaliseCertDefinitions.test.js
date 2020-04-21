@@ -3,7 +3,11 @@
 const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 
 const expectedDomains1 = ['example.com', 'test.example.com']
-const expectedDomains2 = ['test2.example.com', 'test3.example.com', 'test4.example.com']
+const expectedDomains2 = [
+  'test2.example.com',
+  'test3.example.com',
+  'test4.example.com'
+]
 const certName1 = 'test-cert-name'
 const certName2 = 'test-cert-name2'
 const isTest1 = false

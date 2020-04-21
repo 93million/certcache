@@ -21,29 +21,31 @@ const writeHead = jest.fn()
 
 console.error = jest.fn()
 
-clientAuthenticatedHttps.createServer.mockImplementation((options, callback) => {
-  const requestBody = JSON.stringify({ action, ...payload })
-  const _response = []
-  const req = new Readable({ read: () => {} })
-  const res = new Writable({ write: (chunk, encoding, callback) => {
-    _response.push(chunk)
-    callback()
-  } })
+clientAuthenticatedHttps
+  .createServer
+  .mockImplementation((options, callback) => {
+    const requestBody = JSON.stringify({ action, ...payload })
+    const _response = []
+    const req = new Readable({ read: () => {} })
+    const res = new Writable({ write: (chunk, encoding, callback) => {
+      _response.push(chunk)
+      callback()
+    } })
 
-  res.writeHead = writeHead
+    res.writeHead = writeHead
 
-  req.push(requestBody)
-  req.push(null)
+    req.push(requestBody)
+    req.push(null)
 
-  callback(req, res)
+    callback(req, res)
 
-  return new Promise((resolve) => {
-    res.on('finish', () => {
-      response = _response.join('')
-      resolve({ listen })
+    return new Promise((resolve) => {
+      res.on('finish', () => {
+        response = _response.join('')
+        resolve({ listen })
+      })
     })
   })
-})
 
 actions.testAction = jest.fn()
 actions.testAction.mockImplementation(() => {
@@ -122,7 +124,8 @@ test(
   async () => {
     await serve(mockOpts)
 
-    expect(writeHead).toBeCalledWith(200, { 'Content-Type': 'application/json' })
+    expect(writeHead)
+      .toBeCalledWith(200, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -133,7 +136,8 @@ test(
 
     await serve(mockOpts)
 
-    expect(writeHead).toBeCalledWith(500, { 'Content-Type': 'application/json' })
+    expect(writeHead)
+      .toBeCalledWith(500, { 'Content-Type': 'application/json' })
   }
 )
 

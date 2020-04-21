@@ -8,7 +8,8 @@ const execFile = util.promisify(childProcess.execFile)
 
 module.exports = {
   cmd: 'create-keys',
-  desc: 'Create access keys to allow certcache clients to access certcache server',
+  desc:
+    'Create access keys to allow certcache clients to access certcache server',
   builder: {
     cahkeys,
     name: {
