@@ -123,6 +123,7 @@ test(
   'should cache results of getConfig() for reuse',
   async () => {
     await getConfig({ noCache: true })
+    await getConfig()
 
     expect(mainConfigFn).toBeCalledTimes(1)
     expect(mockExtensionConfigFn).toBeCalledTimes(1)

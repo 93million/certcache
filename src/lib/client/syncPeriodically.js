@@ -10,10 +10,10 @@ const setTimeoutPromise = (callback, ms) => new Promise((resolve) => {
   )
 })
 
-const syncPeriodically = async (argv, forever) => {
+const syncPeriodically = async (forever) => {
   const config = (await getConfig())
 
-  await syncCerts(argv)
+  await syncCerts()
     .catch((e) => {
       console.error(e)
 
@@ -24,8 +24,8 @@ const syncPeriodically = async (argv, forever) => {
 
   if (forever === true) {
     await setTimeoutPromise(
-      () => syncPeriodically(argv, forever),
-      1000 * config.syncInterval
+      () => syncPeriodically(forever),
+      1000 * config.syncInterval * 60
     )
   }
 }

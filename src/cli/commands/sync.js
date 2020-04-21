@@ -1,6 +1,5 @@
-const defaultConfig = require('../../config/defaults')
 const syncPeriodically = require('../../lib/client/syncPeriodically')
-const { cahkeys, days, host, httpRedirectUrl, port } = require('./args')
+const { cahkeys, days, host, httpRedirectUrl } = require('./args')
 
 module.exports = {
   cmd: 'sync',
@@ -13,13 +12,11 @@ module.exports = {
     },
     host,
     'http-redirect-url': httpRedirectUrl,
-    port,
     interval: {
-      default: defaultConfig.syncInterval / 60,
       description: 'Num minutes between polling for certificates'
     }
   },
   handler: async (argv) => {
-    await syncPeriodically(argv, argv.forever)
+    await syncPeriodically(argv.forever)
   }
 }

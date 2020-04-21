@@ -30,7 +30,7 @@ getConfig.mockReturnValue(Promise.resolve({
     }
   },
   renewalDays: 30,
-  syncInterval: 60 * 60 * 6,
+  syncInterval: 60 * 6,
   server: {
     clientRestrictions: [
       {

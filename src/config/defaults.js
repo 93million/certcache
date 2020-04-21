@@ -4,6 +4,6 @@ module.exports = {
   certs: [],
   renewalDays: 30,
   server: { port: 4433 },
-  syncInterval: 60 * 60 * 6,
+  syncInterval: 60 * 6,
   upstream: 'localhost'
 }

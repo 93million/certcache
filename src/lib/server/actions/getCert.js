@@ -78,7 +78,8 @@ const findLocalCertFromExtensions = async (
 }
 
 module.exports = async (payload, { req }) => {
-  const { meta, domains, days = 30 } = payload
+  const config = await getConfig()
+  const { meta, domains, days = config.renewalDays } = payload
   const clientName = req.connection.getPeerCertificate().subject.CN
   const commonName = domains[0]
   const altNames = domains

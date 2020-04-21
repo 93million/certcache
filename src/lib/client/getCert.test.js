@@ -39,7 +39,7 @@ test(
       host,
       port,
       mockDomainsArr[0],
-      mockDomainsArr.slice(1),
+      mockDomainsArr,
       mockMeta,
       path.resolve(mockConfig.certDir, mockOpts['cert-name']),
       {
@@ -61,7 +61,8 @@ test(
     await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
-    const [commonName, ...altNames] = mockDomainsArr
+    const commonName = mockDomainsArr[0]
+    const altNames = mockDomainsArr
     const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
@@ -111,7 +112,7 @@ test(
         host,
         port,
         mockDomainsArr[0],
-        mockDomainsArr.slice(1),
+        mockDomainsArr,
         mockMeta,
         path.resolve(mockConfig.certDir, mockOpts['cert-name']),
         {

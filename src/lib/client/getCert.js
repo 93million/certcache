@@ -15,7 +15,8 @@ module.exports = async (opts) => {
     upstream
   } = config
   const domains = opts.domains.split(',')
-  const [commonName, ...altNames] = domains
+  const commonName = domains[0]
+  const altNames = domains
   const certName = opts['cert-name'] || commonName
   const meta = await getMetaFromConfig(config)
   const { host, port } = normaliseUpstreamConfig(upstream)
