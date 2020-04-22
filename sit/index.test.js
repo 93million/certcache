@@ -149,7 +149,10 @@ describe(
     )
 
     test(
-      'should generate new certificates expiring after specified amount of days',
+      [
+        'should generate new certificates when cached certs expire within',
+        'specified amount of days'
+      ].join(' '),
       async () => {
         const origPem = await readFile(path.resolve(
           testClientDir,
