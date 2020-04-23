@@ -4,10 +4,13 @@ WORKDIR /certcache/
 
 COPY . /certcachesrc/
 
+ENV NODE_ENV=production
+
 RUN apk update && \
   apk add bash certbot openssl python g++ make git && \
   pip3 install certbot-dns-standalone && \
-  npm install -g /certcachesrc/
+  rm -rf /var/cache/apk/* && \
+  npm install --production -g /certcachesrc/
 
 VOLUME /certcache/cahkeys/
 VOLUME /certcache/extensions/
