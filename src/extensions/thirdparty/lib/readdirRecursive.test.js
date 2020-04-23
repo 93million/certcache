@@ -33,7 +33,7 @@ fs.readdir.mockImplementation((path, callback) => {
     null,
     filePaths
       .filter((filePath) => {
-        filePath = filePath = stripSlashes(filePath)
+        filePath = stripSlashes(filePath)
         const filePathComponents = filePath.split('/')
 
         return (
