@@ -5,12 +5,15 @@ const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
-const fileExists = require('../helpers/fileExists')
 const getMetaFromCert =
   require('../getMetaFromExtensionFunction')('getMetaFromCert')
 const getMetaFromCertDefinition =
   require('../getMetaFromExtensionFunction')('getMetaFromCertDefinition')
 const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const arrayItemsMatch = require('../helpers/arrayItemsMatch')
+const filterAsync = require('../helpers/filterAsync')
+const someAsync = require('../helpers/someAsync')
+const metaItemsMatch = require('../helpers/metaItemsMatch')
 
 module.exports = async () => {
   const config = (await getConfig())
@@ -28,28 +31,49 @@ module.exports = async () => {
 
   certRenewEpoch.setDate(certRenewEpoch.getDate() + renewalDays)
 
-  const certsForRenewal = localCerts
-    .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
-
   const certDefinitions = normaliseCertDefinitions(certs)
-  const certDefinitionsFileExistsSearch = (
-    await Promise.all(certDefinitions.map(({ certName }) => fileExists(
-      path.resolve(certDir, certName)
-    )))
+  const certDefinitionsToRenew = await filterAsync(
+    certDefinitions,
+    async (certDefinition, i) => (
+      await someAsync(
+        localCerts,
+        async (cert) => {
+          const { certPath, commonName, altNames = [] } = cert
+
+          return (
+            path.basename(path.dirname(certPath)) === certDefinition.certName &&
+            commonName === certDefinition.domains[0] &&
+            (
+              arrayItemsMatch(altNames, certDefinition.domains) ||
+              (altNames.length === 0 && certDefinition.domains.length === 1)
+            ) &&
+            metaItemsMatch(
+              await getMetaFromCert(cert),
+              await getMetaFromCertDefinition(certDefinition)
+            )
+          )
+        }
+      ) === false
+    )
   )
-  const certDefinitionsNotOnFs = certDefinitions.filter((_, i) => (
-    certDefinitionsFileExistsSearch[i] === false
-  ))
+
   debug('Searching for local certs in', certcacheCertDir)
 
   const certDefinitionsForRenewal = await Promise.all(
-    certDefinitionsNotOnFs.map(async (configDomain) => ({
-      commonName: configDomain.domains[0],
-      altnames: configDomain.domains,
-      meta: await getMetaFromCertDefinition(configDomain),
-      certDir: path.resolve(certDir, configDomain.certName)
+    certDefinitionsToRenew.map(async (certDefinition) => ({
+      commonName: certDefinition.domains[0],
+      altNames: certDefinition.domains,
+      meta: await getMetaFromCertDefinition(certDefinition),
+      certDir: path.resolve(certDir, certDefinition.certName)
     }))
   )
+
+  const certsForRenewal = localCerts.filter(({ certPath, notAfter }) => (
+    notAfter.getTime() < certRenewEpoch.getTime() &&
+    certDefinitionsForRenewal.some(
+      ({ certDir }) => (path.dirname(certPath) === certDir)
+    ) === false
+  ))
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
