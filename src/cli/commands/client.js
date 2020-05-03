@@ -7,7 +7,7 @@ module.exports = {
   cmd: 'client',
   desc: `${forever.description} (aliases 'sync --forever')`,
   builder,
-  handler: async (argv) => {
-    await syncPeriodically(argv, true)
+  handler: async () => {
+    await syncPeriodically(true)
   }
 }
