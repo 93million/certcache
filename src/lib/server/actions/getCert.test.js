@@ -119,7 +119,7 @@ test(
 test(
   'should throw error when client cannot access cert',
   async () => {
-    getConfig.mockReturnValueOnce({ server: { clientRestrictions: [] } })
+    getConfig.mockReturnValueOnce({ server: { domainAccess: [] } })
 
     clientPermittedAccessToCerts.mockReturnValueOnce(false)
 

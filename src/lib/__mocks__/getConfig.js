@@ -32,7 +32,7 @@ getConfig.mockReturnValue(Promise.resolve({
   renewalDays: 30,
   syncInterval: 60 * 6,
   server: {
-    clientRestrictions: [
+    domainAccess: [
       {
         domains: ['/.*\\.example.com/'],
         allow: ['dev', 'client']

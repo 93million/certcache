@@ -24,7 +24,7 @@ test(
       CERTCACHE_CLIENT_CERT_RESTRICTIONS: yaml.stringify(mockCertRestrictions)
     }
 
-    expect(config({ argv: {}, env, file }).server.clientRestrictions)
+    expect(config({ argv: {}, env, file }).server.domainAccess)
       .toEqual(mockCertRestrictions)
   }
 )

@@ -11,9 +11,9 @@ const checkRestrictions = async (clientName, domains) => {
   const config = await getConfig()
 
   if (
-    config.server.clientRestrictions !== undefined &&
+    config.server.domainAccess !== undefined &&
     clientPermittedAccessToCerts(
-      config.server.clientRestrictions,
+      config.server.domainAccess,
       clientName,
       domains
     ) === false

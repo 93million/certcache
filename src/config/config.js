@@ -22,11 +22,11 @@ module.exports = ({ argv, env, file }) => {
       defaults.renewalDays,
     server: {
       port: env.CERTCACHE_PORT || file.server.port || defaults.server.port,
-      clientRestrictions: (
+      domainAccess: (
         env.CERTCACHE_CLIENT_CERT_RESTRICTIONS &&
         yaml.parse(env.CERTCACHE_CLIENT_CERT_RESTRICTIONS)
       ) ||
-        file.server.clientRestrictions
+        file.server.domainAccess
     },
     syncInterval: argv.interval ||
       env.CERTCACHE_SYNC_INTERVAL ||
