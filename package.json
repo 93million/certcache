@@ -17,14 +17,14 @@
   "license": "MIT",
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "client-authenticated-https": "git+https://deploy:zkBrVfQk7KicL7yx7mUy@gitlab.mcelderry.com/lib/client-authenticated-https.git#1.1.0",
+    "client-authenticated-https": "^1.0.0-beta.1",
     "debug": "^4.1.1",
     "md5": "^2.2.1",
     "node-rsa": "^1.0.5",
     "rimraf": "^2.6.3",
     "tar-stream": "^2.1.0",
     "yaml": "^1.6.0",
-    "yargs": "^15.1.0"
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
