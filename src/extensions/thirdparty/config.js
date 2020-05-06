@@ -1,5 +1,5 @@
 const defaults = {
-  certDir: 'extensions/thirdparty'
+  certDir: 'cache/thirdparty'
 }
 
 module.exports = ({ argv, env, file }) => {

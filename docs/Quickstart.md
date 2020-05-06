@@ -150,9 +150,9 @@ In this demo, both the server and the client are accessible on the same domain. 
 
 ### Using certificates from third party providers
 
-Third party certificates and keys can be placed in the directory `extensions/thirdparty` in the server. Certificates and keys should be in PEM format. Certificates should have one of the the file extensions `.pem`, `.cer` or `.crt`, keys should use `.pem` or `.key`.
+Third party certificates and keys can be placed in the directory `cache/thirdparty` in the server. Certificates and keys should be in PEM format. Certificates should have one of the the file extensions `.pem`, `.cer` or `.crt`, keys should use `.pem` or `.key`.
 
-Certificates authority chains are compiled recursively by searching through PEM files stores inside `extensions/thirdparty`.
+Certificates authority chains are compiled recursively by searching through PEM files stores inside `cache/thirdparty`.
 
 ### Listing certificates
 
@@ -171,7 +171,7 @@ You will see the server certificate listed in the `Extension: certbot` section s
 ======================
 Extension: certbot
 ======================
-Path:         /Users/pommy/certcache-demo/server/extensions/certbot/config/live/9972fc1ca6f8c7b3bab0f6b53b2ba052/cert.pem
+Path:         /Users/pommy/certcache-demo/server/cache/certbot/config/live/9972fc1ca6f8c7b3bab0f6b53b2ba052/cert.pem
 Common name:  59fdaa31.ngrok.io
 Alt names:    59fdaa31.ngrok.io
 Issuer:       Let's Encrypt Authority X3

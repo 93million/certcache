@@ -3,7 +3,9 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_DIR="$DIR/../test/server/extensions/thirdparty"
+OUTPUT_DIR="$DIR/../test/server/cache/thirdparty"
+
+mkdir -p "$OUTPUT_DIR"
 
 openssl req \
   -new \

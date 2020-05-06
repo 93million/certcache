@@ -1,10 +1,10 @@
 const yaml = require('yaml')
 
 const defaults = {
-  certbotConfigDir: 'extensions/certbot/config',
+  certbotConfigDir: 'cache/certbot/config',
   certbotExec: 'certbot',
-  certbotLogsDir: 'extensions/certbot/logs',
-  certbotWorkDir: 'extensions/certbot/work',
+  certbotLogsDir: 'cache/certbot/logs',
+  certbotWorkDir: 'cache/certbot/work',
   defaultChallenge: 'http-01',
   domains: [],
   'test-cert': false
