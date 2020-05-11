@@ -5,12 +5,12 @@ const fs = require('fs')
 const fileExists = require('./helpers/fileExists')
 const getExtensions = require('./getExtensions')
 const mainConfigFn = require('../config/config')
-const yargs = require('yargs')
 
 jest.mock('fs')
 jest.mock('./helpers/fileExists')
 jest.mock('./getExtensions')
 jest.mock('../config/config')
+jest.mock('./getArgv')
 
 const mockFileConfig = {
   test1: 123,
@@ -60,7 +60,7 @@ test(
     await getConfig({ noCache: true })
 
     expect(mainConfigFn).toBeCalledWith({
-      argv: yargs.argv,
+      argv: expect.any(Object),
       env: process.env,
       file: mockFileBaseCombined
     })
@@ -75,7 +75,7 @@ test(
     await getConfig({ noCache: true })
 
     expect(mainConfigFn).toBeCalledWith({
-      argv: yargs.argv,
+      argv: expect.any(Object),
       env: process.env,
       file: baseFileConfig
     })
@@ -88,7 +88,7 @@ test(
     await getConfig({ noCache: true })
 
     expect(mockExtensionConfigFn).toBeCalledWith({
-      argv: yargs.argv,
+      argv: expect.any(Object),
       env: process.env,
       file: {}
     })

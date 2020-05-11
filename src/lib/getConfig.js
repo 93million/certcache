@@ -4,11 +4,11 @@ const { promisify } = require('util')
 const config = require('../config/config')
 const getExtensions = require('./getExtensions')
 const fileExists = require('./helpers/fileExists')
+const getArgv = require('./getArgv')
 
 const readFile = promisify(fs.readFile)
 
 const fileConfigPath = path.resolve(process.cwd(), 'config.json')
-const yargs = require('yargs')
 
 let cachedConfig
 
@@ -21,7 +21,7 @@ const load = async () => {
     ? { ...fileConfigBase, ...localFileConfig }
     : fileConfigBase
   const extensions = await getExtensions()
-  const argv = yargs.argv
+  const argv = getArgv()
   const env = process.env
   const mainConfig = config({ argv, env, file: fileConfig })
 
