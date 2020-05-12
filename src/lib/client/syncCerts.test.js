@@ -2,13 +2,11 @@
 
 const syncCerts = require('./syncCerts')
 const getLocalCertificates = require('../getLocalCertificates')
-const httpRedirect = require('../httpRedirect')
 const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const getConfig = require('../getConfig')
 
-jest.mock('../httpRedirect')
 jest.mock('../getLocalCertificates')
 jest.mock('./obtainCert')
 jest.mock('../getConfig')
@@ -119,23 +117,6 @@ test(
         { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
       )
     })
-  }
-)
-
-test(
-  'should start an http proxy when requested',
-  async () => {
-    const httpRedirectUrl = 'https://certcache.example.com'
-
-    getConfig.mockReturnValueOnce(Promise.resolve({
-      ...config,
-      httpRedirectUrl
-    }))
-
-    await syncCerts()
-
-    expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
-    expect(httpRedirect.stop).toBeCalledTimes(1)
   }
 )
 

@@ -1,17 +1,14 @@
 const getConfig = require('../../lib/getConfig')
 const syncCerts = require('../../lib/client/syncCerts')
-
-const setTimeoutPromise = (callback, ms) => new Promise((resolve) => {
-  setTimeout(
-    async () => {
-      resolve(await callback())
-    },
-    ms
-  )
-})
+const httpRedirect = require('../httpRedirect')
+const setTimeoutPromise = require('../helpers/setTimeoutPromise')
 
 const syncPeriodically = async (forever) => {
   const config = (await getConfig())
+
+  if (config.httpRedirectUrl !== undefined) {
+    httpRedirect.start(config.httpRedirectUrl)
+  }
 
   await syncCerts()
     .catch((e) => {

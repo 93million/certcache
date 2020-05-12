@@ -9,6 +9,7 @@ const { Certificate } = require('@fidm/x509')
 const setupTests = require('./lib/setupTests')
 const { cliCmd, testClientDir, testServerCahkeysDir } = require('./filepaths')
 const yaml = require('yaml')
+const http = require('http')
 
 const execFile = promisify(childProcess.execFile)
 const readFile = promisify(fs.readFile)
@@ -233,6 +234,42 @@ describe(
           .toBe(mockCertcacheDomains[0].domains[0])
         expect(envvar2Cert.subject.commonName)
           .toBe(mockCertcacheDomains[1].domains[0])
+      }
+    )
+    test(
+      'should run http redirect from client to server',
+      async () => {
+        const redirectHost = 'http://example.com'
+        const env = {
+          ...process.env,
+          CERTCACHE_HTTP_REDIRECT_URL: redirectHost
+        }
+        const proc = childProcess.execFile(
+          cliCmd,
+          ['client'],
+          { cwd: testClientDir, env }
+        )
+        const path = '/.well-known/acme-challenge/foo/'
+
+        return new Promise((resolve, reject) => {
+          setTimeout(
+            () => {
+              http.get(
+                `http://localhost${path}`,
+                (res) => {
+                  resolve(res.headers.location)
+                }
+              )
+            },
+            200
+          )
+        })
+          .then((locationHeader) => {
+            expect(locationHeader).toBe(`${redirectHost}${path}`)
+          })
+          .finally(() => {
+            proc.kill()
+          })
       }
     )
   }

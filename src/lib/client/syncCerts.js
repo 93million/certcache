@@ -1,6 +1,5 @@
 const getLocalCertificates = require('../getLocalCertificates')
 const getConfig = require('../getConfig')
-const httpRedirect = require('../httpRedirect')
 const normaliseCertDefinitions = require('./normaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
@@ -20,7 +19,6 @@ module.exports = async () => {
   const {
     certDir,
     certs,
-    httpRedirectUrl,
     renewalDays,
     upstream
   } = config
@@ -75,10 +73,6 @@ module.exports = async () => {
     ) === false
   ))
 
-  if (httpRedirectUrl !== undefined) {
-    httpRedirect.start(httpRedirectUrl)
-  }
-
   const certsToRequest = [
     ...certDefinitionsForRenewal,
     ...await Promise.all(certsForRenewal.map(async (cert) => ({
@@ -107,10 +101,6 @@ module.exports = async () => {
       }
     })
   )
-
-  if (httpRedirectUrl !== undefined) {
-    httpRedirect.stop()
-  }
 
   const numRequested = certsForRenewal.length + certDefinitionsForRenewal.length
   const numTotal = localCerts.length + certDefinitionsForRenewal.length
