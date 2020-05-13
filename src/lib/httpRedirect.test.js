@@ -76,7 +76,7 @@ test(
     })
 
     expect(res.writeHead.mock.calls[1][1]).toEqual({
-      Location: `${redirectUrl}${requestPath}`
+      Location: expectedLocation
     })
   }
 )
