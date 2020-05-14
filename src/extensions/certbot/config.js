@@ -6,7 +6,7 @@ const defaults = {
   certbotLogsDir: 'cache/certbot/logs',
   certbotWorkDir: 'cache/certbot/work',
   defaultChallenge: 'dns-01',
-  domains: [],
+  domains: ['~.'],
   'test-cert': false
 }
 
