@@ -1,6 +1,6 @@
 {
   "name": "certcache",
-  "version": "1.4.0",
+  "version": "0.1.0-beta.0",
   "description": "TLS certificate server that generates, caches and deploys SSL/TLS certificates",
   "main": "index.js",
   "bin": "src/cli/cli.js",
