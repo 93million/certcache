@@ -8,10 +8,11 @@
     "cli": "node src/cli/cli.js",
     "clidev": "nodemon --inspect -- src/cli/cli.js",
     "lint": "eslint .",
-    "sit": "jest -c sit/jest.config.js --rootDir sit",
     "start": "node src/cli/cli.js serve",
     "startdev": "nodemon --inspect src/cli/cli.js serve",
-    "test": "jest --coverage"
+    "test": "jest -c jest.config.all.js --coverage",
+    "test:sit": "jest -c jest.config.sit.js",
+    "test:unit": "jest -c jest.config.js --coverage"
   },
   "author": "",
   "license": "MIT",

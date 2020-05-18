@@ -1,4 +1,5 @@
 module.exports = {
+  rootDir: 'sit',
   testEnvironment: 'node',
-  testTimeout: 30 * 1000
+  testTimeout: 120 * 1000
 }
