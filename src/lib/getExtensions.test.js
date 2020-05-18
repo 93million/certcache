@@ -22,9 +22,6 @@ requireModule.mockImplementation((_path) => {
   return key && mockExtensions[key]
 })
 
-// jest.mock(path.resolve(extensionsDir, 'ext1'))
-// jest.mock(path.resolve(extensionsDir, 'ext2'))
-
 fs.readdir.mockImplementation((path, callback) => {
   callback(null, mockDirContents)
 })
