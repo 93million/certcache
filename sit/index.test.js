@@ -132,7 +132,9 @@ describe(
             ngrokDomain,
             '--cert-name',
             'certbot',
-            '--test-cert'
+            '--test-cert',
+            '--days',
+            30
           ],
           { cwd: testClientDir }
         )

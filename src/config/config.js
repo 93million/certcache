@@ -16,8 +16,8 @@ module.exports = ({ argv, env, file }) => {
     httpRedirectUrl: argv.httpRedirectUrl ||
       process.env.CERTCACHE_HTTP_REDIRECT_URL ||
       file.httpRedirectUrl,
-    renewalDays: argv.days ||
-      env.CERTCACHE_DAYS_RENEWAL ||
+    renewalDays: (argv.days && Number(argv.days)) ||
+      (env.CERTCACHE_DAYS_RENEWAL && Number(env.CERTCACHE_DAYS_RENEWAL)) ||
       file.renewalDays ||
       defaults.renewalDays,
     server: {
