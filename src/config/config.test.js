@@ -28,3 +28,15 @@ test(
       .toEqual(mockCertRestrictions)
   }
 )
+
+test(
+  'should return renewalDays as a number',
+  () => {
+    const renewalDays = 58008
+    const env = { CERTCACHE_DAYS_RENEWAL: String(renewalDays) }
+    const argv = { days: String(renewalDays) }
+
+    expect(config({ argv, env: {}, file })).toMatchObject({ renewalDays })
+    expect(config({ argv: {}, env, file })).toMatchObject({ renewalDays })
+  }
+)
