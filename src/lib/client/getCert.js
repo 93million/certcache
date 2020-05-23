@@ -4,7 +4,7 @@ const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
 const getMetaFromConfig =
   require('../getMetaFromExtensionFunction')('getMetaFromConfig')
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 module.exports = async (opts) => {
   const config = (await getConfig())
@@ -19,7 +19,7 @@ module.exports = async (opts) => {
   const altNames = domains
   const certName = opts['cert-name'] || commonName
   const meta = await getMetaFromConfig(config)
-  const { host, port } = normaliseUpstreamConfig(upstream)
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)

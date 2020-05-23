@@ -1,8 +1,8 @@
 /* global jest */
 
-const normaliseCertDefinitions = jest.fn()
+const canonicaliseCertDefinitions = jest.fn()
 
-normaliseCertDefinitions.mockReturnValue([
+canonicaliseCertDefinitions.mockReturnValue([
   {
     certName: 'mail',
     domains: ['mail.example.com'],
@@ -20,4 +20,4 @@ normaliseCertDefinitions.mockReturnValue([
   }
 ])
 
-module.exports = normaliseCertDefinitions
+module.exports = canonicaliseCertDefinitions

@@ -1,6 +1,6 @@
 /* global test expect */
 
-const normaliseCertDefinitions = require('./normaliseCertDefinitions')
+const canonicaliseCertDefinitions = require('./canonicaliseCertDefinitions')
 
 const expectedDomains1 = ['example.com', 'test.example.com']
 const expectedDomains2 = [
@@ -26,7 +26,7 @@ const config2 = {
 test(
   'should handle a 1-dimensional array of comma-separated domains',
   () => {
-    expect(normaliseCertDefinitions([
+    expect(canonicaliseCertDefinitions([
       expectedDomains1.join(','),
       expectedDomains2.join(',')
     ]))
@@ -46,7 +46,7 @@ test(
 test(
   'should handle a 2-dimensional array of domains',
   () => {
-    expect(normaliseCertDefinitions([
+    expect(canonicaliseCertDefinitions([
       expectedDomains1,
       expectedDomains2
     ]))
@@ -66,7 +66,7 @@ test(
 test(
   'should handle an array of objects containins an array of domains',
   () => {
-    expect(normaliseCertDefinitions([config1, config2]))
+    expect(canonicaliseCertDefinitions([config1, config2]))
       .toEqual([
         { certName: certName1, isTest: isTest1, domains: expectedDomains1 },
         { certName: certName2, isTest: isTest2, domains: expectedDomains2 }
@@ -77,7 +77,7 @@ test(
 test(
   'should handle an array of objects containing comma-separated domains',
   () => {
-    expect(normaliseCertDefinitions([
+    expect(canonicaliseCertDefinitions([
       { ...config1, domains: expectedDomains1.join(',') },
       { ...config2, domains: expectedDomains2.join(',') }
     ]))
@@ -91,7 +91,7 @@ test(
 test(
   'should ignore leading/trailing spaces in domains',
   () => {
-    expect(normaliseCertDefinitions([
+    expect(canonicaliseCertDefinitions([
       { ...config1, domains: expectedDomains1.join(', ') },
       { ...config2, domains: [...expectedDomains2, ' foo.com '] }
     ]))
@@ -111,7 +111,7 @@ test(
   () => {
     const { certName, ...config } = config1
 
-    expect(normaliseCertDefinitions([config]))
+    expect(canonicaliseCertDefinitions([config]))
       .toEqual([
         {
           certName: expectedDomains1[0],

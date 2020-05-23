@@ -1,6 +1,6 @@
 const getLocalCertificates = require('../getLocalCertificates')
 const getConfig = require('../getConfig')
-const normaliseCertDefinitions = require('./normaliseCertDefinitions')
+const canonicaliseCertDefinitions = require('./canonicaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
@@ -8,7 +8,7 @@ const getMetaFromCert =
   require('../getMetaFromExtensionFunction')('getMetaFromCert')
 const getMetaFromCertDefinition =
   require('../getMetaFromExtensionFunction')('getMetaFromCertDefinition')
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 const arrayItemsMatch = require('../helpers/arrayItemsMatch')
 const filterAsync = require('../helpers/filterAsync')
 const someAsync = require('../helpers/someAsync')
@@ -25,11 +25,11 @@ module.exports = async () => {
   const certcacheCertDir = path.resolve(certDir)
   const localCerts = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
-  const { host, port } = normaliseUpstreamConfig(upstream)
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
 
   certRenewEpoch.setDate(certRenewEpoch.getDate() + renewalDays)
 
-  const certDefinitions = normaliseCertDefinitions(certs)
+  const certDefinitions = canonicaliseCertDefinitions(certs)
   const certDefinitionsToRenew = await filterAsync(
     certDefinitions,
     async (certDefinition, i) => (

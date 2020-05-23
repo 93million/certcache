@@ -2,7 +2,7 @@
 
 const syncCerts = require('./syncCerts')
 const getLocalCertificates = require('../getLocalCertificates')
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const getConfig = require('../getConfig')
@@ -84,7 +84,7 @@ beforeAll(async () => {
     certs: mockCertcacheCertDefinitions
   }))
 
-  upstream = normaliseUpstreamConfig(config.upstream)
+  upstream = canonicaliseUpstreamConfig(config.upstream)
 
   const certRenewEpoch = new Date()
 

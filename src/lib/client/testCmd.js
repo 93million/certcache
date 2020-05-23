@@ -1,11 +1,11 @@
 const getConfig = require('../getConfig')
 const request = require('../request')
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 module.exports = async () => {
   const config = await getConfig()
   const { cahKeysDir, upstream } = config
-  const { host, port } = normaliseUpstreamConfig(upstream)
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
 
   try {
     const response = await request({ cahKeysDir, host, port }, 'getInfo')

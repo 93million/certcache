@@ -2,7 +2,7 @@ const getConfig = require('../getConfig')
 const getExtensions = require('../getExtensions')
 const packageJson = require('../../../package.json')
 const request = require('../request')
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 const getField = ([title, val], maxTitleLength) => {
   return (val === undefined)
@@ -38,7 +38,7 @@ const getInfo = async () => {
 
   try {
     const { cahKeysDir, upstream } = config
-    const { host, port } = normaliseUpstreamConfig(upstream)
+    const { host, port } = canonicaliseUpstreamConfig(upstream)
     const response = await request({ cahKeysDir, host, port }, 'getInfo')
     const { error, data } = response
 

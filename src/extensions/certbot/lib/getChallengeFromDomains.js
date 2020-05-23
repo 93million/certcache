@@ -1,5 +1,5 @@
 const challenges = require('./challenges')
-const normaliseDomains = require('./normaliseDomains')
+const canonicaliseDomains = require('./canonicaliseDomains')
 const allItemsPresent = require('../../../lib/helpers/allItemsPresent')
 
 const groupCertbotDomainsByChallengeType = (certbotDomains, challengeTypes) => {
@@ -25,7 +25,7 @@ const groupCertbotDomainsByChallengeType = (certbotDomains, challengeTypes) => {
 module.exports = (certbotDomains, domains, defaultChallenge) => {
   const challengeTypes = Object.keys(challenges)
   const certbotDomainsByChallengeTypes = groupCertbotDomainsByChallengeType(
-    normaliseDomains(certbotDomains, { defaultChallenge }),
+    canonicaliseDomains(certbotDomains, { defaultChallenge }),
     challengeTypes
   )
   const challengeType = challengeTypes.find((challengeType) => {

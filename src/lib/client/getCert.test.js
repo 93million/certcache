@@ -5,7 +5,7 @@ const getCert = require('./getCert')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
 const getConfig = (require('../getConfig'))
-const normaliseUpstreamConfig = require('../normaliseUpstreamConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 jest.mock('../httpRedirect')
 jest.mock('./obtainCert')
@@ -31,7 +31,7 @@ test(
   'should request certs using args from command-line when provided',
   async () => {
     const mockDomainsArr = mockOpts.domains.split(',')
-    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
@@ -63,7 +63,7 @@ test(
     const mockDomainsArr = mockOpts.domains.split(',')
     const commonName = mockDomainsArr[0]
     const altNames = mockDomainsArr
-    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
@@ -105,7 +105,7 @@ test(
     await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
-    const { host, port } = normaliseUpstreamConfig(mockConfig.upstream)
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     expect(obtainCert)
       .toBeCalledWith(
