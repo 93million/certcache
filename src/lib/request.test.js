@@ -9,14 +9,17 @@ const port = 12345
 const action = 'doSomething'
 const domains = ['secure.example.com', 'secret.example.com']
 const meta = { isTest: true }
-const mockResponse = { data: 'test certcache response data' }
+const mockResponse = { data: 'test certcache response data', success: true }
 let requestData
 const mockErrorMessage = '__test error message__'
 let requestStream
 
 jest.mock('client-authenticated-https')
 
-const setUpRequestMockImplementation = (shouldThrow) => {
+const setUpRequestMockImplementation = ({
+  shouldThrow = false,
+  response = mockResponse
+} = {}) => {
   clientAuthenticatedHttps.request.mockReset()
   clientAuthenticatedHttps.request.mockImplementation((options, callback) => {
     const requestDataArr = []
@@ -33,7 +36,7 @@ const setUpRequestMockImplementation = (shouldThrow) => {
         requestStream.emit('error', new Error(mockErrorMessage))
       } else {
         requestData = requestDataArr.join('')
-        responseStream.push(JSON.stringify(mockResponse))
+        responseStream.push(JSON.stringify(response))
         responseStream.push(null)
       }
     })
@@ -44,7 +47,7 @@ const setUpRequestMockImplementation = (shouldThrow) => {
 }
 
 beforeEach(() => {
-  setUpRequestMockImplementation(false)
+  setUpRequestMockImplementation()
 })
 
 test(
@@ -62,14 +65,14 @@ test(
   async () => {
     const response = await request({ host, port }, action, { domains, meta })
 
-    expect(response).toEqual(mockResponse)
+    expect(response).toEqual(mockResponse.data)
   }
 )
 
 test(
   'should throw an error if an error is returned by the request library',
   async () => {
-    setUpRequestMockImplementation(true)
+    setUpRequestMockImplementation({ shouldThrow: true })
 
     await expect(request({ host, port }, { domains, meta }))
       .rejects
@@ -129,5 +132,17 @@ test(
     })
 
     await expect(req).rejects.toThrow('BAAAAH!')
+  }
+)
+
+test(
+  'should throw an error when response was not successful',
+  async () => {
+    const error = 'nope!'
+    setUpRequestMockImplementation({ response: { success: false, error } })
+
+    await expect(request({ host, port }, { domains, meta }))
+      .rejects
+      .toThrow(error)
   }
 )

@@ -38,7 +38,7 @@ const mockArchive = '__mockArchive__'
 
 const getPeerCertificate = jest.fn()
 getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
-const req = { connection: { getPeerCertificate } }
+const clientName = 'mockClient'
 const mockExtensions = [{
   filterCert: filterCertGetter,
   getLocalCerts,
@@ -66,7 +66,7 @@ test(
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
 
-    await getCert(payload, { req })
+    await getCert(payload, { clientName })
 
     expect(generateFirstCertInSequence)
       .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
@@ -83,7 +83,7 @@ test(
       throw err
     })
 
-    await expect(getCert(payload, { req })).rejects.toThrow(err)
+    await expect(getCert(payload, { clientName })).rejects.toThrow(err)
   }
 )
 
@@ -95,7 +95,7 @@ test(
       notAfter: getDate(1)
     }]))
 
-    await getCert(payload, { req })
+    await getCert(payload, { clientName })
 
     expect(generateFirstCertInSequence)
       .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
@@ -110,7 +110,7 @@ test(
       notAfter: getDate(90)
     }]))
 
-    await getCert(payload, { req })
+    await getCert(payload, { clientName })
 
     expect(generateFirstCertInSequence).not.toBeCalled()
   }
@@ -123,11 +123,13 @@ test(
 
     clientPermittedAccessToCerts.mockReturnValueOnce(false)
 
-    await expect(getCert(payload, { req }))
+    await expect(getCert(payload, { clientName }))
       .rejects
-      .toThrow(
-        'Client foo does not have permission to generate the requested certs'
-      )
+      .toThrow([
+        'Client',
+        clientName,
+        'does not have permission to generate the requested certs'
+      ].join(' '))
   }
 )
 
@@ -137,14 +139,16 @@ test(
   async () => {
     process.env.CERTCACHE_DOMAIN_ACCESS = ''
 
-    await expect(getCert(payload, { req })).resolves.toEqual(expect.any(Object))
+    await expect(getCert(payload, { clientName }))
+      .resolves
+      .toEqual(expect.any(Object))
   }
 )
 
 test(
   'should resolve with certificate bundle',
   async () => {
-    await expect(getCert(payload, { req })).resolves.toEqual({
+    await expect(getCert(payload, { clientName })).resolves.toEqual({
       bundle: Buffer.from(mockArchive).toString('base64')
     })
   }
@@ -165,7 +169,7 @@ test(
       { ...mockCert, notAfter: getDate(30) }
     ]))
 
-    await expect(getCert(payload, { req })).resolves.toEqual({
+    await expect(getCert(payload, { clientName })).resolves.toEqual({
       bundle: Buffer.from('latest exrpiry cert').toString('base64')
     })
   }
@@ -181,7 +185,7 @@ test(
       return Promise.resolve(undefined)
     })
 
-    await expect(getCert(payload, { req }))
+    await expect(getCert(payload, { clientName }))
       .rejects
       .toThrow(
         new FeedbackError('Unable to find or generate requested certificate')
@@ -192,7 +196,7 @@ test(
 test(
   'should use extensions filterCert function to filter local certs',
   async () => {
-    await getCert(payload, { req })
+    await getCert(payload, { clientName })
 
     expect(filterCertGetter).toBeCalledWith({
       commonName: mockCert.commonName,
@@ -214,7 +218,7 @@ test(
       { ...mockExtensionWithoutFilterCert }
     ]))
 
-    const cert = await getCert(payload, { req })
+    const cert = await getCert(payload, { clientName })
 
     expect(filterCertGetter).not.toBeCalled()
 
@@ -228,7 +232,7 @@ test(
   // eslint-disable-next-line max-len
   'should pass empty meta object to filterCert when no meta data present for extension',
   async () => {
-    await getCert({ ...payload, meta: {} }, { req })
+    await getCert({ ...payload, meta: {} }, { clientName })
 
     expect(filterCertGetter).toBeCalledWith({
       commonName: mockCert.commonName,
@@ -252,7 +256,7 @@ test(
 
     await expect(getCert(
       { ...payload, domains: ['test.example.com'] },
-      { req }
+      { clientName }
     ))
       .resolves
       .toEqual({ bundle: Buffer.from(mockArchive).toString('base64') })
@@ -277,9 +281,18 @@ test(
 
     await expect(getCert(
       { ...payload, domains: ['test.example.com'] },
-      { req }
+      { clientName }
     ))
       .resolves
       .toEqual({ bundle: Buffer.from(mockArchive).toString('base64') })
+  }
+)
+
+test(
+  'should not perform restriction checks when client name not provided',
+  async () => {
+    await getCert(payload)
+
+    expect(clientPermittedAccessToCerts).not.toBeCalled()
   }
 )

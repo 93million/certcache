@@ -216,7 +216,8 @@ describe(
             cwd: testClientDir,
             env: {
               ...process.env,
-              CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains)
+              CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
+              CERTCACHE_UPSTREAM: 'localhost'
             }
           }
         )

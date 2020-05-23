@@ -1,26 +1,30 @@
-/* global jest beforeEach test expect */
+/* global jest test expect */
 
 const obtainCert = require('./obtainCert')
 const request = require('../request')
 const writeBundle = require('../writeBundle')
 const getConfig = require('../getConfig')
+const getCert = require('../server/actions/getCert')
 
 jest.mock('../request')
 jest.mock('../writeBundle')
 jest.mock('../getConfig')
+jest.mock('../server/actions/getCert')
 
 console.error = jest.fn()
 console.log = jest.fn()
 
-let mockResponse
+const mockResponse = { success: true, data: { bundle: 'foobar54321' } }
 
 request.mockImplementation(() => {
-  const p = Promise.resolve(mockResponse)
+  const p = Promise.resolve(mockResponse.data)
 
   p.destroy = jest.fn()
 
   return p
 })
+
+getCert.mockReturnValue(mockResponse.data)
 
 const mockHost = 'certcache.example.com'
 const mockPort = 54321
@@ -29,10 +33,7 @@ const mockAltNames = ['test.example.com', 'foo.example.com']
 const mockMeta = { isTest: true }
 const mockCertDirPath = '/test/path/certs/example.com'
 const mockCahKeysDir = '/test/path/cahkeys'
-
-beforeEach(() => {
-  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
-})
+const mockDays = 21
 
 test(
   'should request certs using args provided',
@@ -44,13 +45,17 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     )
 
     expect(request).toBeCalledWith(
       { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
-      { domains: [mockCommonName, ...mockAltNames], meta: mockMeta }
+      {
+        domains: [mockCommonName, ...mockAltNames],
+        meta: mockMeta,
+        days: mockDays
+      }
     )
   }
 )
@@ -65,7 +70,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     )
 
     expect(writeBundle).toBeCalledWith(
@@ -78,7 +83,7 @@ test(
 test(
   'should throw an error when failing to get cert from certcache server',
   async () => {
-    mockResponse = { success: false }
+    request.mockImplementationOnce(() => Promise.reject(new Error('foo')))
 
     await expect(obtainCert(
       mockHost,
@@ -87,10 +92,10 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     ))
       .rejects
-      .toThrow()
+      .toThrow(/^Error renewing certificate .* Message: 'foo'$/)
   }
 )
 
@@ -99,7 +104,7 @@ test(
   async () => {
     const error = '__test error__'
 
-    mockResponse = { success: false, error }
+    request.mockReturnValueOnce(Promise.reject(new Error(error)))
 
     await expect(obtainCert(
       mockHost,
@@ -108,7 +113,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     ))
       .rejects
       .toThrow(error)
@@ -125,7 +130,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     )
 
     expect(console.log.mock.calls.map((args) => (args.join(' '))).join(' '))
@@ -143,13 +148,13 @@ test(
       undefined,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
     )
 
     expect(request).toBeCalledWith(
       { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
-      { domains: [mockCommonName], meta: mockMeta }
+      { domains: [mockCommonName], meta: mockMeta, days: mockDays }
     )
   }
 )
@@ -239,5 +244,25 @@ test(
     ))
       .rejects
       .toThrow('HOPPLA!')
+  }
+)
+test(
+  'should generate cert locally when when in autonomous mode',
+  async () => {
+    await obtainCert(
+      '--internal',
+      mockPort,
+      mockCommonName,
+      mockAltNames,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir, days: mockDays }
+    )
+
+    expect(getCert).toBeCalledWith({
+      domains: [mockCommonName, ...mockAltNames],
+      meta: mockMeta,
+      days: mockDays
+    })
   }
 )

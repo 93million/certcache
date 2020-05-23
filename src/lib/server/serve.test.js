@@ -17,6 +17,7 @@ const mockActionReturnValue = { foo: 'bar', test: 123 }
 let mockConfig
 const listen = jest.fn()
 const writeHead = jest.fn()
+const mockClientName = 'mockClient'
 const close = jest.fn()
 const setTimeout = jest.fn()
 let mockSocket
@@ -35,6 +36,10 @@ clientAuthenticatedHttps
       _response.push(chunk)
       callback()
     } })
+
+    req.connection = {
+      getPeerCertificate: () => ({ subject: { CN: mockClientName } })
+    }
 
     res.writeHead = writeHead
     res.socket = mockSocket
@@ -183,5 +188,14 @@ test(
     await serve()
 
     expect(writeHead).not.toBeCalled()
+  }
+)
+test(
+  'should pass client name to actions',
+  async () => {
+    await serve()
+
+    expect(actions.testAction)
+      .toBeCalledWith(payload, { clientName: mockClientName })
   }
 )
