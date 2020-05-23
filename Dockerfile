@@ -15,6 +15,7 @@ RUN apk update && \
 VOLUME /certcache/cache/
 VOLUME /certcache/cahkeys/
 VOLUME /certcache/certs/
+VOLUME /certcache/conf/
 
 EXPOSE 53
 EXPOSE 80

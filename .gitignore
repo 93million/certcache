@@ -3,6 +3,7 @@
 /cache
 /cahkeys
 /certs
+/conf
 /coverage
 /node_modules
 /sit/coverage

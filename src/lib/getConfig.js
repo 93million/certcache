@@ -8,7 +8,7 @@ const getArgv = require('./getArgv')
 
 const readFile = promisify(fs.readFile)
 
-const fileConfigPath = path.resolve(process.cwd(), 'config.json')
+const fileConfigPath = path.resolve(process.cwd(), 'conf', 'settings.json')
 
 let cachedConfig
 
