@@ -132,10 +132,8 @@ test(
 )
 
 test(
-  [
-    'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but',
-    'client has permission'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but client has permission',
   async () => {
     process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
 
@@ -153,10 +151,8 @@ test(
 )
 
 test(
-  [
-    'should locate the certificate with the longest expiry when multiple certs',
-    'exist for domain'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should locate the certificate with the longest expiry when multiple certs exist for domain',
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([
       { ...mockCert, notAfter: getDate(10) },
@@ -176,10 +172,8 @@ test(
 )
 
 test(
-  [
-    'should throw a FeedbackError when no extension is able to locate or',
-    'generate a cert for a domain'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should throw a FeedbackError when no extension is able to locate or generate a cert for a domain',
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
 
@@ -231,10 +225,8 @@ test(
 )
 
 test(
-  [
-    'should pass empty meta object to filterCert when no meta data present for',
-    'extension'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should pass empty meta object to filterCert when no meta data present for extension',
   async () => {
     await getCert({ ...payload, meta: {} }, { req })
 
@@ -247,10 +239,8 @@ test(
 )
 
 test(
-  [
-    'should match certs with only common name and no alt names when 1 domain',
-    'provided'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should match certs with only common name and no alt names when 1 domain provided',
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {
       return Promise.resolve(undefined)
@@ -270,10 +260,8 @@ test(
 )
 
 test(
-  [
-    'should match certs with only common name and 1 alt name when 1 domain',
-    'provided'
-  ].join(' '),
+  // eslint-disable-next-line max-len
+  'should match certs with only common name and 1 alt name when 1 domain provided',
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {
       return Promise.resolve(undefined)
