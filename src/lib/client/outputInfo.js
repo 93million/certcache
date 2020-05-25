@@ -25,31 +25,34 @@ const getInfo = async () => {
   let fields = []
   const sections = []
 
-  sections.push(['Certcache client', fields])
+  sections.push(['General', fields])
   fields.push(['Version', packageJson.version])
   fields.push([
     'Extensions',
     Object.values(extensions).map(({ id }) => id).join(', ')
   ])
+
+  const { upstream } = config
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
+
   fields = []
-  sections.push(['Certcache server', fields])
-  fields.push(['Server host', config.host])
-  fields.push(['Server port', config.port])
+  sections.push(['Upstream', fields])
 
-  try {
-    const { cahKeysDir, upstream } = config
-    const { host, port } = canonicaliseUpstreamConfig(upstream)
-    const response = await request({ cahKeysDir, host, port }, 'getInfo')
-    const { error, data } = response
+  if (host === '--internal') {
+    fields.push(['Server host', 'standalone'])
+  } else {
+    fields.push(['Server host', host])
+    fields.push(['Server port', port])
+    try {
+      const { cahKeysDir } = config
 
-    if (response.success !== true) {
-      fields.push(['Error', error || 'received unsucessful response'])
-    } else {
+      const data = await request({ cahKeysDir, host, port }, 'getInfo')
+
       fields.push(['Version', data.version])
       fields.push(['Extensions', data.extensions.join(', ')])
+    } catch (e) {
+      fields.push(['Error connecting', e.message])
     }
-  } catch (e) {
-    fields.push(['Error connecting', e.message])
   }
 
   const maxTitleLength = Math.max(
