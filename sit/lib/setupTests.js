@@ -8,7 +8,8 @@ const {
   testDir,
   testServerCahkeysDir,
   testServerDir,
-  testSkelDir
+  testSkelDir,
+  testStandaloneDir
 } = require('../filepaths')
 const startNgrok = require('./startNgrok')
 
@@ -40,14 +41,40 @@ module.exports = async () => {
   )
 
   // create test certs
-  await execFile(path.resolve(__dirname, '..', 'bin', 'createca.sh'))
   await execFile(
-    path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
-    ['-n', 'test.example.com']
+    path.resolve(__dirname, '..', 'bin', 'createca.sh'),
+    ['-d', path.resolve(testServerDir, 'cache', 'thirdparty')]
   )
   await execFile(
     path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
-    ['-n', 'foo.example.com']
+    [
+      '-n',
+      'test.example.com',
+      '-d',
+      path.resolve(testServerDir, 'cache', 'thirdparty')
+    ]
+  )
+  await execFile(
+    path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
+    [
+      '-n',
+      'foo.example.com',
+      '-d',
+      path.resolve(testServerDir, 'cache', 'thirdparty')
+    ]
+  )
+  await execFile(
+    path.resolve(__dirname, '..', 'bin', 'createca.sh'),
+    ['-d', path.resolve(testStandaloneDir, 'cache', 'thirdparty')]
+  )
+  await execFile(
+    path.resolve(__dirname, '..', 'bin', 'createcert.sh'),
+    [
+      '-n',
+      'standalone.example.com',
+      '-d',
+      path.resolve(testStandaloneDir, 'cache', 'thirdparty')
+    ]
   )
 
   // start ngrok

@@ -3,7 +3,6 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_DIR="$DIR/../test/server/cache/thirdparty"
 
 cleanup () {
   rm -f "$OUTPUT_DIR/$COMMON_NAME/csr.pem"
@@ -11,10 +10,13 @@ cleanup () {
 
 trap cleanup SIGHUP SIGINT EXIT
 
-while getopts ":n:k:" o; do
+while getopts ":n:d:" o; do
   case "${o}" in
     n)
       COMMON_NAME="${OPTARG}"
+      ;;
+    d)
+      OUTPUT_DIR="${OPTARG}"
       ;;
   esac
 done

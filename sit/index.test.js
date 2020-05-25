@@ -5,9 +5,19 @@ const { promisify } = require('util')
 const path = require('path')
 const fs = require('fs')
 const loadKey = require('client-authenticated-https/lib/loadKey')
-const { Certificate } = require('@fidm/x509')
+const {
+  Certificate,
+  PrivateKey,
+  RSAPrivateKey,
+  RSAPublicKey
+} = require('@fidm/x509')
 const setupTests = require('./lib/setupTests')
-const { cliCmd, testClientDir, testServerCahkeysDir } = require('./filepaths')
+const {
+  cliCmd,
+  testClientDir,
+  testServerCahkeysDir,
+  testStandaloneDir
+} = require('./filepaths')
 const yaml = require('yaml')
 const http = require('http')
 
@@ -72,15 +82,25 @@ describe(
           ],
           { cwd: testClientDir }
         )
-        const pem = await readFile(path.resolve(
+        const certPem = await readFile(path.resolve(
           testClientDir,
           'certs',
           'thirdparty',
           'cert.pem'
         ))
-        const cert = Certificate.fromPEM(pem)
+        const keyPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'thirdparty',
+          'privkey.pem'
+        ))
+        const cert = Certificate.fromPEM(certPem)
+        const key = PrivateKey.fromPEM(keyPem)
+        const certPublicKey = new RSAPublicKey(cert.publicKey.toASN1())
+        const keyPublicKey = new RSAPrivateKey(key.toASN1())
 
         expect(cert.subject.commonName).toBe(commonName)
+        expect(keyPublicKey.modulus).toBe(certPublicKey.modulus)
       }
     )
     test(
@@ -279,6 +299,43 @@ describe(
           .finally(() => {
             proc.kill()
           })
+      }
+    )
+    test(
+      'should be able to obtain certs in standalone mode without server',
+      async () => {
+        const commonName = 'standalone.example.com'
+
+        await execFile(
+          cliCmd,
+          [
+            'get',
+            '-d',
+            commonName,
+            '--cert-name',
+            'standalone'
+          ],
+          { cwd: testStandaloneDir }
+        )
+        const certPem = await readFile(path.resolve(
+          testStandaloneDir,
+          'certs',
+          'standalone',
+          'cert.pem'
+        ))
+        const keyPem = await readFile(path.resolve(
+          testStandaloneDir,
+          'certs',
+          'standalone',
+          'privkey.pem'
+        ))
+        const cert = Certificate.fromPEM(certPem)
+        const key = PrivateKey.fromPEM(keyPem)
+        const certPublicKey = new RSAPublicKey(cert.publicKey.toASN1())
+        const keyPublicKey = new RSAPrivateKey(key.toASN1())
+
+        expect(cert.subject.commonName).toBe(commonName)
+        expect(keyPublicKey.modulus).toBe(certPublicKey.modulus)
       }
     )
   }
