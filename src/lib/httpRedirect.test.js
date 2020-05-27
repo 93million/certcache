@@ -1,4 +1,4 @@
-/* global jest test expect */
+/* global jest afterEach test expect */
 
 const httpRedirect = require('./httpRedirect')
 const http = require('http')
@@ -20,6 +20,10 @@ http.createServer.mockImplementation((handler) => {
 const res = { writeHead: jest.fn(), end: jest.fn() }
 const redirectUrl = 'http://example.com'
 const requestPath = '/.well-known/anything/'
+
+afterEach(() => {
+  httpRedirect.stop()
+})
 
 test(
   'should start an http server on port 80',
@@ -84,6 +88,7 @@ test(
 test(
   'should stop the http server when requested to',
   () => {
+    httpRedirect.stop()
     httpRedirect.start(redirectUrl)
     httpRedirect.stop()
 

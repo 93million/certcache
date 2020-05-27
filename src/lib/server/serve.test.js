@@ -1,4 +1,4 @@
-/* global jest test expect beforeEach */
+/* global jest test expect beforeEach afterEach */
 
 const serve = require('./serve')
 const clientAuthenticatedHttps = require('client-authenticated-https')
@@ -14,10 +14,12 @@ let action
 const payload = { test: 'payload', other: 58008 }
 let response
 const mockActionReturnValue = { foo: 'bar', test: 123 }
-const mockOpts = { }
 let mockConfig
 const listen = jest.fn()
 const writeHead = jest.fn()
+const close = jest.fn()
+
+listen.mockReturnValue({ close })
 
 console.error = jest.fn()
 
@@ -68,10 +70,14 @@ beforeEach(async () => {
   mockConfig = await getConfig()
 })
 
+afterEach(() => {
+  process.emit('SIGTERM')
+})
+
 test(
   'should call action submitted in request',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
     expect(actions.testAction).toBeCalledTimes(1)
   }
@@ -80,7 +86,7 @@ test(
 test(
   'should return data returned by action',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).data).toEqual(mockActionReturnValue)
   }
@@ -91,7 +97,7 @@ test(
   async () => {
     action = 'nonExistantAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -102,7 +108,7 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -113,7 +119,7 @@ test(
   async () => {
     action = 'throwingFeedbackErrorAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).error).toBe(feedbackErrorMessage)
   }
@@ -122,7 +128,7 @@ test(
 test(
   'should send a 200 HTTP status code when action completes successfully',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
     expect(writeHead)
       .toBeCalledWith(200, { 'Content-Type': 'application/json' })
@@ -134,7 +140,7 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(writeHead)
       .toBeCalledWith(500, { 'Content-Type': 'application/json' })
@@ -146,8 +152,21 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(listen).toBeCalledWith(mockConfig.server.port)
+  }
+)
+
+test(
+  'should stop serving on SIGTERM to exit cleanly',
+  async () => {
+    serve()
+
+    await new Promise((resolve) => { setImmediate(resolve) })
+
+    process.emit('SIGTERM')
+
+    expect(close).toBeCalledTimes(1)
   }
 )

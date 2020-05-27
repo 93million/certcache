@@ -1,8 +1,18 @@
-module.exports = (callback, ms) => new Promise((resolve) => {
-  setTimeout(
-    async () => {
-      resolve(await callback())
-    },
-    ms
-  )
-})
+module.exports = (callback, ms) => {
+  let timeout
+
+  const promise = new Promise((resolve) => {
+    timeout = setTimeout(
+      () => {
+        resolve(callback())
+      },
+      ms
+    )
+  })
+
+  promise.clearTimeout = () => {
+    clearTimeout(timeout)
+  }
+
+  return promise
+}

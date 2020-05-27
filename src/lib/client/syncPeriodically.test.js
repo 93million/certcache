@@ -1,4 +1,4 @@
-/* global jest test expect  */
+/* global jest afterEach test expect  */
 
 const syncPeriodically = require('./syncPeriodically')
 const getConfig = require('../getConfig')
@@ -14,7 +14,10 @@ jest.mock('../../lib/client/syncCerts')
 jest.mock('../httpRedirect')
 jest.mock('../helpers/setTimeoutPromise')
 
-setTimeoutPromise.mockImplementationOnce(() => Promise.resolve())
+const mockTimeout = Promise.resolve()
+mockTimeout.clearTimeout = jest.fn()
+
+setTimeoutPromise.mockImplementation((callback) => mockTimeout)
 
 syncCerts.mockReturnValue(Promise.resolve())
 
@@ -23,6 +26,10 @@ const httpRedirectUrl = 'https://certcache.example.com'
 getConfig.mockReturnValueOnce(Promise.resolve({
   httpRedirectUrl
 }))
+
+afterEach(() => {
+  process.emit('SIGTERM')
+})
 
 test(
   'should start an http proxy when requested',
@@ -74,17 +81,27 @@ test(
 
 test(
   'should run forever when requested',
-  () => {
-    setTimeoutPromise.mockImplementationOnce((callback) => { callback() })
+  async () => {
+    setTimeoutPromise.mockImplementationOnce((callback) => {
+      callback()
+      return mockTimeout
+    })
 
     syncPeriodically(true)
 
-    return new Promise((resolve, reject) => {
-      process.nextTick(resolve)
-    })
-      .then(() => {
-        expect(setTimeoutPromise)
-          .toBeCalledWith(expect.any(Function), expect.any(Number))
-      })
+    await new Promise((resolve, reject) => { setImmediate(resolve) })
+    expect(setTimeoutPromise)
+      .toBeCalledWith(expect.any(Function), expect.any(Number))
+  }
+)
+
+test(
+  'should clear sync timeout to shut down nicely on SIGTERM',
+  async () => {
+    syncPeriodically(true)
+    syncPeriodically()
+    await new Promise((resolve, reject) => { setImmediate(resolve) })
+    process.emit('SIGTERM')
+    expect(mockTimeout.clearTimeout).toBeCalledTimes(1)
   }
 )

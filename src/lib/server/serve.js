@@ -10,5 +10,9 @@ module.exports = async () => {
     createRequestHandler({ actions })
   )
 
-  server.listen(config.server.port)
+  const srv = server.listen(config.server.port)
+
+  process.once('SIGTERM', () => {
+    srv.close()
+  })
 }

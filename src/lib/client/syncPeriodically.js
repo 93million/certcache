@@ -3,18 +3,16 @@ const syncCerts = require('../../lib/client/syncCerts')
 const httpRedirect = require('../httpRedirect')
 const setTimeoutPromise = require('../helpers/setTimeoutPromise')
 
-let httpRedirectLaunched
-
 const syncPeriodically = async (forever) => {
   const config = (await getConfig())
+  let foreverPromise
 
-  if (config.httpRedirectUrl !== undefined && httpRedirectLaunched !== true) {
+  if (config.httpRedirectUrl !== undefined) {
     httpRedirect.start(config.httpRedirectUrl)
-    httpRedirectLaunched = true
   }
 
-  await syncCerts()
-    .catch((e) => {
+  const sync = async () => {
+    await syncCerts().catch((e) => {
       console.error(e)
 
       if (forever !== true) {
@@ -22,15 +20,22 @@ const syncPeriodically = async (forever) => {
       }
     })
 
-  if (forever === true) {
-    await setTimeoutPromise(
-      () => syncPeriodically(forever),
-      1000 * config.syncInterval * 60
-    )
-  } else if (config.httpRedirectUrl !== undefined) {
-    httpRedirect.stop()
-    httpRedirectLaunched = false
+    if (forever === true) {
+      foreverPromise = setTimeoutPromise(sync, 1000 * config.syncInterval * 60)
+
+      await foreverPromise
+    } else if (config.httpRedirectUrl !== undefined) {
+      httpRedirect.stop()
+    }
   }
+
+  process.once('SIGTERM', () => {
+    if (foreverPromise !== undefined) {
+      foreverPromise.clearTimeout()
+    }
+  })
+
+  await sync()
 }
 
 module.exports = syncPeriodically
