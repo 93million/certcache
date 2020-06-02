@@ -14,7 +14,7 @@
     "test:sit": "jest -c jest.config.sit.js",
     "test:unit": "jest -c jest.config.js --coverage"
   },
-  "author": "",
+  "author": "Pommy <tm_certcache@93m.co> (https://93million.org)",
   "license": "MIT",
   "dependencies": {
     "@fidm/x509": "^1.2.1",
