@@ -23,4 +23,4 @@ EXPOSE 4433
 
 ENTRYPOINT ["certcache"]
 
-CMD ["serve"]
+CMD ["client"]
