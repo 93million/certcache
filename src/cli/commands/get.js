@@ -1,5 +1,11 @@
 const getCert = require('../../lib/client/getCert')
-const { cahkeys, days, host, httpRedirectUrl } = require('./args')
+const {
+  cahkeys,
+  days,
+  host,
+  httpRedirectUrl,
+  skipFilePerms
+} = require('./args')
 
 module.exports = {
   cmd: 'get',
@@ -16,7 +22,8 @@ module.exports = {
       required: true
     },
     host,
-    'http-redirect-url': httpRedirectUrl
+    'http-redirect-url': httpRedirectUrl,
+    'skip-file-perms': skipFilePerms
   },
   handler: (argv) => {
     getCert(argv).catch((e) => {

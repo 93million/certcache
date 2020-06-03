@@ -8,13 +8,21 @@ const { Readable, Writable } = require('stream')
 const fs = require('fs')
 const zlib = require('zlib')
 const path = require('path')
+const setAndDemandDirPerms = require('./helpers/setAndDemandDirPerms')
+const getConfig = require('./getConfig')
 
 jest.mock('./helpers/fileExists')
 jest.mock('./helpers/mkdirRecursive')
 jest.mock('fs')
+jest.mock('./helpers/setAndDemandDirPerms')
+jest.mock('./getConfig')
 
 const mockFiles = {}
 const mockCertDir = '/test/cert/dir'
+
+setAndDemandDirPerms.mockReturnValue(Promise.resolve())
+
+fs.chmod.mockImplementation((path, mode, callback) => { callback(null) })
 
 fs.createWriteStream.mockImplementation((path, options = {}) => {
   const chunks = []
@@ -115,5 +123,49 @@ test(
     await writeBundle(mockCertPath, await tarArchivePromise)
 
     expect(mkdirRecursive).toBeCalledWith(mockCertPath)
+  }
+)
+
+test(
+  'should set file permissions',
+  async () => {
+    const mockCertPath = '/path/to/cert'
+
+    fileExists.mockImplementation(() => Promise.resolve(false))
+
+    await writeBundle(mockCertPath, await tarArchivePromise)
+
+    expect(fs.chmod).toBeCalledWith(
+      path.resolve(mockCertPath, 'privkey.pem'),
+      0o600,
+      expect.any(Function)
+    )
+  }
+)
+
+test(
+  'should test file permissions',
+  async () => {
+    const mockCertPath = '/path/to/cert'
+
+    await writeBundle(mockCertPath, await tarArchivePromise)
+
+    expect(setAndDemandDirPerms).toBeCalledTimes(1)
+  }
+)
+
+test(
+  'should skip file permissions when required',
+  async () => {
+    const mockCertPath = '/path/to/cert'
+
+    getConfig.mockReturnValueOnce({
+      ...(await getConfig()),
+      skipFilePerms: true
+    })
+
+    await writeBundle(mockCertPath, await tarArchivePromise)
+
+    expect(setAndDemandDirPerms).not.toBeCalled()
   }
 )
