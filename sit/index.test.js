@@ -67,7 +67,8 @@ describe(
             '-d',
             commonName,
             '--cert-name',
-            'thirdparty'
+            'thirdparty',
+            '--skip-file-perms'
           ],
           { cwd: testClientDir }
         )
@@ -95,7 +96,8 @@ describe(
             ngrokDomain,
             '--cert-name',
             'certbot',
-            '--test-cert'
+            '--test-cert',
+            '--skip-file-perms'
           ],
           { cwd: testClientDir }
         )
@@ -134,7 +136,8 @@ describe(
             'certbot',
             '--test-cert',
             '--days',
-            30
+            30,
+            '--skip-file-perms'
           ],
           { cwd: testClientDir }
         )
@@ -181,7 +184,8 @@ describe(
             'certbot',
             '--test-cert',
             '--days',
-            String(Math.ceil(daysBeforeExpiry) + 1)
+            String(Math.ceil(daysBeforeExpiry) + 1),
+            '--skip-file-perms'
           ],
           { cwd: testClientDir }
         )
@@ -207,7 +211,7 @@ describe(
         ]
         await execFile(
           cliCmd,
-          ['sync'],
+          ['sync', '--skip-file-perms'],
           {
             cwd: testClientDir,
             env: {

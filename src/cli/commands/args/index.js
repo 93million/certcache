@@ -19,5 +19,10 @@ module.exports = {
       'Hostname of upstream Certcache Server.',
       'Include portname in format <hostname>:<port>'
     ].join(' ')
+  },
+  skipFilePerms: {
+    boolean: true,
+    description:
+      'Don\'t test or set directory file permissions when writing certificates'
   }
 }

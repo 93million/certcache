@@ -28,6 +28,10 @@ module.exports = ({ argv, env, file }) => {
       ) ||
         file.server.domainAccess
     },
+    skipFilePerms: argv['skip-file-perms'] ||
+      env.CERTCACHE_SKIP_FILE_PERMS === '1' ||
+      file.skipFilePerms ||
+      defaults.skipFilePerms,
     syncInterval: argv.interval ||
       env.CERTCACHE_SYNC_INTERVAL ||
       file.syncInterval ||
