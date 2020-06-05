@@ -24,8 +24,8 @@ module.exports = async (commonName, altNames, meta) => {
 
       if (challenge === undefined) {
         throw new FeedbackError([
-          'Unable to find common certbot challenge that can generate requested',
-          'comination of domains:',
+          'Unable to find a common certbot challenge to generate the requested',
+          'combination of domains:',
           domains.join(', ')
         ].join(' '))
       }
