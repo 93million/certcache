@@ -133,9 +133,9 @@ test(
 
 test(
   // eslint-disable-next-line max-len
-  'should not throw error when CERTCACHE_CLIENT_CERT_RESTRICTIONS is set but client has permission',
+  'should not throw error when CERTCACHE_DOMAIN_ACCESS is set but client has permission',
   async () => {
-    process.env.CERTCACHE_CLIENT_CERT_RESTRICTIONS = ''
+    process.env.CERTCACHE_DOMAIN_ACCESS = ''
 
     await expect(getCert(payload, { req })).resolves.toEqual(expect.any(Object))
   }

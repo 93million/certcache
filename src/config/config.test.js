@@ -17,11 +17,11 @@ test(
 )
 
 test(
-  'should parse yaml CERTCACHE_CLIENT_CERT_RESTRICTIONS',
+  'should parse yaml CERTCACHE_DOMAIN_ACCESS',
   () => {
     const mockCertRestrictions = { test: 'item', bar: 432 }
     const env = {
-      CERTCACHE_CLIENT_CERT_RESTRICTIONS: yaml.stringify(mockCertRestrictions)
+      CERTCACHE_DOMAIN_ACCESS: yaml.stringify(mockCertRestrictions)
     }
 
     expect(config({ argv: {}, env, file }).server.domainAccess)
