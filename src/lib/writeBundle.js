@@ -37,10 +37,6 @@ module.exports = async (certDir, data) => {
   return new Promise((resolve, reject) => {
     extract.on('error', reject)
     extract.on('finish', async () => {
-      if (skipFilePerms !== true) {
-        await chmod(path.resolve(certDir, 'privkey.pem'), 0o600)
-      }
-
       const writeStream = fs
         .createWriteStream(path.resolve(certDir, 'fullchain.pem'))
 
@@ -54,7 +50,13 @@ module.exports = async (certDir, data) => {
           .createReadStream(path.resolve(certDir, 'chain.pem'))
           .pipe(appendStream)
 
-        appendStream.on('finish', resolve)
+        appendStream.on('finish', async () => {
+          if (skipFilePerms !== true) {
+            await chmod(path.resolve(certDir, 'privkey.pem'), 0o600)
+          }
+
+          resolve()
+        })
       })
       fs.createReadStream(path.resolve(certDir, 'cert.pem')).pipe(writeStream)
     })
