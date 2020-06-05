@@ -13,7 +13,7 @@ module.exports = ({ argv, env, file }) => {
     certs: (env.CERTCACHE_CERTS && yaml.parse(env.CERTCACHE_CERTS)) ||
       file.certs ||
       defaults.certs,
-    httpRedirectUrl: argv.httpRedirectUrl ||
+    httpRedirectUrl: argv['http-redirect-url'] ||
       process.env.CERTCACHE_HTTP_REDIRECT_URL ||
       file.httpRedirectUrl,
     renewalDays: (argv.days && Number(argv.days)) ||
@@ -21,10 +21,13 @@ module.exports = ({ argv, env, file }) => {
       file.renewalDays ||
       defaults.renewalDays,
     server: {
-      port: env.CERTCACHE_PORT || file.server.port || defaults.server.port,
+      port: argv.port ||
+        env.CERTCACHE_PORT ||
+        file.server.port ||
+        defaults.server.port,
       domainAccess: (
-        env.CERTCACHE_CLIENT_CERT_RESTRICTIONS &&
-        yaml.parse(env.CERTCACHE_CLIENT_CERT_RESTRICTIONS)
+        env.CERTCACHE_DOMAIN_ACCESS &&
+        yaml.parse(env.CERTCACHE_DOMAIN_ACCESS)
       ) ||
         file.server.domainAccess
     },
