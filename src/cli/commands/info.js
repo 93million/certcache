@@ -1,9 +1,9 @@
 const outputInfo = require('../../lib/client/outputInfo')
-const { cahkeys, host } = require('./args')
+const { cahkeys, upstream } = require('./args')
 
 module.exports = {
   cmd: 'info',
   desc: 'Display info about Certcache client and server',
-  builder: { cahkeys, host },
+  builder: { cahkeys, upstream },
   handler: outputInfo
 }

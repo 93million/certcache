@@ -13,16 +13,16 @@ module.exports = {
       'client server is recipient of HTTP-01 ACME challenges'
     ].join(' ')
   },
-  host: {
-    alias: 'h',
-    description: [
-      'Hostname of upstream Certcache Server.',
-      'Include portname in format <hostname>:<port>'
-    ].join(' ')
-  },
   skipFilePerms: {
     boolean: true,
     description:
       'Don\'t test or set directory file permissions when writing certificates'
+  },
+  upstream: {
+    alias: 'u',
+    description: [
+      'Upstream hostname of upstream Certcache Server.',
+      'Include port in format <hostname>:<port>'
+    ].join(' ')
   }
 }
