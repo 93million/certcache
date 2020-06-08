@@ -1,7 +1,11 @@
 .DS_Store
 /.vscode
+/cache
 /cahkeys
 /certs
-/certbot
+/conf
 /coverage
 /node_modules
+/sit/coverage
+/sit/skel/server/cache/thirdparty/
+/sit/test

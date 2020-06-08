@@ -1,40 +1,33 @@
-const config = require('../../config')
 const getCert = require('../../lib/client/getCert')
+const {
+  cahkeys,
+  days,
+  upstream,
+  httpRedirectUrl,
+  skipFilePerms
+} = require('./args')
 
 module.exports = {
   cmd: 'get',
   desc: 'Get a single cert from Certcache server',
   builder: {
+    cahkeys,
     'cert-name': {
       description: 'Certificate name (used for certificate directory name)'
     },
+    days,
     domains: {
       alias: 'd',
       description: 'List of comma-separated domain domains',
       required: true
     },
-    host: {
-      alias: 'h',
-      description: 'Hostname of Certcache Server'
-    },
-    'http-redirect-url': {
-      description: 'Address of a Certcache server to redirect HTTP-01 ACME challenges to'
-    },
-    port: {
-      alias: 'p',
-      default: config.certcachePort,
-      description: 'Port to connect to Certcache server'
-    },
-    'test-cert': {
-      alias: 't',
-      boolean: true,
-      default: false,
-      description: 'Generate a test certificate'
-    }
+    'http-redirect-url': httpRedirectUrl,
+    'skip-file-perms': skipFilePerms,
+    upstream
   },
   handler: (argv) => {
     getCert(argv).catch((e) => {
-      console.error(`ERROR! ${e}`)
+      console.error(e.message)
       process.exit(1)
     })
   }

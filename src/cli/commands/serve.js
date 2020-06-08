@@ -1,13 +1,13 @@
-const config = require('../../config')
 const serve = require('../../lib/server/serve')
+const { cahkeys } = require('./args')
 
 module.exports = {
   cmd: 'serve',
   desc: 'Start certcache server',
   builder: {
+    cahkeys,
     port: {
       alias: 'p',
-      default: config.certcachePort,
       description: 'Port to run Certcache server'
     }
   },

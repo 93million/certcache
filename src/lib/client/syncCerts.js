@@ -1,89 +1,122 @@
 const getLocalCertificates = require('../getLocalCertificates')
-const config = require('../../config')
-const httpRedirect = require('../httpRedirect')
-const yaml = require('yaml')
-const getDomainsFromConfig = require('./getDomainsFromConfig')
+const getConfig = require('../getConfig')
+const canonicaliseCertDefinitions = require('./canonicaliseCertDefinitions')
 const obtainCert = require('./obtainCert')
 const path = require('path')
 const debug = require('debug')('certcache:syncCerts')
+const getMetaFromCert =
+  require('../getMetaFromExtensionFunction')('getMetaFromCert')
+const getMetaFromCertDefinition =
+  require('../getMetaFromExtensionFunction')('getMetaFromCertDefinition')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
+const arrayItemsMatch = require('../helpers/arrayItemsMatch')
+const filterAsync = require('../helpers/filterAsync')
+const someAsync = require('../helpers/someAsync')
+const metaItemsMatch = require('../helpers/metaItemsMatch')
 
-module.exports = async (opts) => {
-  const configDomains = (process.env.CERTCACHE_DOMAINS !== undefined)
-    ? getDomainsFromConfig(yaml.parse(process.env.CERTCACHE_DOMAINS))
-    : []
-  const certcacheCertDir = config.certcacheCertDir
-  debug('Searching for local certs in', certcacheCertDir)
-  const certs = await getLocalCertificates(certcacheCertDir)
-  debug('Local certs:', certs)
-  const configDomainsWithoutCert = configDomains
-    .filter(({ domains, isTest }) => {
-      return certs.findCert(
-        domains[0],
-        domains,
-        { isTest: (isTest === true) }
-      ) === undefined
-    })
-  debug(
-    'Certs in CERTCACHE_DOMAINS not in local cert dir:',
-    configDomainsWithoutCert
-  )
+module.exports = async () => {
+  const config = (await getConfig())
+  const {
+    certDir,
+    certs,
+    renewalDays,
+    upstream
+  } = config
+  const certcacheCertDir = path.resolve(certDir)
+  const localCerts = await getLocalCertificates(certcacheCertDir)
   const certRenewEpoch = new Date()
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
 
-  certRenewEpoch.setDate(certRenewEpoch.getDate() + config.renewDaysBefore)
+  certRenewEpoch.setDate(certRenewEpoch.getDate() + renewalDays)
 
-  const certsForRenewal = certs
-    .filter(({ notAfter }) => (notAfter.getTime() < certRenewEpoch.getTime()))
+  const certDefinitions = canonicaliseCertDefinitions(certs)
+  const certDefinitionsToRenew = await filterAsync(
+    certDefinitions,
+    async (certDefinition, i) => (
+      await someAsync(
+        localCerts,
+        async (cert) => {
+          const { certPath, commonName, altNames = [] } = cert
 
-  debug(`Local certs that expiring in next ${config.renewDaysBefore} days:`, certsForRenewal)
-
-  const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
-  const host = opts.host || config.certcacheHost
-  const port = opts.port || config.certcachePort
-
-  if (httpRedirectUrl !== undefined) {
-    httpRedirect.start(httpRedirectUrl)
-  }
-
-  const certRenewalPromise = Promise.all(certsForRenewal.map(async ({
-    commonName,
-    altNames,
-    issuerCommonName,
-    certPath
-  }) => {
-    const isTest = (issuerCommonName.indexOf('Fake') !== -1)
-
-    return obtainCert(
-      host,
-      port,
-      commonName,
-      altNames,
-      isTest,
-      path.dirname(certPath)
+          return (
+            path.basename(path.dirname(certPath)) === certDefinition.certName &&
+            commonName === certDefinition.domains[0] &&
+            (
+              arrayItemsMatch(altNames, certDefinition.domains) ||
+              (altNames.length === 0 && certDefinition.domains.length === 1)
+            ) &&
+            metaItemsMatch(
+              await getMetaFromCert(cert),
+              await getMetaFromCertDefinition(certDefinition)
+            )
+          )
+        }
+      ) === false
     )
-  }))
+  )
 
-  const configDomainPromise = Promise.all(configDomainsWithoutCert.map(
-    async ({ domains, isTest, certName }) => obtainCert(
-      host,
-      port,
-      domains[0],
-      domains,
-      isTest,
-      `${config.certcacheCertDir}/${certName}`
-    )
+  debug('Searching for local certs in', certcacheCertDir)
+
+  const certDefinitionsForRenewal = await Promise.all(
+    certDefinitionsToRenew.map(async (certDefinition) => ({
+      commonName: certDefinition.domains[0],
+      altNames: certDefinition.domains,
+      meta: await getMetaFromCertDefinition(certDefinition),
+      certDir: path.resolve(certDir, certDefinition.certName)
+    }))
+  )
+
+  const certsForRenewal = localCerts.filter(({ certPath, notAfter }) => (
+    notAfter.getTime() < certRenewEpoch.getTime() &&
+    certDefinitionsForRenewal.some(
+      ({ certDir }) => (path.dirname(certPath) === certDir)
+    ) === false
   ))
 
-  await certRenewalPromise
-  await configDomainPromise
+  const certsToRequest = [
+    ...certDefinitionsForRenewal,
+    ...await Promise.all(certsForRenewal.map(async (cert) => ({
+      ...cert,
+      certDir: path.dirname(cert.certPath),
+      meta: await getMetaFromCert(cert)
+    })))
+  ]
 
-  if (httpRedirectUrl !== undefined) {
-    httpRedirect.stop()
+  const obtainCertErrors = []
+
+  await Promise.all(
+    certsToRequest.map(async ({ altNames, certDir, commonName, meta }) => {
+      try {
+        await obtainCert(
+          host,
+          port,
+          commonName,
+          altNames,
+          meta,
+          certDir,
+          { cahKeysDir: config.cahKeysDir, days: renewalDays }
+        )
+      } catch (e) {
+        obtainCertErrors.push(e.message)
+      }
+    })
+  )
+
+  const numRequested = certsForRenewal.length + certDefinitionsForRenewal.length
+  const numFailed = obtainCertErrors.length
+  const msg = [
+    'Sync complete:',
+    numRequested,
+    'requested.',
+    numRequested - numFailed,
+    'successful.',
+    numFailed,
+    'failed.'
+  ]
+
+  console.log(msg.join(' '))
+
+  if (obtainCertErrors.length !== 0) {
+    throw new Error(obtainCertErrors.join('\n'))
   }
-
-  console.log([
-    certsForRenewal.length + configDomainsWithoutCert.length,
-    'of',
-    certs.length + configDomainsWithoutCert.length,
-    'certs synced'
-  ].join(' '))
 }

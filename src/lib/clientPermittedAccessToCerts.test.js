@@ -5,20 +5,20 @@ const clientPermittedAccessToCerts = require('./clientPermittedAccessToCerts')
 const mockClientCertRestrictions = [
   {
     domains: [
-      '^(www[1-2]\\.)?example\\.com$',
-      '^secure[1-2]\\.93million\\.com$'
+      '~^(www[1-2]\\.)?example\\.com$',
+      '~^secure[1-2]\\.93million\\.com$'
     ],
     allow: ['deploy']
   },
   {
     domains: [
-      '^test[1-2]\\.example\\.com$',
-      '^qa[1-2]\\.93million\\.com$'
+      '~^test[1-2]\\.example\\.com$',
+      '~^qa[1-2]\\.93million\\.com$'
     ],
     deny: ['dev']
   },
   {
-    domains: ['^dev[1-2]\\.example\\.com$'],
+    domains: ['~^dev[1-2]\\.example\\.com$'],
     allow: [
       'deploy',
       'dev'
@@ -34,7 +34,7 @@ test(
     expect(clientPermittedAccessToCerts(
       mockClientCertRestrictions,
       'deploy',
-      ['www.example.com', 'dev.example.com']
+      ['www1.example.com', 'dev2.example.com']
     ))
       .toBe(true)
   }
@@ -77,13 +77,13 @@ test(
 )
 
 test(
-  'should return true for non-matching domain',
+  'should return false for non-matching domain',
   () => {
     expect(clientPermittedAccessToCerts(
       mockClientCertRestrictions,
-      'dev',
-      ['foo1.example.com']
+      'deploy',
+      ['www1.example.com', '93m.co.uk']
     ))
-      .toBe(true)
+      .toBe(false)
   }
 )

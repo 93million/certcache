@@ -1,10 +1,11 @@
-/* global jest test expect beforeEach */
+/* global jest test expect beforeEach afterEach */
 
 const serve = require('./serve')
 const clientAuthenticatedHttps = require('client-authenticated-https')
 const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const { Readable, Writable } = require('stream')
+const getConfig = require('../getConfig')
 
 jest.mock('client-authenticated-https')
 jest.mock('./actions')
@@ -13,35 +14,40 @@ let action
 const payload = { test: 'payload', other: 58008 }
 let response
 const mockActionReturnValue = { foo: 'bar', test: 123 }
-const mockOpts = { port: 1234 }
+let mockConfig
 const listen = jest.fn()
 const writeHead = jest.fn()
+const close = jest.fn()
+
+listen.mockReturnValue({ close })
 
 console.error = jest.fn()
 
-clientAuthenticatedHttps.createServer.mockImplementation((callback) => {
-  const requestBody = JSON.stringify({ action, ...payload })
-  const _response = []
-  const req = new Readable({ read: () => {} })
-  const res = new Writable({ write: (chunk, encoding, callback) => {
-    _response.push(chunk)
-    callback()
-  } })
+clientAuthenticatedHttps
+  .createServer
+  .mockImplementation((options, callback) => {
+    const requestBody = JSON.stringify({ action, ...payload })
+    const _response = []
+    const req = new Readable({ read: () => {} })
+    const res = new Writable({ write: (chunk, encoding, callback) => {
+      _response.push(chunk)
+      callback()
+    } })
 
-  res.writeHead = writeHead
+    res.writeHead = writeHead
 
-  req.push(requestBody)
-  req.push(null)
+    req.push(requestBody)
+    req.push(null)
 
-  callback(req, res)
+    callback(req, res)
 
-  return new Promise((resolve) => {
-    res.on('finish', () => {
-      response = _response.join('')
-      resolve({ listen })
+    return new Promise((resolve) => {
+      res.on('finish', () => {
+        response = _response.join('')
+        resolve({ listen })
+      })
     })
   })
-})
 
 actions.testAction = jest.fn()
 actions.testAction.mockImplementation(() => {
@@ -59,18 +65,19 @@ actions.throwingFeedbackErrorAction.mockImplementation(() => {
   throw new FeedbackError(feedbackErrorMessage)
 })
 
-beforeEach(() => {
-  actions.testAction.mockClear()
-  console.error.mockClear()
-  writeHead.mockClear()
-  listen.mockClear()
+beforeEach(async () => {
   action = 'testAction'
+  mockConfig = await getConfig()
+})
+
+afterEach(() => {
+  process.emit('SIGTERM')
 })
 
 test(
   'should call action submitted in request',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
     expect(actions.testAction).toBeCalledTimes(1)
   }
@@ -79,7 +86,7 @@ test(
 test(
   'should return data returned by action',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).data).toEqual(mockActionReturnValue)
   }
@@ -90,7 +97,7 @@ test(
   async () => {
     action = 'nonExistantAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -101,7 +108,7 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).success).toBe(false)
   }
@@ -112,7 +119,7 @@ test(
   async () => {
     action = 'throwingFeedbackErrorAction'
 
-    await serve(mockOpts)
+    await serve()
 
     expect(JSON.parse(response).error).toBe(feedbackErrorMessage)
   }
@@ -121,9 +128,10 @@ test(
 test(
   'should send a 200 HTTP status code when action completes successfully',
   async () => {
-    await serve(mockOpts)
+    await serve()
 
-    expect(writeHead).toBeCalledWith(200, { 'Content-Type': 'application/json' })
+    expect(writeHead)
+      .toBeCalledWith(200, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -132,9 +140,10 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
-    expect(writeHead).toBeCalledWith(500, { 'Content-Type': 'application/json' })
+    expect(writeHead)
+      .toBeCalledWith(500, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -143,8 +152,21 @@ test(
   async () => {
     action = 'throwingAction'
 
-    await serve(mockOpts)
+    await serve()
 
-    expect(listen).toBeCalledWith(mockOpts.port)
+    expect(listen).toBeCalledWith(mockConfig.server.port)
+  }
+)
+
+test(
+  'should stop serving on SIGTERM to exit cleanly',
+  async () => {
+    serve()
+
+    await new Promise((resolve) => { setImmediate(resolve) })
+
+    process.emit('SIGTERM')
+
+    expect(close).toBeCalledTimes(1)
   }
 )

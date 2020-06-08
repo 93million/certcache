@@ -1,21 +1,29 @@
-const config = require('../../config')
-const syncCerts = require('../../lib/client/syncCerts')
+const syncPeriodically = require('../../lib/client/syncPeriodically')
+const {
+  cahkeys,
+  days,
+  upstream,
+  httpRedirectUrl,
+  skipFilePerms
+} = require('./args')
 
 module.exports = {
   cmd: 'sync',
-  desc: 'Sync certs once and exit',
+  desc: 'Sync certificates with Certcache server',
   builder: {
-    host: { alias: 'h' },
-    port: {
-      alias: 'p',
-      default: config.certcachePort,
-      description: 'Port to connect to Certcache server'
-    }
+    cahkeys,
+    days,
+    forever: {
+      description: 'Sync certificates continuously with Certcache server'
+    },
+    'http-redirect-url': httpRedirectUrl,
+    interval: {
+      description: 'Num minutes between polling for certificates'
+    },
+    'skip-file-perms': skipFilePerms,
+    upstream
   },
-  handler: (argv) => {
-    syncCerts(argv).catch((e) => {
-      console.error(`ERROR! ${e}`)
-      process.exit(1)
-    })
+  handler: async (argv) => {
+    await syncPeriodically(argv.forever)
   }
 }

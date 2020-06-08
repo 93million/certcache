@@ -2,4 +2,6 @@
 cahkeys
 certs
 certbot
+conf
+docs
 node_modules

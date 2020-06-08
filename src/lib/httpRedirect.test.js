@@ -1,4 +1,4 @@
-/* global jest test expect beforeEach */
+/* global jest afterEach test expect */
 
 const httpRedirect = require('./httpRedirect')
 const http = require('http')
@@ -21,12 +21,8 @@ const res = { writeHead: jest.fn(), end: jest.fn() }
 const redirectUrl = 'http://example.com'
 const requestPath = '/.well-known/anything/'
 
-beforeEach(() => {
-  listen.mockClear()
-  close.mockClear()
-  http.createServer.mockClear()
-  res.writeHead.mockClear()
-  res.end.mockClear()
+afterEach(() => {
+  httpRedirect.stop()
 })
 
 test(
@@ -84,7 +80,7 @@ test(
     })
 
     expect(res.writeHead.mock.calls[1][1]).toEqual({
-      Location: `${redirectUrl}${requestPath}`
+      Location: expectedLocation
     })
   }
 )
@@ -92,6 +88,7 @@ test(
 test(
   'should stop the http server when requested to',
   () => {
+    httpRedirect.stop()
     httpRedirect.start(redirectUrl)
     httpRedirect.stop()
 

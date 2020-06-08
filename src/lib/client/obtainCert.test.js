@@ -1,10 +1,10 @@
 /* global jest beforeEach test expect */
 
 const obtainCert = require('./obtainCert')
-const requestCert = require('../requestCert')
+const request = require('../request')
 const writeBundle = require('../writeBundle')
 
-jest.mock('../requestCert')
+jest.mock('../request')
 jest.mock('../writeBundle')
 
 console.error = jest.fn()
@@ -12,23 +12,19 @@ console.log = jest.fn()
 
 let mockResponse
 
-requestCert.mockImplementation(() => {
-  return Promise.resolve(JSON.stringify(mockResponse))
+request.mockImplementation(() => {
+  return Promise.resolve(mockResponse)
 })
 
 const mockHost = 'certcache.example.com'
 const mockPort = 54321
 const mockCommonName = 'example.com'
 const mockAltNames = ['test.example.com', 'foo.example.com']
-const mockIsTest = true
+const mockMeta = { isTest: true }
 const mockCertDirPath = '/test/path/certs/example.com'
+const mockCahKeysDir = '/test/path/cahkeys'
 
 beforeEach(() => {
-  console.error.mockClear()
-  console.log.mockClear()
-  requestCert.mockClear()
-  writeBundle.mockClear()
-
   mockResponse = { success: true, data: { bundle: 'foobar54321' } }
 })
 
@@ -40,14 +36,15 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
-      mockCertDirPath
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
-    expect(requestCert).toBeCalledWith(
-      { host: mockHost, port: mockPort },
-      [mockCommonName, ...mockAltNames],
-      { isTest: mockIsTest }
+    expect(request).toBeCalledWith(
+      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      expect.any(String),
+      { domains: [mockCommonName, ...mockAltNames], meta: mockMeta }
     )
   }
 )
@@ -60,8 +57,9 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
-      mockCertDirPath
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
     expect(writeBundle).toBeCalledWith(
@@ -72,40 +70,42 @@ test(
 )
 
 test(
-  'should output a warning if cert fails to be retrieved from certcache server',
+  'should throw an error when failing to get cert from certcache server',
   async () => {
     mockResponse = { success: false }
 
-    await obtainCert(
+    await expect(obtainCert(
       mockHost,
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
-      mockCertDirPath
-    )
-
-    expect(console.error).toBeCalledTimes(1)
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    ))
+      .rejects
+      .toThrow()
   }
 )
 
 test(
-  'should output any error messages retrieved from certcache server',
+  'should throw an error containing messages retrieved from certcache server',
   async () => {
     const error = '__test error__'
 
     mockResponse = { success: false, error }
 
-    await obtainCert(
+    await expect(obtainCert(
       mockHost,
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest,
-      mockCertDirPath
-    )
-
-    expect(console.error.mock.calls[0][0]).toContain(error)
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    ))
+      .rejects
+      .toThrow(error)
   }
 )
 
@@ -117,11 +117,33 @@ test(
       mockPort,
       mockCommonName,
       mockAltNames,
-      mockIsTest === false,
-      mockCertDirPath
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
     )
 
     expect(console.log.mock.calls.map((args) => (args.join(' '))).join(' '))
       .toContain(mockCommonName)
+  }
+)
+
+test(
+  'should handle being invoked with undefined altNames',
+  async () => {
+    await obtainCert(
+      mockHost,
+      mockPort,
+      mockCommonName,
+      undefined,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    )
+
+    expect(request).toBeCalledWith(
+      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      expect.any(String),
+      { domains: [mockCommonName], meta: mockMeta }
+    )
   }
 )

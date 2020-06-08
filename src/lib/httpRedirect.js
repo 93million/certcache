@@ -16,6 +16,13 @@ module.exports.start = (httpRedirectUrl) => {
   }).listen(80)
 }
 
-module.exports.stop = () => {
-  redirectServer.close()
+const stop = () => {
+  if (redirectServer !== undefined) {
+    redirectServer.close()
+    redirectServer = undefined
+  }
 }
+
+process.on('SIGTERM', () => stop())
+
+module.exports.stop = stop

@@ -1,14 +1,25 @@
-const config = require('../../config')
+const path = require('path')
+const getConfig = require('../getConfig')
 const httpRedirect = require('../httpRedirect')
 const obtainCert = require('./obtainCert')
+const getMetaFromConfig =
+  require('../getMetaFromExtensionFunction')('getMetaFromConfig')
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 module.exports = async (opts) => {
-  const host = opts.host || config.certcacheHost
-  const port = opts.port || config.certcachePort
-  const httpRedirectUrl = opts['http-redirect-url'] || config.httpRedirectUrl
+  const config = (await getConfig())
+  const {
+    certDir,
+    httpRedirectUrl,
+    renewalDays,
+    upstream
+  } = config
   const domains = opts.domains.split(',')
-  const [commonName, ...altNames] = domains
+  const commonName = domains[0]
+  const altNames = domains
   const certName = opts['cert-name'] || commonName
+  const meta = await getMetaFromConfig(config)
+  const { host, port } = canonicaliseUpstreamConfig(upstream)
 
   if (httpRedirectUrl !== undefined) {
     httpRedirect.start(httpRedirectUrl)
@@ -17,10 +28,11 @@ module.exports = async (opts) => {
   await obtainCert(
     host,
     port,
-    domains[0],
+    commonName,
     altNames,
-    opts['test-cert'],
-    `${config.certcacheCertDir}/${certName}`
+    meta,
+    path.resolve(certDir, certName),
+    { cahKeysDir: config.cahKeysDir, days: renewalDays }
   )
 
   if (httpRedirectUrl !== undefined) {

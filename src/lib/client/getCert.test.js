@@ -1,64 +1,51 @@
 /* global jest test expect beforeEach */
 
+const path = require('path')
 const getCert = require('./getCert')
-const requestCert = require('../requestCert')
 const httpRedirect = require('../httpRedirect')
-const config = require('../../config')
 const obtainCert = require('./obtainCert')
+const getConfig = (require('../getConfig'))
+const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
-jest.mock('getopts')
-jest.mock('../requestCert')
 jest.mock('../httpRedirect')
 jest.mock('./obtainCert')
+jest.mock('../getConfig')
 
 let mockOpts
-let mockResponse
-const mockConfig = {
-  certcacheHost: 'bar.com',
-  certcachePort: 54321
-}
-
-for (const i in mockConfig) {
-  config[i] = mockConfig[i]
-}
-
-requestCert.mockImplementation(() => {
-  return Promise.resolve(JSON.stringify(mockResponse))
-})
+let mockConfig
+const mockMeta = { certbot: { isTest: expect.any(Boolean) } }
 
 console.error = jest.fn()
 console.log = jest.fn()
 
-beforeEach(() => {
-  mockResponse = { success: true, data: { bundle: 'foobar54321' } }
+beforeEach(async () => {
   mockOpts = {
-    'cert-name': 'test-cert-name',
     domains: 'example.com,test.example.com,foo.example.com',
-    host: 'example.com',
-    port: 12345,
-    'test-cert': true
+    cahkeys: '/argv/path/to/cahkeys',
+    'cert-name': 'testcert'
   }
-  requestCert.mockClear()
-  console.error.mockClear()
-  console.log.mockClear()
-  httpRedirect.start.mockClear()
-  httpRedirect.stop.mockClear()
+  mockConfig = await getConfig()
 })
 
 test(
   'should request certs using args from command-line when provided',
   async () => {
     const mockDomainsArr = mockOpts.domains.split(',')
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockOpts.host,
-      mockOpts.port,
+      host,
+      port,
       mockDomainsArr[0],
-      mockDomainsArr.slice(1),
-      mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${mockOpts['cert-name']}`
+      mockDomainsArr,
+      mockMeta,
+      path.resolve(mockConfig.certDir, mockOpts['cert-name']),
+      {
+        cahKeysDir: mockConfig.cahKeysDir,
+        days: mockConfig.renewalDays
+      }
     )
   }
 )
@@ -74,29 +61,40 @@ test(
     await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
-    const [commonName, ...altNames] = mockDomainsArr
+    const commonName = mockDomainsArr[0]
+    const altNames = mockDomainsArr
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     await getCert(mockOpts)
 
     expect(obtainCert).toBeCalledWith(
-      mockConfig.certcacheHost,
-      mockConfig.certcachePort,
+      host,
+      port,
       commonName,
       altNames,
-      mockOpts['test-cert'],
-      `${config.certcacheCertDir}/${commonName}`
+      mockMeta,
+      path.resolve(mockConfig.certDir, commonName),
+      {
+        cahKeysDir: mockConfig.cahKeysDir,
+        days: mockConfig.renewalDays
+      }
     )
   }
 )
 
 test(
-  'should start an http proxy when requested',
+  'should start an http redirect server when requested',
   async () => {
-    mockOpts['http-redirect-url'] = 'https://certcache.example.com'
+    const httpRedirectUrl = 'https://certcache.example.com'
+
+    getConfig.mockReturnValueOnce({
+      ...mockConfig,
+      httpRedirectUrl
+    })
 
     await getCert(mockOpts)
 
-    expect(httpRedirect.start).toBeCalledWith(mockOpts['http-redirect-url'])
+    expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
     expect(httpRedirect.stop).toBeCalled()
   }
 )
@@ -107,15 +105,20 @@ test(
     await getCert(mockOpts)
 
     const mockDomainsArr = mockOpts.domains.split(',')
+    const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     expect(obtainCert)
       .toBeCalledWith(
-        mockOpts.host,
-        mockOpts.port,
+        host,
+        port,
         mockDomainsArr[0],
-        mockDomainsArr.slice(1),
-        mockOpts['test-cert'],
-        `${config.certcacheCertDir}/${mockOpts['cert-name']}`
+        mockDomainsArr,
+        mockMeta,
+        path.resolve(mockConfig.certDir, mockOpts['cert-name']),
+        {
+          cahKeysDir: mockConfig.cahKeysDir,
+          days: mockConfig.renewalDays
+        }
       )
   }
 )

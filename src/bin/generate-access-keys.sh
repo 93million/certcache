@@ -1,19 +1,21 @@
 #! /usr/bin/env bash
 
-set -e
+# TODO remove this
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# set -e
 
-SERVER_NAME="$1"
+# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-usage () {
-  echo "$0" "<certcache servername>"
-}
+# SERVER_NAME="$1"
 
-if [ -z "$SERVER_NAME" ]; then
-  usage
-  exit 1
-fi
+# usage () {
+#   echo "$0" "<certcache servername>"
+# }
 
-"$DIR/../lib/clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../cahkeys" -n "$SERVER_NAME"
-"$DIR/../lib/clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../cahkeys" -n "client"
+# if [ -z "$SERVER_NAME" ]; then
+#   usage
+#   exit 1
+# fi
+
+# "$DIR/../lib/clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../cahkeys" -n "$SERVER_NAME"
+# "$DIR/../lib/clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../cahkeys" -n "client"

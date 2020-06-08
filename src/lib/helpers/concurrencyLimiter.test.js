@@ -65,3 +65,31 @@ test(
     expect(_catch).toBeCalledTimes(1)
   }
 )
+
+test(
+  'should pass all arguments to wrapped function',
+  async () => {
+    const asyncFn = (a, b, c) => new Promise((resolve) => {
+      setTimeout(() => { resolve(a + b * c) }, 0)
+    })
+    const limitedFn = concurrencyLimiter(asyncFn, 2)
+
+    await expect(limitedFn(2, 2, 3)).resolves.toBe(8)
+    await expect(limitedFn(4, 2, 4)).resolves.toBe(12)
+    await expect(limitedFn(7, 2, 3)).resolves.toBe(13)
+    await expect(limitedFn(6, 4, 2)).resolves.toBe(14)
+  }
+)
+
+test(
+  'should work with synchronous functions',
+  async () => {
+    const syncFn = (a, b, c) => a + b * c
+    const limitedFn = concurrencyLimiter(syncFn, 2)
+
+    await expect(limitedFn(2, 2, 3)).resolves.toBe(8)
+    await expect(limitedFn(4, 2, 4)).resolves.toBe(12)
+    await expect(limitedFn(7, 2, 3)).resolves.toBe(13)
+    await expect(limitedFn(6, 4, 2)).resolves.toBe(14)
+  }
+)

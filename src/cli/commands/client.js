@@ -1,22 +1,13 @@
-const config = require('../../config')
-const syncCerts = require('../../lib/client/syncCerts')
+const sync = require('./sync')
+const syncPeriodically = require('../../lib/client/syncPeriodically')
+
+const { forever, ...builder } = sync.builder
 
 module.exports = {
   cmd: 'client',
-  desc: 'Start client that continuously syncs certs Certcache server',
-  builder: {
-    host: { alias: 'h' },
-    port: {
-      alias: 'p',
-      default: config.certcachePort,
-      description: 'Port to connect to Certcache server'
-    }
-  },
-  handler: (argv) => {
-    const syncPeriodically = () => {
-      syncCerts(argv).catch((e) => { console.error(`ERROR! ${e}`) })
-      setTimeout(syncPeriodically, 1000 * config.clientSyncInterval)
-    }
-    syncPeriodically()
+  desc: `${forever.description} (aliases 'sync --forever')`,
+  builder,
+  handler: async () => {
+    await syncPeriodically(true)
   }
 }

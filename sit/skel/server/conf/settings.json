@@ -1,0 +1,12 @@
+{
+  "extensions": {
+    "certbot": {
+      "domains": [
+        {
+          "domain": "~(.*\\.)?.ngrok.io$",
+          "challenges": ["http-01"]
+        }
+      ]
+    }
+  }
+}

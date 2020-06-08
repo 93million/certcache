@@ -4,7 +4,6 @@ const fs = require('fs')
 const getCertInfo = require('./getCertInfo')
 const fileExists = require('./helpers/fileExists')
 const getLocalCertificates = require('./getLocalCertificates')
-const CertList = require('./classes/CertList')
 
 jest.mock('fs')
 jest.mock('./getCertInfo')
@@ -30,15 +29,15 @@ fs.readdir.mockImplementation((path, callback) => {
 
 const mockCert = { _test_: 58008 }
 
-getCertInfo.mockReturnValue(mockCert)
+getCertInfo.mockReturnValue(Promise.resolve(mockCert))
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {
-  const expected = CertList.from([
+  const expected = [
     { ...mockCert, certPath: `${certDir}/cert1/cert.pem` },
     { ...mockCert, certPath: `${certDir}/cert2/cert.pem` },
     { ...mockCert, certPath: `${certDir}/cert3/cert.pem` }
-  ])
+  ]
 
   const localCerts = getLocalCertificates(certDir)
 
@@ -48,6 +47,8 @@ test('should get local certificates', async () => {
 test(
   'should return a blank array when certificate diretcory doesn\'t exist',
   async () => {
-    await expect(getLocalCertificates('/dir/that/doesnt/exist')).resolves.toHaveLength(0)
+    await expect(getLocalCertificates('/dir/that/doesnt/exist'))
+      .resolves
+      .toHaveLength(0)
   }
 )
