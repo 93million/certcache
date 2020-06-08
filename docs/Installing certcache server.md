@@ -91,7 +91,7 @@ If `CERTCACHE_CERTBOT_DOMAINS` is defined, Certbot will only be used to generate
           challenges: ['dns-01']
 ```
 
-For information about setting up challenges see [Configure challenges.md](Configure challenges.md).
+For information about setting up challenges see [Configure challenges.md](Configure%20challenges.md).
 
 ## Start the server
 

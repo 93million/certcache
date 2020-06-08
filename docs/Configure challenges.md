@@ -92,4 +92,4 @@ $ curl -v http://93m.co/.well-known/acme-challenge/foo
 
 ### Not running an HTTP server?
 
-If you want to use HTTP-01 validation but not have HTTP servers running on your domains, you can use the inbuilt HTTP server in CertCache to handle validation. See section [Running an HTTP redirect server](./Installing certcache client.md#running-an-http-redirect-server).
+If you want to use HTTP-01 validation but not have HTTP servers running on your domains, you can use the inbuilt HTTP server in CertCache to handle validation. See section [Running an HTTP redirect server](./Installing%20certcache%20client.md#running-an-http-redirect-server).

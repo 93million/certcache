@@ -41,7 +41,7 @@ Create DNS entries:
 
 > 💡It's a good idea to use low TTLs when creating these records. A value of `300` seconds means you will have to wait no more than 5 minutes for any changes to take affect.
 
-See [docs/Configure DNS.md](docs/Configure DNS.md) for more info
+See [docs/Configure DNS.md](docs/Configure%20DNS.md) for more info
 
 ### Configure challenges
 
@@ -63,7 +63,7 @@ For each domain you want to validate/generate a cert for:
 
   * set up HTTP redirection from `http://<domain-to-validate>/.well-known/acme-challenge` to `http://<certcache-domain>/.well-known/acme-challenge`
 
-See [docs/Configure challenges.md](docs/Configure challenges.md) for more info
+See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
 
 ## Installing CertCache server
 
@@ -93,7 +93,7 @@ services:
   * Run `docker-compose run --rm certcacheserver create-keys -n <certcache-domain>`
   * Run `docker-compose up -d`
 
-See [docs/Installing certcache server.md](docs/Installing certcache server.md) for more info
+See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
 
 ## Installing CertCache client
 
@@ -127,19 +127,19 @@ services:
 
 > ⚠️ the `testCert: true` specified in `CERTCACHE_CERTS` causes CertBot to generate testing certificates. This is useful when testing a setup. Remove `testCert` or set to `false` when you are ready to use valid certs.
 
-See [docs/Installing certcache client.md](docs/Installing certcache client.md) for more info
+See [docs/Installing certcache client.md](docs/Installing%20certcache%20client.md) for more info
 
 ## Using certificates from other containers
 
 Certificates are installed into `/certcache/certs/` in the CertCache client container. Map a volume to this path and share with containers to let them access the certificates.
 
-See [docs/Using certificates.md](docs/Using certificates.md) for more info
+See [docs/Using certificates.md](docs/Using%20certificates.md) for more info
 
 ## Configuring CertCache
 
 As has been shown in the examples, CertCache is configured through environment variables. It can also be configured through a JSON config file (also through command arguments if you are using the command line interface).
 
-For a list of environment variables and config directives, please see [docs/Config directives.md](docs/Config directives.md).
+For a list of environment variables and config directives, please see [docs/Config directives.md](docs/Config%20directives.md).
 
 <Debugging problems>
 
