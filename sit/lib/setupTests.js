@@ -63,6 +63,10 @@ module.exports = async () => {
     { cwd: testServerDir }
   )
 
+  serveProcess.stderr.on('data', (data) => {
+    console.error('CertCache server error:', data.toString())
+  })
+
   return {
     cleanup: async () => {
       serveProcess.kill()
