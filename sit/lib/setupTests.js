@@ -67,6 +67,8 @@ module.exports = async () => {
     console.error('CertCache server error:', data.toString())
   })
 
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
   return {
     cleanup: async () => {
       serveProcess.kill()
