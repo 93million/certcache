@@ -62,7 +62,7 @@ describe(
           cliCmd,
           [
             'get',
-            '-h',
+            '-u',
             'localhost',
             '-d',
             commonName,
@@ -90,7 +90,7 @@ describe(
           cliCmd,
           [
             'get',
-            '-h',
+            '-u',
             'localhost',
             '-d',
             ngrokDomain,
@@ -128,7 +128,7 @@ describe(
           cliCmd,
           [
             'get',
-            '-h',
+            '-u',
             'localhost',
             '-d',
             ngrokDomain,
@@ -176,7 +176,7 @@ describe(
           cliCmd,
           [
             'get',
-            '-h',
+            '-u',
             'localhost',
             '-d',
             ngrokDomain,

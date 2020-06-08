@@ -1,15 +1,15 @@
 const defaults = { port: 4433 }
 
-module.exports = (host) => {
-  if (typeof host === 'string') {
-    const [hostName, port] = host.split(':')
+module.exports = (upstream) => {
+  if (typeof upstream === 'string') {
+    const [host, port] = upstream.split(':')
 
-    host = { host: hostName }
+    upstream = { host }
 
     if (port !== undefined) {
-      host.port = Number(port)
+      upstream.port = Number(port)
     }
   }
 
-  return { ...defaults, ...host }
+  return { ...defaults, ...upstream }
 }

@@ -2,7 +2,7 @@ const getCert = require('../../lib/client/getCert')
 const {
   cahkeys,
   days,
-  host,
+  upstream,
   httpRedirectUrl,
   skipFilePerms
 } = require('./args')
@@ -21,9 +21,9 @@ module.exports = {
       description: 'List of comma-separated domain domains',
       required: true
     },
-    host,
     'http-redirect-url': httpRedirectUrl,
-    'skip-file-perms': skipFilePerms
+    'skip-file-perms': skipFilePerms,
+    upstream
   },
   handler: (argv) => {
     getCert(argv).catch((e) => {

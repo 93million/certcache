@@ -39,7 +39,7 @@ module.exports = ({ argv, env, file }) => {
       env.CERTCACHE_SYNC_INTERVAL ||
       file.syncInterval ||
       defaults.syncInterval,
-    upstream: argv.host ||
+    upstream: argv.upstream ||
       env.CERTCACHE_UPSTREAM ||
       file.upstream ||
       defaults.upstream
