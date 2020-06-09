@@ -3,6 +3,7 @@
   "version": "0.1.0-beta.0",
   "description": "TLS certificate server that generates, caches and deploys SSL/TLS certificates",
   "main": "index.js",
+  "repository": "https://github.com/93million/certcache",
   "bin": "src/cli/cli.js",
   "scripts": {
     "cli": "node src/cli/cli.js",
