@@ -1,5 +1,9 @@
-<div align="right"><img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" /></div>
-<div align="center"><img src="docs/images/certcache_logo.svg" alt="CertCache logo" height="160" /></div>
+<div align="right">
+  <img src="./docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" />
+</div>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/93million/certcache/master/docs/images/certcache_logo.svg?sanitize=true" alt="CertCache logo" height="160" />
+</div>
 
 ![Node.js CI](https://github.com/93million/certcache/workflows/Node.js%20CI/badge.svg)
 
