@@ -5,6 +5,8 @@
 /certs
 /conf
 /coverage
+/docker-compose/certcacheclient/certcache/cahkeys
+/docker-compose/certcacheclient/certcache/certs
 /node_modules
 /sit/coverage
 /sit/skel/server/cache/thirdparty/

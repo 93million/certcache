@@ -21,57 +21,38 @@ CertCache is a secure TLS/SSL certificate distribution service. It can do the fo
 
 ## Overview
 
-CertCache is run in a server and client configuration. Clients request certificates from the server. If a matching certificate is found in the cache it is served. If no certificate is found it can be generated dynamically using Let's Encrypt.
-
-Certificates are served securely to the client using [client-authenticated-https](https://www.npmjs.com/package/client-authenticated-https). This provides secure encryption and authorisation so that only allowed clients can obtain certificates.
+CertCache is run in a server and client configuration. Clients request certificates from the server. If a matching certificate is found in the server cache it is served. If no certificate is found it can be generated dynamically using Let's Encrypt.
 
 ## Usage
 
-This guide will provide a quick overview of how set up CertCache server and client on a system running Docker and Docker Compose. See documentation in [docs/](docs/) for more detailed info.
+### Client and server instances
 
-### Instantiate a server to host CertCache
+Clients and servers run in Docker containers. The server supplies certificates to clients on demand. The clients then share the certificates with containers that require access to them.
 
-CertCache runs nicely in Docker. It can also be installed through NPM to run directly on Linux and MacOS. Unfortunately Windows is not supported at this time.
+#### Configure CertCache server
 
-> ⚠️ Warning: CertCache will contain TLS/SSL keys for your domain. It should not be used on shared servers and environments that other people have access to.
+Choose a domain from which to run CertCache server. It does not need to be one of the domains you intend to create a certificate for. But it needs to be static and will be the domain that clients connect to in order to obtain certificates.
 
-Instantiate a server and install Docker and Docker Compose.
+If your company domain is `93million.org`, a good name would be `certcache.93million.org`. This domain will be refered to as `<certcache-domain>` in the documentation from now on. We will also refer to `<cert-domain>` - this is a name that you want to generate an SSL/TLS cert for. Replace these references with your own values each time they appear in the documentation.
 
-### Configure DNS for CertCache server
+Instantiate a server to host CertCache server and install Docker and Docker Compose.
 
-Create DNS entries:
-  * `A` record `certcache.<your-domain>` (refered to as `<certcache-domain>` from now on) which points to your server instance hosting certcache
-  * `NS` record `acme.<certcache-domain>` (ie. `acme.certcache.<your-domain>`) which points to `<certcache-domain>`
+> ⚠️ Warning: CertCache server and clients will contain TLS/SSL keys. They should not be used on shared servers and insecure environments that other people have access to.
 
-> 💡It's a good idea to use low TTLs when creating these records. A value of `300` seconds means you will have to wait no more than 5 minutes for any changes to take affect.
+##### CertCache server DNS
 
-See [docs/Configure DNS.md](docs/Configure%20DNS.md) for more info
+Create 2 DNS records:
 
-### Configure challenges
+  * Create a `A` record to point `<certcache-domain>` to your server instance
+  * Create an `NS` record `acme.<certcache-domain>` which points to `<certcache-domain>`
 
-Configure domains for either HTTP-01 or DNS-01 acme validation (you don't need to configure both). DNS-01 is easier in most cases and allows for wildcard domains.
+Eg. if `<certcache-domain>` is `certcache.93million.org` then create an `NS` record `acme.certcache.93million.org` which points to `certcache.93million.org`
 
-#### DNS-01
+##### CertCache server Docker container
 
-For each domain you want to validate/generate a cert for, create DNS entries:
+On your CertCache server instance, perform the following steps:
 
-  * `CNAME` record `_acme-challenge.<domain-to-validate>` that points to `<domain-to-validate>.acme.<certcache-domain>`
-
-Eg. if `<domain-to-validate>` is `93m.co` and `<certcache-domain>` is `certcache.93million.org` then add a CNAME record for the host `_acme-challenge.93m.co` that points to `93m.co.acme.certcache.93million.org`
-
-> 💡It's a good idea to use low TTLs when creating these records. A value of `300` seconds means you will have to wait no more than 5 minutes for any changes to take affect.
-
-#### HTTP-01
-
-For each domain you want to validate/generate a cert for:
-
-  * set up HTTP redirection from `http://<domain-to-validate>/.well-known/acme-challenge` to `http://<certcache-domain>/.well-known/acme-challenge`
-
-See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
-
-## Installing CertCache server
-
-  * Create a new directory with a file named `docker-compose.yml` with these contents:
+  * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
 version: '3.7'
@@ -99,9 +80,11 @@ services:
 
 See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
 
-## Installing CertCache client
+#### Configure CertCache client
 
-  * Create a new directory with a file named `docker-compose.yml` with these contents:
+On your CertCache client instances, perform the following steps:
+
+  * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
 version: '3.7'
@@ -109,7 +92,7 @@ services:
   certcache:
     container_name: certcache
     image: 93million/certcache
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     volumes:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
@@ -118,34 +101,66 @@ services:
       CERTCACHE_CERTS: |
         - certName: <cert-name>
           domains:
-            - <your-domain-1>
-            - '*.<your-domain-1>'
-            - <your-domain-2>
+            - '<cert-domain-1>'
+            - '*.<cert-domain-1>'
+            - '<cert-domain-2>'
+            - '*.<cert-domain-2>'
           testCert: true
 ```
 
-  * Change env var `CERTCACHE_UPSTREAM` to contain the address of your CertCache server
-  * Change env var `CERTCACHE_CERTS` to list the certificates you want to synchronise with the server
-  * Make a directory at `./certcache/cahkeys/` and copy the file `client.cahkey` from the `cahkeys` directory on the server to the client
-  * Run `docker-compose up -d`
+  * Change env var `CERTCACHE_UPSTREAM` to contain the domain of your CertCache server
+  * Change env var `CERTCACHE_CERTS` to list the certificates you want to synchronise with the server. `<cert-domain-n>` represents a domain you want to generate a cert for. `<cert-name>` represents the name of the certificate directory into which the certificate and key will be written.
+  * Make a directory at `./certcache/cahkeys/` and copy into it the file `client.cahkey` from the `cahkeys` directory on the server
+
+Do not start the client yet. We need to configure challenges first.
 
 > ⚠️ the `testCert: true` specified in `CERTCACHE_CERTS` causes CertBot to generate testing certificates. This is useful when testing a setup. Remove `testCert` or set to `false` when you are ready to use valid certs.
 
 See [docs/Installing certcache client.md](docs/Installing%20certcache%20client.md) for more info
 
-## Using certificates from other containers
+### Configure challenges
 
-Certificates are installed into `/certcache/certs/` in the CertCache client container. Map a volume to this path and share with containers to let them access the certificates.
+Configure domains for either HTTP-01 or DNS-01 acme validation (you don't need to configure both). DNS-01 is easier in most cases and allows for wildcard domains.
+
+#### DNS-01
+
+For each domain you want to generate a cert:
+
+  * create a `CNAME` record `_acme-challenge.<cert-domain>` that points to `<cert-domain>.acme.<certcache-domain>`
+
+Eg. if `<cert-domain>` is `93m.co` and `<certcache-domain>` is `certcache.93million.org`, then add a CNAME record for the host `_acme-challenge.93m.co` that points to `93m.co.acme.certcache.93million.org`
+
+> 💡It's a good idea to use low TTLs when creating these records. A value of `300` seconds means you will have to wait no more than 5 minutes for any changes to take affect.
+
+#### HTTP-01
+
+For each domain you want to generate a cert:
+
+  * set up HTTP redirection from `http://<cert-domain>/.well-known/acme-challenge` to `http://<certcache-domain>/.well-known/acme-challenge`
+
+See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
+
+### Using the certificates
+
+Now the challenges are configured you can start CertCache client. On the CertCache client instance, run:
+
+```
+docker-compose up -d
+```
+
+Certificates will be placed in `./certcache/certs`. Map a volume to this path in containers that require access to the certificates.
 
 See [docs/Using certificates.md](docs/Using%20certificates.md) for more info
 
-## Configuring CertCache
+## Advanced configuration
 
-As has been shown in the examples, CertCache is configured through environment variables. It can also be configured through a JSON config file (also through command arguments if you are using the command line interface).
+As shown, CertCache is configured through environment variables. It can also be configured through a JSON config file if you don't want to place config in `docker-compose.yml`.
 
 For a list of environment variables and config directives, please see [docs/Config directives.md](docs/Config%20directives.md).
 
-<Debugging problems>
+## Debugging problems
+
+See [docs/Debugging problems.md](docs/Debugging%20problems.md) for some tips on debugging problems. If you discover bugs please raise an issue in GitHub.
 
 ## Alternatives
 

@@ -3,7 +3,7 @@ services:
   certcache:
     container_name: certcache
     image: 93million/certcache
-    restart: "unless-stopped"
+    restart: 'unless-stopped'
     volumes:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
@@ -12,17 +12,18 @@ services:
       CERTCACHE_CERTS: |
         - certName: web
           domains:
-            - <your-domain-1>
-            - '*.<your-domain-1>'
-            - <your-domain-2>
+            - '<cert-domain-1>'
+            - '*.<cert-domain-1>'
+            - '<cert-domain-2>'
+            - '*.<cert-domain-2>'
   nginx:
     container_name: nginx
     image: nginx
-    depends_on: [certcache]
-    restart: unless-stopped
+    restart: 'unless-stopped'
     volumes:
       - ./certcache/certs/:/etc/certcache/certs/:ro
-      - ./nginx/config/:/etc/nginx/conf.d/:rw
+      - ./nginx/config/:/etc/nginx/conf.d/:ro
+      - ./www/:/var/www/:ro
     ports:
       - '80:80'
       - '443:443'
