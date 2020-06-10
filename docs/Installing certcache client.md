@@ -1,12 +1,6 @@
 # Installing CertCache client
 
-On your client, create a new directory to hold your Docker Compose config
-
-Inside this directory, create a directory `cahkeys`. Copy the file `cahkeys/client.cahkey` from the server's Docker Compose directory into the client's `cahkeys` directory - this will allow the client to connect to the server.
-
-> ⚠️ `cahkey` files allow CertCache clients to connect to the server - so be careful who you give them to!
-
-Create a file named `docker-compose.yml` that contains the following:
+On your CertCache client instance, create a new directory to hold your Docker Compose config. Create a file named `docker-compose.yml` that contains the following:
 
 ```yaml
 version: '3.7'
@@ -29,6 +23,12 @@ services:
           testCert: true
 ```
 
+## Grant access to the server
+
+Create a directory `certcache/cahkeys`. Copy the file `client.cahkey` from CertCache server's into the client's `cahkeys` directory - this will allow the client to connect to the server.
+
+> ⚠️ `cahkey` files allow CertCache clients to connect to the server - so be careful who you give them to!
+
 ## Getting certificate
 
 ### Listing certificates in docker-compose.yml
@@ -47,7 +47,9 @@ If you do not want to list your certificates in `CERTCACHE_CERTS` in the Docker 
 docker-compose run --rm certcache get -t  -d <your-domain-1>,<your-domain-2> --cert-name <cert-name>
 ```
 
-This will store certificates in the `certcache/certs` and they will be kept up to date when you start the client.
+> ⚠️ the `-t` arg causes CertBot to generate testing certificates. This is useful when testing a setup. Remove `-t` when you are ready to use valid certs.
+
+This will store certificates in the `certcache/certs`. All certificates in `certcache/certs` will be kept up to date when you start the client - regardless of whether they are listed in `docker-compose.yml` or not.
 
 ## Running an HTTP redirect server
 

@@ -4,7 +4,7 @@
 
 After generating keys, and starting up your certcache server, you can test connection from the client to the server by running this command the directory your client's `docker-compose.yml` is in:
 
-```bash
+```
 docker-compose run --rm certcache test
 ```
 
