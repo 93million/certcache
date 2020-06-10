@@ -257,6 +257,8 @@ describe(
         )
         const path = '/.well-known/acme-challenge/foo/'
 
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
         return new Promise((resolve, reject) => {
           setTimeout(
             () => {
