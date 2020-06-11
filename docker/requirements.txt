@@ -1,0 +1,1 @@
+certbot-dns-standalone == 1.0.2

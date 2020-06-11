@@ -8,7 +8,7 @@ ENV NODE_ENV=production
 
 RUN apk update && \
   apk add --no-cache bash certbot openssl python g++ make git && \
-  pip3 install certbot-dns-standalone && \
+  pip3 install -r /certcachesrc/docker/requirements.txt && \
   rm -rf /var/cache/apk/* && \
   npm install --production -g /certcachesrc/
 
