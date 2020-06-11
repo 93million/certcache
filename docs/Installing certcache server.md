@@ -2,12 +2,12 @@
 
 ## Configure DNS for CertCache server
 
-Set up a DNS record to host CertCache server. Typically this would be a hostname like `certcache.93million.org` (we will refer to this as `<certcache-domain>` below).
+Set up a DNS record to host CertCache server. Typically this would be a hostname like `certcache.93million.org` (we will refer to this as `<certcache-server>` below).
 
 From your DNS management control panel, perfrom the following steps:
   * Edit the DNS zone for the domain you want to host CertCache on
-  * Add an `A` record for the host `<certcache-domain>` that points to the public IP of the machine you are using to host CertCache
-  * Add and `NS` record for the host `acme.<certcache-domain>` that points to `<certcache-domain>`
+  * Add an `A` record for the host `<certcache-server>` that points to the public IP of the machine you are using to host CertCache
+  * Add and `NS` record for the host `acme.<certcache-server>` that points to `<certcache-server>`
 
 To give an example running certcache on `certcache.93million.org`:
   * Edit the DNS zone for `93million.org`
@@ -18,14 +18,14 @@ To give an example running certcache on `certcache.93million.org`:
 
 You can test using `dig` on the command line.
 
-To test the `A` record, run `dig <certcache-domain> A +short` which should output the IP address of your certcache server. Eg:
+To test the `A` record, run `dig <certcache-server> A +short` which should output the IP address of your certcache server. Eg:
 
 ```
 $ dig certcache.93million.org A +short
 10.20.30.40
 ```
 
-To test the `NS` record, find the name servers of `<certcache-domain>` by running `dig <domain> NS +short` (eg. `dig 93million.org NS +short`). This will probably return several name servers. Choose any of them and run `dig acme.<certcache-domain> NS @<name-server>`. You should see your certcache server listed in `AUTHORITY SECTION`
+To test the `NS` record, find the name servers of `<certcache-server>` by running `dig <domain> NS +short` (eg. `dig 93million.org NS +short`). This will probably return several name servers. Choose any of them and run `dig acme.<certcache-server> NS @<name-server>`. You should see your certcache server listed in `AUTHORITY SECTION`
 
 ```
 $ dig 93million.org NS +short
@@ -79,10 +79,10 @@ Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` '
 Run the following command from the directory that contans your `docker-compose.yml` file
 
 ```
-docker-compose run --rm certcacheserver create-keys -n <certcache-domain>
+docker-compose run --rm certcacheserver create-keys -n <certcache-server>
 ```
 
-> ℹ️ `<certcache-domain>` is the DNS name of your certcache server
+> ℹ️ `<certcache-server>` is the DNS name of your certcache server
 >
 > eg: `docker-compose run --rm certcacheserver create-keys -n certcache.93million.org`
 

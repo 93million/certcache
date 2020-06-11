@@ -16,7 +16,7 @@ CertCache is a secure TLS/SSL certificate distribution service. It can do the fo
 * Securely share TLS certificates between a number of clients
 * Generate certificates dynamically using Let's Encrypt
 * Avoid Let's Encrypt usage limits by serving certificates from a cache
-* Share manually downloaded TLS certificates from third parties such as Verisign
+* Share manually downloaded TLS certificates from third parties such as Comodo
 * Declaratively define ceritificates within config - either in a JSON config file or in `docker-compose.yml` if using Docker
 
 ## Overview
@@ -33,7 +33,7 @@ Clients and servers run in Docker containers. The server supplies certificates t
 
 Choose a domain from which to run CertCache server. It does not need to be one of the domains you intend to create a certificate for. But it needs to be static and will be the domain that clients connect to in order to obtain certificates.
 
-If your company domain is `93million.org`, a good name would be `certcache.93million.org`. This domain will be refered to as `<certcache-domain>` in the documentation from now on. We will also refer to `<cert-domain>` - this is a name that you want to generate an SSL/TLS cert for. Replace these references with your own values each time they appear in the documentation.
+If your company domain is `93million.org`, a good name would be `certcache.93million.org`. This domain will be refered to as `<certcache-server>` in the documentation from now on. We will also refer to `<cert-domain>` - this is a domain name that you want to generate an SSL/TLS cert for. Replace these references with your own values each time they appear in the documentation.
 
 Instantiate a server to host CertCache server and install Docker and Docker Compose.
 
@@ -43,10 +43,10 @@ Instantiate a server to host CertCache server and install Docker and Docker Comp
 
 Create 2 DNS records:
 
-  * Create a `A` record to point `<certcache-domain>` to your server instance
-  * Create an `NS` record `acme.<certcache-domain>` which points to `<certcache-domain>`
+  * Create a `A` record to point `<certcache-server>` to your server instance
+  * Create an `NS` record `acme.<certcache-server>` which points to `<certcache-server>`
 
-Eg. if `<certcache-domain>` is `certcache.93million.org` then create an `NS` record `acme.certcache.93million.org` which points to `certcache.93million.org`
+Eg. if `<certcache-server>` is `certcache.93million.org` then create an `NS` record `acme.certcache.93million.org` which points to `certcache.93million.org`
 
 ##### CertCache server Docker container
 
@@ -75,7 +75,7 @@ services:
 ```
 
   * Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
-  * Run `docker-compose run --rm certcacheserver create-keys -n <certcache-domain>`
+  * Run `docker-compose run --rm certcacheserver create-keys -n <certcache-server>`
   * Run `docker-compose up -d`
 
 See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
@@ -97,7 +97,7 @@ services:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
-      CERTCACHE_UPSTREAM: <certcache-domain>
+      CERTCACHE_UPSTREAM: <certcache-server>
       CERTCACHE_CERTS: |
         - certName: <cert-name>
           domains:
@@ -126,9 +126,9 @@ Configure domains for either HTTP-01 or DNS-01 acme validation (you don't need t
 
 For each domain you want to generate a cert:
 
-  * create a `CNAME` record `_acme-challenge.<cert-domain>` that points to `<cert-domain>.acme.<certcache-domain>`
+  * create a `CNAME` record `_acme-challenge.<cert-domain>` that points to `<cert-domain>.acme.<certcache-server>`
 
-Eg. if `<cert-domain>` is `93m.co` and `<certcache-domain>` is `certcache.93million.org`, then add a CNAME record for the host `_acme-challenge.93m.co` that points to `93m.co.acme.certcache.93million.org`
+Eg. if `<cert-domain>` is `93m.co` and `<certcache-server>` is `certcache.93million.org`, then add a CNAME record for the host `_acme-challenge.93m.co` that points to `93m.co.acme.certcache.93million.org`
 
 > 💡It's a good idea to use low TTLs when creating these records. A value of `300` seconds means you will have to wait no more than 5 minutes for any changes to take affect.
 
@@ -136,7 +136,7 @@ Eg. if `<cert-domain>` is `93m.co` and `<certcache-domain>` is `certcache.93mill
 
 For each domain you want to generate a cert:
 
-  * set up HTTP redirection from `http://<cert-domain>/.well-known/acme-challenge` to `http://<certcache-domain>/.well-known/acme-challenge`
+  * set up HTTP redirection from `http://<cert-domain>/.well-known/acme-challenge` to `http://<certcache-server>/.well-known/acme-challenge`
 
 See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
 
@@ -148,7 +148,7 @@ Now the challenges are configured you can start CertCache client. On the CertCac
 docker-compose up -d
 ```
 
-Certificates will be placed in `./certcache/certs`. Map a volume to this path in containers that require access to the certificates.
+Certificates will be placed in `./certcache/certs`. Map a read-only volume to this path in containers that require access to the certificates.
 
 See [docs/Using certificates.md](docs/Using%20certificates.md) for more info
 
