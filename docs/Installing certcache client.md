@@ -13,7 +13,7 @@ services:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
-      CERTCACHE_UPSTREAM: <certcache-domain>
+      CERTCACHE_UPSTREAM: <certcache-server>
       CERTCACHE_CERTS: |
         - certName: <cert-name>
           domains:
@@ -56,7 +56,7 @@ This will store certificates in the `certcache/certs`. All certificates in `cert
 If you are running CertCache client on a host that does not have an HTTP server and want to use HTTP-01 ACME challenges, then you can use the inbuilt HTTP redirect server in CertCache. Add the following line to your `environment` in the `certcache` service of your `docker-compose.yml` file:
 
 ```yaml
-CERTCACHE_HTTP_REDIRECT_URL: 'http://<certcache-domain>'
+CERTCACHE_HTTP_REDIRECT_URL: 'http://<certcache-server>'
 ```
 
 You will also need to add `80:80/tcp` to the list of `ports` in the `certcache` service of your `docker-compose.yml` file.

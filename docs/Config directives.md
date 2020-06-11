@@ -19,7 +19,7 @@ services:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
-      CERTCACHE_UPSTREAM: <certcache-domain>
+      CERTCACHE_UPSTREAM: <certcache-server>
       CERTCACHE_CERTS: |
         - certName: <cert-name>
           domains:
