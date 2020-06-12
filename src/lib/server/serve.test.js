@@ -18,6 +18,8 @@ let mockConfig
 const listen = jest.fn()
 const writeHead = jest.fn()
 const close = jest.fn()
+const setTimeout = jest.fn()
+let mockSocket
 
 listen.mockReturnValue({ close })
 
@@ -35,6 +37,7 @@ clientAuthenticatedHttps
     } })
 
     res.writeHead = writeHead
+    res.socket = mockSocket
 
     req.push(requestBody)
     req.push(null)
@@ -44,7 +47,7 @@ clientAuthenticatedHttps
     return new Promise((resolve) => {
       res.on('finish', () => {
         response = _response.join('')
-        resolve({ listen })
+        resolve({ listen, setTimeout })
       })
     })
   })
@@ -68,6 +71,7 @@ actions.throwingFeedbackErrorAction.mockImplementation(() => {
 beforeEach(async () => {
   action = 'testAction'
   mockConfig = await getConfig()
+  mockSocket = { destroyed: false }
 })
 
 afterEach(() => {
@@ -168,5 +172,16 @@ test(
     process.emit('SIGTERM')
 
     expect(close).toBeCalledTimes(1)
+  }
+)
+
+test(
+  'should not send response when conncetion has been closed',
+  async () => {
+    mockSocket = { destroyed: true }
+
+    await serve()
+
+    expect(writeHead).not.toBeCalled()
   }
 )

@@ -4,6 +4,7 @@ const {
   days,
   upstream,
   httpRedirectUrl,
+  maxRequestTime,
   skipFilePerms
 } = require('./args')
 
@@ -22,6 +23,7 @@ module.exports = {
       required: true
     },
     'http-redirect-url': httpRedirectUrl,
+    'max-request-time': maxRequestTime,
     'skip-file-perms': skipFilePerms,
     upstream
   },

@@ -14,3 +14,16 @@ test(
     expect(config({ argv: {}, env, file }).domains).toEqual(mockDomains)
   }
 )
+
+test(
+  'should parse yaml CERTCACHE_CERTBOT_CHALLENGES',
+  () => {
+    const mockChallenges = { mockChallenge: { args: '--foo' } }
+    const env = {
+      CERTCACHE_CERTBOT_CHALLENGES: yaml.stringify(mockChallenges)
+    }
+
+    expect(config({ argv: {}, env, file }).challenges)
+      .toEqual(mockChallenges)
+  }
+)

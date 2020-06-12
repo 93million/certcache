@@ -1,5 +1,5 @@
 module.exports = {
-  certonlyArgs: [
+  args: [
     '--preferred-challenges',
     'dns',
     '--authenticator',

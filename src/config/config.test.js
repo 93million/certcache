@@ -40,3 +40,15 @@ test(
     expect(config({ argv: {}, env, file })).toMatchObject({ renewalDays })
   }
 )
+
+test(
+  'should return maxRequestTime as a number',
+  () => {
+    const maxRequestTime = 58008
+    const env = { CERTCACHE_MAX_REQUEST_TIME: String(maxRequestTime) }
+    const argv = { 'max-request-time': String(maxRequestTime) }
+
+    expect(config({ argv, env: {}, file })).toMatchObject({ maxRequestTime })
+    expect(config({ argv: {}, env, file })).toMatchObject({ maxRequestTime })
+  }
+)

@@ -13,15 +13,18 @@ jest.mock('./lib/getChallengeFromDomains')
 
 const commonName = 'test.example.com'
 const altNames = ['test.example.com', 'test1.example.com', 'test.93million.com']
-const mockChallenge = { certonlyArgs: ['--test-arg1', '--test-arg2'] }
+const mockChallenge = {
+  args: ['--test-arg1', '--test-arg2'],
+  environment: { item: '123' }
+}
 const meta = { isTest: true }
 let certbotConfig
 
-getChallengeFromDomains.mockReturnValue(mockChallenge)
+getChallengeFromDomains.mockReturnValue(Promise.resolve(mockChallenge))
 
 beforeEach(async () => {
   childProcess.execFile.mockReset()
-  childProcess.execFile.mockImplementation((exec, args, callback) => {
+  childProcess.execFile.mockImplementation((exec, args, options, callback) => {
     callback(null, true)
   })
   certbotConfig = (await getConfig()).extensions.certbot
@@ -53,8 +56,12 @@ test(
 test(
   'should throw errors encountered',
   async () => {
-    childProcess.execFile.mockReset()
-    childProcess.execFile.mockImplementation((exec, args, callback) => {
+    childProcess.execFile.mockImplementationOnce((
+      exec,
+      args,
+      options,
+      callback
+    ) => {
       callback(new Error('certbot exited with error'), null)
     })
 
@@ -67,10 +74,38 @@ test(
 test(
   'should throw feedback error if common challenge cannot be found for domains',
   async () => {
-    getChallengeFromDomains.mockReturnValueOnce(undefined)
+    getChallengeFromDomains.mockReturnValueOnce(Promise.resolve(undefined))
 
     await expect(generateCert(commonName, altNames, meta))
       .rejects
       .toThrow(FeedbackError)
+  }
+)
+
+test(
+  'should pass challenge args to certbot',
+  async () => {
+    await generateCert(commonName, altNames, meta)
+
+    expect(childProcess.execFile).toBeCalledWith(
+      certbotConfig.certbotExec,
+      expect.arrayContaining(mockChallenge.args),
+      expect.any(Object),
+      expect.any(Function)
+    )
+  }
+)
+
+test(
+  'should pass challenge env to certbot',
+  async () => {
+    await generateCert(commonName, altNames, meta)
+
+    expect(childProcess.execFile).toBeCalledWith(
+      certbotConfig.certbotExec,
+      expect.any(Array),
+      { env: expect.objectContaining(mockChallenge.environment) },
+      expect.any(Function)
+    )
   }
 )

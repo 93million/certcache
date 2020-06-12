@@ -1,6 +1,7 @@
 const challenges = require('./challenges')
 const canonicaliseDomains = require('./canonicaliseDomains')
 const allItemsPresent = require('../../../lib/helpers/allItemsPresent')
+const getConfig = require('../../../lib/getConfig')
 
 const groupCertbotDomainsByChallengeType = (certbotDomains, challengeTypes) => {
   return challengeTypes.reduce(
@@ -22,8 +23,10 @@ const groupCertbotDomainsByChallengeType = (certbotDomains, challengeTypes) => {
   )
 }
 
-module.exports = (certbotDomains, domains, defaultChallenge) => {
-  const challengeTypes = Object.keys(challenges)
+module.exports = async (certbotDomains, domains, defaultChallenge) => {
+  const config = await getConfig()
+  const _challenges = { ...config.extensions.certbot.challenges, ...challenges }
+  const challengeTypes = Object.keys(_challenges)
   const certbotDomainsByChallengeTypes = groupCertbotDomainsByChallengeType(
     canonicaliseDomains(certbotDomains, { defaultChallenge }),
     challengeTypes
@@ -35,5 +38,5 @@ module.exports = (certbotDomains, domains, defaultChallenge) => {
     )
   })
 
-  return challengeType && challenges[challengeType]
+  return challengeType && _challenges[challengeType]
 }

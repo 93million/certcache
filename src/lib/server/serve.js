@@ -10,6 +10,8 @@ module.exports = async () => {
     createRequestHandler({ actions })
   )
 
+  server.setTimeout(1000 * 60 * config.maxRequestTime)
+
   const srv = server.listen(config.server.port)
 
   process.once('SIGTERM', () => {

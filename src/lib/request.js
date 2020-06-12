@@ -16,10 +16,12 @@ module.exports = (
     port
   }
 
-  return new Promise((resolve, reject) => {
+  let _req
+  let isDestroyed = false
+  const promise = new Promise((resolve, reject) => {
     const response = []
 
-    clientAuthenticatedHttps
+    return clientAuthenticatedHttps
       .request(options, (res) => {
         res.on('data', (data) => response.push(data))
         res.on('end', () => {
@@ -31,14 +33,32 @@ module.exports = (
         })
       })
       .then((req) => {
-        req.on('error', (e) => {
-          reject(e)
-        })
+        _req = req
 
-        debug('request() request', options)
-        debug('request() posting', postData)
-        req.write(postData)
-        req.end()
+        if (isDestroyed) {
+          req.destroy()
+        } else {
+          req.on('error', (e) => {
+            reject(e)
+          })
+
+          debug('request() request', options)
+          debug('request() posting', postData)
+          req.write(postData)
+          req.end()
+
+          return req
+        }
       })
   })
+
+  promise.destroy = () => {
+    isDestroyed = true
+
+    if (_req !== undefined) {
+      _req.destroy()
+    }
+  }
+
+  return promise
 }
