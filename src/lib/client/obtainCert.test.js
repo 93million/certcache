@@ -3,9 +3,11 @@
 const obtainCert = require('./obtainCert')
 const request = require('../request')
 const writeBundle = require('../writeBundle')
+const getConfig = require('../getConfig')
 
 jest.mock('../request')
 jest.mock('../writeBundle')
+jest.mock('../getConfig')
 
 console.error = jest.fn()
 console.log = jest.fn()
@@ -13,7 +15,11 @@ console.log = jest.fn()
 let mockResponse
 
 request.mockImplementation(() => {
-  return Promise.resolve(mockResponse)
+  const p = Promise.resolve(mockResponse)
+
+  p.destroy = jest.fn()
+
+  return p
 })
 
 const mockHost = 'certcache.example.com'
@@ -145,5 +151,93 @@ test(
       expect.any(String),
       { domains: [mockCommonName], meta: mockMeta }
     )
+  }
+)
+
+test(
+  'should throw an error if time taken is longer than maxRequestTime',
+  async () => {
+    const config = await getConfig()
+    getConfig.mockReturnValueOnce(Promise.resolve({
+      ...config,
+      maxRequestTime: 0
+    }))
+
+    request.mockImplementationOnce(async () => {
+      await new Promise((resolve) => { setTimeout(resolve, 100) })
+
+      return mockResponse
+    })
+
+    await expect(obtainCert(
+      mockHost,
+      mockPort,
+      mockCommonName,
+      undefined,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    ))
+      .rejects
+      .toThrow('obtainCert() took more than')
+  }
+)
+
+test(
+  'should repeat requests for certificates until it receives a valid response',
+  async () => {
+    const config = await getConfig()
+    getConfig.mockReturnValueOnce(Promise.resolve({
+      ...config,
+      httpRequestInterval: 0
+    }))
+
+    const destroy = jest.fn()
+
+    request.mockImplementationOnce(() => {
+      const p = new Promise((resolve) => {
+        setTimeout(() => { resolve(mockResponse) }, 100)
+      })
+
+      p.destroy = destroy
+
+      return p
+    })
+
+    await obtainCert(
+      mockHost,
+      mockPort,
+      mockCommonName,
+      undefined,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    )
+
+    expect(request).toBeCalledTimes(2)
+    expect(destroy).toBeCalledTimes(1)
+  }
+)
+
+test(
+  'should throw request errors that are not REQUEST_DESTROYED',
+  async () => {
+    request.mockImplementationOnce(
+      () => new Promise((resolve, reject) => {
+        reject(new Error('HOPPLA!'))
+      })
+    )
+
+    await expect(obtainCert(
+      mockHost,
+      mockPort,
+      mockCommonName,
+      undefined,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir }
+    ))
+      .rejects
+      .toThrow('HOPPLA!')
   }
 )

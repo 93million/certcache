@@ -14,8 +14,20 @@ module.exports = ({ argv, env, file }) => {
       file.certs ||
       defaults.certs,
     httpRedirectUrl: argv['http-redirect-url'] ||
-      process.env.CERTCACHE_HTTP_REDIRECT_URL ||
+      env.CERTCACHE_HTTP_REDIRECT_URL ||
       file.httpRedirectUrl,
+    httpRequestInterval: file.httpRequestInterval ||
+      defaults.httpRequestInterval,
+    maxRequestTime: (
+      argv['max-request-time'] &&
+      Number(argv['max-request-time'])
+    ) ||
+      (
+        env.CERTCACHE_MAX_REQUEST_TIME &&
+        Number(env.CERTCACHE_MAX_REQUEST_TIME)
+      ) ||
+      file.maxRequestTime ||
+      defaults.maxRequestTime,
     renewalDays: (argv.days && Number(argv.days)) ||
       (env.CERTCACHE_DAYS_RENEWAL && Number(env.CERTCACHE_DAYS_RENEWAL)) ||
       file.renewalDays ||

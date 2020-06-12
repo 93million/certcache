@@ -16,6 +16,7 @@ VOLUME /certcache/cache/
 VOLUME /certcache/cahkeys/
 VOLUME /certcache/certs/
 VOLUME /certcache/conf/
+VOLUME /certcache/credentials/
 
 EXPOSE 53
 EXPOSE 80

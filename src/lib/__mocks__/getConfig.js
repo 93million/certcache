@@ -29,6 +29,8 @@ getConfig.mockReturnValue(Promise.resolve({
       certDir: '/path/to/cert/dir'
     }
   },
+  httpRequestInterval: 1,
+  maxRequestTime: 1234,
   renewalDays: 30,
   syncInterval: 60 * 6,
   server: {
