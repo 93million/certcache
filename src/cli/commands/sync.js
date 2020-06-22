@@ -4,6 +4,7 @@ const {
   days,
   upstream,
   httpRedirectUrl,
+  maxRequestTime,
   skipFilePerms
 } = require('./args')
 
@@ -20,6 +21,7 @@ module.exports = {
     interval: {
       description: 'Num minutes between polling for certificates'
     },
+    'max-request-time': maxRequestTime,
     'skip-file-perms': skipFilePerms,
     upstream
   },

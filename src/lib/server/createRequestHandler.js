@@ -35,11 +35,15 @@ module.exports = ({ actions }) => (req, res) => {
       console.error(error)
     }
 
-    res.writeHead(
-      result.success ? 200 : 500,
-      { 'Content-Type': 'application/json' }
-    )
-    res.write(JSON.stringify(result))
+    // socket might be destroyed during long running requests (eg. delays
+    // waiting for DNS updates)
+    if (res.socket.destroyed !== true) {
+      res.writeHead(
+        result.success ? 200 : 500,
+        { 'Content-Type': 'application/json' }
+      )
+      res.write(JSON.stringify(result))
+    }
     res.end()
     debug('Response sent')
   })

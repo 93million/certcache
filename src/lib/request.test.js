@@ -12,6 +12,7 @@ const meta = { isTest: true }
 const mockResponse = { data: 'test certcache response data' }
 let requestData
 const mockErrorMessage = '__test error message__'
+let requestStream
 
 jest.mock('client-authenticated-https')
 
@@ -20,7 +21,7 @@ const setUpRequestMockImplementation = (shouldThrow) => {
   clientAuthenticatedHttps.request.mockImplementation((options, callback) => {
     const requestDataArr = []
     const responseStream = new Readable({ read: () => {} })
-    const requestStream = new Writable({
+    requestStream = new Writable({
       write: (chunk, encoding, callback) => {
         requestDataArr.push(chunk)
         callback()
@@ -36,8 +37,7 @@ const setUpRequestMockImplementation = (shouldThrow) => {
         responseStream.push(null)
       }
     })
-
-    callback(responseStream)
+    setImmediate(() => { callback(responseStream) })
 
     return Promise.resolve(requestStream)
   })
@@ -62,7 +62,7 @@ test(
   async () => {
     const response = await request({ host, port }, action, { domains, meta })
 
-    await expect(response).toEqual(mockResponse)
+    expect(response).toEqual(mockResponse)
   }
 )
 
@@ -74,5 +74,60 @@ test(
     await expect(request({ host, port }, { domains, meta }))
       .rejects
       .toThrow()
+  }
+)
+
+test(
+  'should be able to be destroyed before request made',
+  () => {
+    expect.assertions(1)
+    const req = request({ host, port }, { domains, meta })
+
+    req.destroy()
+
+    req.finally(() => {
+      throw new Error([
+        'request promise should not be resolved or rejected after being',
+        'destroyed'
+      ].join(' '))
+    })
+
+    return new Promise((resolve) => {
+      setImmediate(() => {
+        expect(requestStream.destroyed).toBe(true)
+        resolve()
+      })
+    })
+  }
+)
+
+test(
+  'should be able to be destroyed after request made',
+  async () => {
+    const req = request({ host, port }, { domains, meta })
+
+    await new Promise((resolve) => {
+      process.nextTick(() => {
+        req.destroy()
+        resolve()
+      })
+    })
+
+    expect(requestStream.destroyed).toBe(true)
+  }
+)
+
+test(
+  'should throw errors before being destroyed',
+  async () => {
+    const req = request({ host, port }, { domains, meta })
+
+    process.nextTick(() => {
+      const err = new Error('BAAAAH!')
+      err.code = 'ECONNRESET'
+      requestStream.emit('error', err)
+    })
+
+    await expect(req).rejects.toThrow('BAAAAH!')
   }
 )

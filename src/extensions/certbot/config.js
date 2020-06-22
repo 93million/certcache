@@ -5,6 +5,7 @@ const defaults = {
   certbotExec: 'certbot',
   certbotLogsDir: 'cache/certbot/logs',
   certbotWorkDir: 'cache/certbot/work',
+  challenges: {},
   defaultChallenge: 'dns-01',
   domains: ['~.'],
   'test-cert': false
@@ -22,6 +23,12 @@ module.exports = ({ argv, env, file }) => {
       defaults.certbotLogsDir,
     certbotWorkDir: file.certbotWorkDir ||
       defaults.certbotWorkDir,
+    challenges: (
+      env.CERTCACHE_CERTBOT_CHALLENGES &&
+      yaml.parse(env.CERTCACHE_CERTBOT_CHALLENGES)
+    ) ||
+      file.challenges ||
+      defaults.challenges,
     defaultChallenge: argv['certbot-default-challenge'] ||
       env.CERTCACHE_CERTBOT_DEFAULT_CHALLENGE ||
       file.defaultChallenge ||

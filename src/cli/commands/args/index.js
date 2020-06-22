@@ -13,6 +13,10 @@ module.exports = {
       'client server is recipient of HTTP-01 ACME challenges'
     ].join(' ')
   },
+  maxRequestTime: {
+    description:
+      'Maximum time (in minutes) requests to CertCache server should take'
+  },
   skipFilePerms: {
     boolean: true,
     description:

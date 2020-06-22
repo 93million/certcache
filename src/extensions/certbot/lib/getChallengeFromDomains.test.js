@@ -27,20 +27,21 @@ const mockDomains = [
 
 test(
   'should return challenge shared between domains',
-  () => {
-    expect(getChallengeFromDomains(
+  async () => {
+    await expect(getChallengeFromDomains(
       mockCertbotDomains,
       mockDomains,
       'mockChallenge2'
     ))
+      .resolves
       .toBe(challenges.mockChallenge3)
   }
 )
 
 test(
   'should use default chalenge when none provided',
-  () => {
-    const challenge = getChallengeFromDomains(
+  async () => {
+    const challenge = await getChallengeFromDomains(
       mockCertbotDomains,
       ['foo.example.com', 'test7.example.com'],
       'mockChallenge1'
