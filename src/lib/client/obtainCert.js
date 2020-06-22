@@ -59,15 +59,21 @@ module.exports = async (
 
     req
       .then((response) => {
-        clearTimeout(requestTimeout)
         resolve(response)
       })
-      .catch((e) => reject(e))
+      .catch((e) => {
+        reject(e)
+      })
+      .finally(() => {
+        clearTimeout(requestTimeout)
+      })
   })
 
-  const response = await Promise.race([doRequest(), maxRequestTimePromise])
-
-  maxRequestTimePromise.clearTimeout()
+  const response = await Promise
+    .race([doRequest(), maxRequestTimePromise])
+    .finally(() => {
+      maxRequestTimePromise.clearTimeout()
+    })
 
   if (response.success === true) {
     await writeBundle(certDirPath, response.data.bundle)
