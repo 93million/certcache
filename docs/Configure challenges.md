@@ -87,7 +87,7 @@ services:
 
 See https://certbot.eff.org/docs/using.html#dns-plugins for instructions about which args and environment variales to use.
 
-Note that to credential files are mounted as a volume so they are accessible in the CertCache server container at `/certcache/credentials/`.
+If the DNS plugin required that you provide credentials for your DNS provider, you can mount them at `/certcache/credentials/` and reference them from the challenge args list.
 
 We set `CERTCACHE_CERTBOT_DEFAULT_CHALLENGE` to `dns_route53`. This means that all domains will be generated using this challenge unless they specify another challenge.
 
