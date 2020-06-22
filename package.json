@@ -11,9 +11,9 @@
     "lint": "eslint .",
     "start": "node src/cli/cli.js serve",
     "startdev": "nodemon --inspect src/cli/cli.js serve",
-    "test": "jest -c jest.config.all.js --coverage",
-    "test:sit": "jest -c jest.config.sit.js",
-    "test:unit": "jest -c jest.config.js --coverage"
+    "test": "jest -c jest.config.all.js --coverage --detectOpenHandles",
+    "test:sit": "jest -c jest.config.sit.js --detectOpenHandles",
+    "test:unit": "jest -c jest.config.js --coverage --detectOpenHandles"
   },
   "author": "Pommy <tm_certcache@93m.co> (https://93million.org)",
   "license": "MIT",

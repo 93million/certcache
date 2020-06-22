@@ -31,5 +31,5 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - name: Run all tests
-      run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org npm test
+      run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org DEBUG="certcache.*" npm test
 
