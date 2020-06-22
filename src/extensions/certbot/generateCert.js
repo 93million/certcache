@@ -16,7 +16,7 @@ module.exports = async (commonName, altNames, meta) => {
     certsInGeneration[certName] = (async () => {
       const domains = Array.from(new Set([commonName, ...altNames]))
       const certbotConfig = (await getConfig()).extensions.certbot
-      const challenge = getChallengeFromDomains(
+      const challenge = await getChallengeFromDomains(
         certbotConfig.domains,
         domains,
         certbotConfig.defaultChallenge
@@ -36,7 +36,7 @@ module.exports = async (commonName, altNames, meta) => {
         certName,
         meta,
         certbotConfig,
-        challenge.certonlyArgs
+        challenge.args
       )
       debug(
         'Generating certificate by calling',
@@ -44,7 +44,11 @@ module.exports = async (commonName, altNames, meta) => {
         certbotArgs.join(' ')
       )
 
-      await execCertbot(certbotConfig.certbotExec, certbotArgs)
+      await execCertbot(
+        certbotConfig.certbotExec,
+        certbotArgs,
+        { env: { ...process.env, ...challenge.environment } }
+      )
 
       return certbotConfig
     })()

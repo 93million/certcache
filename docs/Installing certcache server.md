@@ -90,7 +90,9 @@ docker-compose run --rm certcacheserver create-keys -n <certcache-server>
 
 ### Changing the default challenge
 
-Domains can be validated using either `http-01` and `dns-01` challenges. The default challenge is `dns-01`. The default challenge can be changed by setting the env var `CERTCACHE_CERTBOT_DEFAULT_CHALLENGE` to `http-01`.
+Domains can be validated using the inbuilt `http-01` and `dns-01` challenges. The default challenge is `dns-01`. The default challenge can be changed by setting the env var `CERTCACHE_CERTBOT_DEFAULT_CHALLENGE` to `http-01`.
+
+If you need to set up Certbot plugin challenges, please see the section on how to use [other Certbot DNS plugins](Configure%20Challenges.md#other-certbot-dns-plugins)
 
 ### Changing challenges per domain
 
@@ -102,7 +104,7 @@ services:
     …
     environment:
       …
-      CERTCACHE_CERTBOT_DOMAINS:
+      CERTCACHE_CERTBOT_DOMAINS: |
         - domain: 'example.com'
           challenges: ['dns-01', 'http-01']
         - domain: '93million.org'
@@ -122,7 +124,7 @@ The value of `domain` in `CERTCACHE_CERTBOT_DOMAINS` can be provided as a regula
 If `CERTCACHE_CERTBOT_DOMAINS` is defined, Certbot will only be used to generate certs for the domains listed. By default Certbot is used to generate every domain. If you want to change a challenge for 1 domain only without having to list all other domains explicitly, use a regular expression to match the other domains like this:
 
 ```yaml
-      CERTCACHE_CERTBOT_DOMAINS:
+      CERTCACHE_CERTBOT_DOMAINS: |
         - domain: 'http-01-challenge.example.com'
           challenges: ['http-01']
         - domain: '~.*'

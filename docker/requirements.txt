@@ -1,1 +1,14 @@
+acme == 1.5.0
+certbot-dns-cloudflare == 1.5.0
+certbot-dns-cloudxns == 1.5.0
+certbot-dns-digitalocean == 1.5.0
+certbot-dns-dnsimple == 1.5.0
+certbot-dns-dnsmadeeasy == 1.5.0
+certbot-dns-google == 1.5.0
+certbot-dns-linode == 1.5.0
+certbot-dns-luadns == 1.5.0
+certbot-dns-nsone == 1.5.0
+certbot-dns-ovh == 1.5.0
+certbot-dns-rfc2136 == 1.5.0
+certbot-dns-route53 == 1.5.0
 certbot-dns-standalone == 1.0.2
