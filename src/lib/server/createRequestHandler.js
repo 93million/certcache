@@ -21,9 +21,11 @@ module.exports = ({ actions }) => (req, res) => {
         throw new FeedbackError(`Action '${action}' not found`)
       }
 
+      const clientName = req.connection.getPeerCertificate().subject.CN
+
       result = {
         success: true,
-        data: await actions[action](payload, { req })
+        data: await actions[action](payload, { clientName })
       }
     } catch (error) {
       result = { success: false }

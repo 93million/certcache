@@ -21,7 +21,9 @@ CertCache is a secure TLS/SSL certificate distribution service. It can do the fo
 
 ## Overview
 
-CertCache is run in a server and client configuration. Clients request certificates from the server. If a matching certificate is found in the server cache it is served. If no certificate is found it can be generated dynamically using Let's Encrypt.
+CertCache is normally run in a server and client configuration. Clients request certificates from the server. If a matching certificate is found in the server cache it is served. If no certificate is found it can be generated dynamically using Let's Encrypt.
+
+If however you do not need the cache functionality you can use CertCache in [standalone mode](docs/Standalone%20mode.md) to gain access to all the benefits excluding the caching functionality.
 
 ## Usage
 

@@ -4,25 +4,24 @@ const canonicaliseUpstreamConfig = require('../canonicaliseUpstreamConfig')
 
 module.exports = async () => {
   const config = await getConfig()
-  const { cahKeysDir, upstream } = config
-  const { host, port } = canonicaliseUpstreamConfig(upstream)
+  const { host, port } = canonicaliseUpstreamConfig(config.upstream)
 
-  try {
-    const response = await request({ cahKeysDir, host, port }, 'getInfo')
-    const { error, version } = response.data
+  if (host === '--internal') {
+    console.log('No upstream server. Running in standalone mode')
+  } else {
+    try {
+      const { cahKeysDir } = config
+      const { version } = await request({ cahKeysDir, host, port }, 'getInfo')
 
-    if (response.success === true) {
       console.log([
-        'Connected sucessfully to server',
+        'Connected successfully to server',
         `${host}:${port}`,
         'running version',
         version
       ].join(' '))
-    } else {
-      console.log(`Connected to ${host}:${port} but received error ${error}`)
+    } catch (e) {
+      console.error('Error', e.message)
+      process.exit(1)
     }
-  } catch (e) {
-    console.error('Error', e.message)
-    process.exit(1)
   }
 }

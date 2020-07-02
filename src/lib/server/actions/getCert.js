@@ -77,14 +77,16 @@ const findLocalCertFromExtensions = async (
   return localCertSearch.find((localCert) => (localCert !== undefined))
 }
 
-module.exports = async (payload, { req }) => {
+module.exports = async (payload, { clientName } = {}) => {
   const config = await getConfig()
   const { meta, domains, days = config.renewalDays } = payload
-  const clientName = req.connection.getPeerCertificate().subject.CN
   const commonName = domains[0]
   const altNames = domains
 
-  await checkRestrictions(clientName, domains)
+  if (clientName !== undefined) {
+    await checkRestrictions(clientName, domains)
+  }
+
   debug('Request for certificate', domains, 'meta', meta)
 
   const extensions = await getExtensionsForDomains(domains)

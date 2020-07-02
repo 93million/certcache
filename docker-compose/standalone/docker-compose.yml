@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  certcache:
+    container_name: certcache
+    restart: unless-stopped
+    image: 93million/certcache
+    ports:
+      - '53:53/udp'
+      - '53:53/tcp'
+    volumes:
+      - ./certcache/cache:/certcache/cache:rw
+      - ./certcache/cahkeys:/certcache/cahkeys:ro
+      - ./certcache/certs:/certcache/certs:rw
+    environment:
+      CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>
+      CERTCACHE_CERTS: |
+        - certName: web
+          domains:
+            - '<your-domain>'
+            - '*.<your-domain>'
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./certcache/certs/:/etc/certcache/certs/:ro
+      - ./nginx/config/:/etc/nginx/conf.d/:ro
+      - ./www/:/var/www/:ro
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"

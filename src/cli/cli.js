@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#! /usr/bin/env node
 
 const yargs = require('yargs')
 const commands = require('./commands')

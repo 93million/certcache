@@ -7,6 +7,7 @@ const testServerDir = path.resolve(testDir, 'server')
 const testClientDir = path.resolve(testDir, 'client')
 const testServerCahkeysDir = path.resolve(testServerDir, 'cahkeys')
 const testClientCahkeysDir = path.resolve(testClientDir, 'cahkeys')
+const testStandaloneDir = path.resolve(testDir, 'standalone')
 
 module.exports = {
   cliCmd,
@@ -15,5 +16,6 @@ module.exports = {
   testDir,
   testServerCahkeysDir,
   testServerDir,
-  testSkelDir
+  testSkelDir,
+  testStandaloneDir
 }

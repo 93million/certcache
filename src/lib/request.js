@@ -29,7 +29,13 @@ module.exports = (
 
           debug('request() response length', res.length)
 
-          resolve(JSON.parse(res))
+          const responseObj = JSON.parse(res)
+
+          if (responseObj.success === true) {
+            resolve(responseObj.data)
+          } else {
+            reject(new Error(responseObj.error))
+          }
         })
       })
       .then((req) => {

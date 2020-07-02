@@ -3,7 +3,15 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUTPUT_DIR="$DIR/../test/server/cache/thirdparty"
+
+while getopts ":n:d:" o; do
+  case "${o}" in
+    d)
+      OUTPUT_DIR="${OPTARG}"
+      ;;
+  esac
+done
+shift $((OPTIND-1))
 
 mkdir -p "$OUTPUT_DIR"
 

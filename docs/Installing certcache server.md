@@ -1,5 +1,11 @@
 # Installing CertCache server
 
+Instantiate a server to host CertCache server and install Docker and Docker Compose.
+
+See https://docs.docker.com/get-docker/ to install Docker
+
+See https://docs.docker.com/compose/install/ to install Docker Compose
+
 ## Configure DNS for CertCache server
 
 Set up a DNS record to host CertCache server. Typically this would be a hostname like `certcache.93million.org` (we will refer to this as `<certcache-server>` below).
@@ -40,12 +46,6 @@ acme.certcache.93million.org. 300 IN	NS	certcache.93million.org.
 …
 ```
 
-## Install Docker and docker-compose
-
-See https://docs.docker.com/get-docker/ to install Docker
-
-See https://docs.docker.com/compose/install/ to install Docker Compose
-
 ## Install Docker Compose config on the server
 
 On your server, create a new dircetory to hold your Docker Compose config
@@ -72,7 +72,7 @@ services:
     command: ['serve']
 ```
 
-Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
+  * Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
 
 ## Generate the server and client keys
 
@@ -85,6 +85,8 @@ docker-compose run --rm certcacheserver create-keys -n <certcache-server>
 > ℹ️ `<certcache-server>` is the DNS name of your certcache server
 >
 > eg: `docker-compose run --rm certcacheserver create-keys -n certcache.93million.org`
+
+This will create server and client keys in your `./cahkeys` directory. The client key will be provided to the client to allow it to connect. Protect these keys with your life.
 
 ## Certbot DNS and HTTP challenges
 

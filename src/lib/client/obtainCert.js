@@ -3,6 +3,7 @@ const writeBundle = require('../writeBundle')
 const getConfig = require('../getConfig')
 const debug = require('debug')('certcache:obtainCert')
 const setTimeoutPromise = require('../helpers/setTimeoutPromise')
+const getCert = require('../server/actions/getCert')
 
 module.exports = async (
   host,
@@ -15,6 +16,7 @@ module.exports = async (
 ) => {
   const config = await getConfig()
   const domains = Array.from(new Set([commonName, ...altNames]))
+  const payload = { days, domains, meta }
 
   console.log([
     `Requesting certificate CN=${commonName}`,
@@ -69,25 +71,21 @@ module.exports = async (
       })
   })
 
-  const response = await Promise
-    .race([doRequest(), maxRequestTimePromise])
-    .finally(() => {
-      maxRequestTimePromise.clearTimeout()
-    })
+  try {
+    const { bundle } = (host === '--internal')
+      ? await getCert(payload)
+      : (await Promise.race([doRequest(), maxRequestTimePromise]))
 
-  if (response.success === true) {
-    await writeBundle(certDirPath, response.data.bundle)
-  } else {
+    await writeBundle(certDirPath, bundle)
+  } catch (e) {
     let message = `Error renewing certificate ${certDirPath}`
 
-    message += ` (${domains.join(',')})`
+    message += ` (${domains.join(',')}). Message: '${e.message}'`
 
-    debug(`Error obtaining bundle`, response)
-
-    if (response.error !== undefined) {
-      message += `. Message from server: '${response.error}'`
-    }
+    debug(`Error obtaining bundle`, e.message)
 
     throw new Error(message)
+  } finally {
+    maxRequestTimePromise.clearTimeout()
   }
 }

@@ -111,9 +111,9 @@ For HTTP validation you will need to be running an HTTP server on the domains yo
 
 <div align="center"><img alt="HTTP-01 challenge diagram" src="images/http-01_diagram.svg" width="70%" /></div>
 
-The following example shows how to configure NginX to validate the domains `93m.co` and `secure.93m.co`, running certcache on `certcache.93million.org`
+The following example shows how to configure Nginx to validate the domains `93m.co` and `secure.93m.co`, running certcache on `certcache.93million.org`
 
-Edit your NginX config and add a redirection rule for the location `/.well-known/acme-challenge`:
+Edit your Nginx config and add a redirection rule for the location `/.well-known/acme-challenge`:
 
 ```
 server {
@@ -130,7 +130,7 @@ server {
 
 This will redirect requests from `http://93m.co/.well-known/acme-challenge/<path>` to `http://certcache.93million.org/.well-known/acme-challenge/<path>`.
 
-Note you can use wildcards and regular expressions in NginX's `server_name` to reduce configuration duplication, however HTTP validation is not capable of creating certificates with wildcard domains.
+Note you can use wildcards and regular expressions in Nginx's `server_name` to reduce configuration duplication, however HTTP validation is not capable of creating certificates with wildcard domains.
 
 If you are using Apache, you can redirect requests using `mod_rewrite`'s `Redirect` directive.
 
