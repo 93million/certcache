@@ -2,7 +2,7 @@
 
 CertCache doesn't need to be run in a server/client configuration. It can be run in standalone mode which doesn't require a server.
 
-This brings the benefits of being able to use the bunded standalone DNS server ([certbot-dns-standalone](https://github.com/siilike/certbot-dns-standalone)) for DNS-01 validation and the ability to declaratively define certificates in `docker-compose.yml`, but loses the benefits of caching functionality. CertCache without the cache.
+This brings the benefits of being able to use the bundled standalone DNS server ([certbot-dns-standalone](https://github.com/siilike/certbot-dns-standalone)) for DNS-01 validation and the ability to declaratively define certificates in `docker-compose.yml`, but loses the benefits of caching functionality. CertCache without the cache.
 
 In this guide, we will run through setting up a simple site protected with a wildcard certificate.
 
