@@ -1,4 +1,5 @@
 acme == 1.5.0
+certbot == 1.5.0
 certbot-dns-cloudflare == 1.5.0
 certbot-dns-cloudxns == 1.5.0
 certbot-dns-digitalocean == 1.5.0
