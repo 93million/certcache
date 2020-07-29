@@ -5,11 +5,13 @@ const request = require('../request')
 const writeBundle = require('../writeBundle')
 const getConfig = require('../getConfig')
 const getCert = require('../server/actions/getCert')
+const execCommand = require('../execCommand')
 
 jest.mock('../request')
 jest.mock('../writeBundle')
 jest.mock('../getConfig')
 jest.mock('../server/actions/getCert')
+jest.mock('../execCommand')
 
 console.error = jest.fn()
 console.log = jest.fn()
@@ -264,5 +266,24 @@ test(
       meta: mockMeta,
       days: mockDays
     })
+  }
+)
+
+test(
+  'should execute commands in cert definitions onChange prop',
+  async () => {
+    const mockOnWrite = 'mock command'
+
+    await obtainCert(
+      '--internal',
+      mockPort,
+      mockCommonName,
+      mockAltNames,
+      mockMeta,
+      mockCertDirPath,
+      { cahKeysDir: mockCahKeysDir, days: mockDays, onChange: mockOnWrite }
+    )
+
+    expect(execCommand).toBeCalledWith(mockOnWrite, expect.any(Object))
   }
 )

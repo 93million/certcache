@@ -36,7 +36,7 @@ module.exports = async () => {
       await someAsync(
         localCerts,
         async (cert) => {
-          const { certPath, commonName, altNames = [] } = cert
+          const { certPath, commonName, altNames = [], notAfter } = cert
 
           return (
             path.basename(path.dirname(certPath)) === certDefinition.certName &&
@@ -48,7 +48,8 @@ module.exports = async () => {
             metaItemsMatch(
               await getMetaFromCert(cert),
               await getMetaFromCertDefinition(certDefinition)
-            )
+            ) &&
+            notAfter.getTime() >= certRenewEpoch.getTime()
           )
         }
       ) === false
@@ -62,7 +63,8 @@ module.exports = async () => {
       commonName: certDefinition.domains[0],
       altNames: certDefinition.domains,
       meta: await getMetaFromCertDefinition(certDefinition),
-      certDir: path.resolve(certDir, certDefinition.certName)
+      certDir: path.resolve(certDir, certDefinition.certName),
+      onChange: certDefinition.onChange
     }))
   )
 
@@ -85,7 +87,13 @@ module.exports = async () => {
   const obtainCertErrors = []
 
   await Promise.all(
-    certsToRequest.map(async ({ altNames, certDir, commonName, meta }) => {
+    certsToRequest.map(async ({
+      altNames,
+      certDir,
+      commonName,
+      meta,
+      onChange
+    }) => {
       try {
         await obtainCert(
           host,
@@ -94,7 +102,7 @@ module.exports = async () => {
           altNames,
           meta,
           certDir,
-          { cahKeysDir: config.cahKeysDir, days: renewalDays }
+          { cahKeysDir: config.cahKeysDir, days: renewalDays, onChange }
         )
       } catch (e) {
         obtainCertErrors.push(e.message)
