@@ -29,7 +29,7 @@ Create a directory `certcache/cahkeys`. Copy the file `client.cahkey` from CertC
 
 > ⚠️ `cahkey` files allow CertCache clients to connect to the server - so be careful who you give them to!
 
-## Getting certificate
+## Getting certificates
 
 ### Listing certificates in docker-compose.yml
 
@@ -38,6 +38,22 @@ This config will connect to the CertCache server specified in `CERTCACHE_UPSTREA
 In this example we defined 1 certificate with 3 domain names (alt-names). It will be stored in the directory `certcache/certs/<cert-name>` on the client. If you do not provide a `certName` then the first domain name will be used as the directory name.
 
 > ⚠️ the `testCert: true` specified in `CERTCACHE_CERTS` causes CertBot to generate testing certificates. This is useful when testing a setup. Remove `testCert` or set to `false` when you are ready to use valid certs.
+
+### Certificate onChange hook
+
+An onChange hook exists to run commands when certificates are changed (installed or renewed). Use the property `onChange` in the `CERTCACHE_CERTS` env var to run a shell command. Commands are executed with the env var `CERTCACHE_CHANGED_DIR` which points to the directory of the changed certificate.
+
+For example, the following command will concatenate fullchain.pem and privkey.pem for use with HAProxy:
+
+```
+CERTCACHE_CERTS: |
+  - certName: <cert-name>
+    domains:
+      …
+    onChange: cat $$CERTCACHE_CHANGED_DIR/fullchain.pem $$CERTCACHE_CHANGED_DIR/privkey.pem | tee $$CERTCACHE_CHANGED_DIR/cert-key-combined.pem
+```
+
+> `PATH` is updated to include `/certcache/bin` directory. If there was an executable script at the location `/certcache/bin/do_stuff` then the command in `onChange` could simply read `onChange: do_stuff` - without requiring the full path.
 
 ### Getting certificates from the command line
 

@@ -313,7 +313,8 @@ describe(
             '-d',
             commonName,
             '--cert-name',
-            'standalone'
+            'standalone',
+            '--skip-file-perms'
           ],
           { cwd: testStandaloneDir }
         )
@@ -336,6 +337,53 @@ describe(
 
         expect(cert.subject.commonName).toBe(commonName)
         expect(keyPublicKey.modulus).toBe(certPublicKey.modulus)
+      }
+    )
+    test(
+      'should execute commands listed in CERTCACHE_CERTS onChange prop',
+      async () => {
+        const mockCertcacheDomains = [
+          {
+            domains: ['test.example.com'],
+            certName: 'envvar3',
+            // eslint-disable-next-line max-len
+            onChange: 'cat "$CERTCACHE_CHANGED_DIR/fullchain.pem" "$CERTCACHE_CHANGED_DIR/privkey.pem" | tee "$CERTCACHE_CHANGED_DIR/fullchain-privkey-combined.pem"'
+          }
+        ]
+        await execFile(
+          cliCmd,
+          ['sync', '--skip-file-perms'],
+          {
+            cwd: testClientDir,
+            env: {
+              ...process.env,
+              CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
+              CERTCACHE_UPSTREAM: 'localhost'
+            }
+          }
+        )
+
+        const fullchainPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'envvar3',
+          'fullchain.pem'
+        ))
+        const privkeyPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'envvar3',
+          'privkey.pem'
+        ))
+        const fullchainPrivkeyCombinedPem = await readFile(path.resolve(
+          testClientDir,
+          'certs',
+          'envvar3',
+          'fullchain-privkey-combined.pem'
+        ))
+
+        expect(fullchainPrivkeyCombinedPem)
+          .toEqual(Buffer.concat([fullchainPem, privkeyPem]))
       }
     )
   }

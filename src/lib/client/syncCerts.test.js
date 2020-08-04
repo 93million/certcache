@@ -40,8 +40,10 @@ const mockLocalCerts = [
   generateMockCert('woo.example.com', true, 60),
   generateMockCert('93million.com', false, 20),
   generateMockCert('foo.example.com', false, 10),
-  generateMockCert('boo.example.com', false, 10, { skipAltNames: true })
+  generateMockCert('boo.example.com', false, 10, { skipAltNames: true }),
+  generateMockCert('poo.example.com', true, 10)
 ]
+const mockOnChange = 'do something with cert once written'
 const mockCertcacheCertDefinitions = [
   {
     certName: 'example.com',
@@ -65,6 +67,12 @@ const mockCertcacheCertDefinitions = [
     certName: 'boo.example.com',
     domains: ['boo.example.com', 'foo.boo.example.com', 'test.boo.example.com'],
     testCert: true
+  },
+  {
+    certName: 'poo.example.com',
+    domains: ['poo.example.com', 'www.poo.example.com', 'test.poo.example.com'],
+    testCert: true,
+    onChange: mockOnChange
   }
 ]
 mockLocalCerts.findCert = jest.fn()
@@ -221,6 +229,32 @@ test(
       expect.any(Object),
       path.resolve(path.dirname(mockCert.certPath)),
       { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+    )
+  }
+)
+
+test(
+  'should use cert definitions when renewing certs',
+  async () => {
+    await syncCerts()
+
+    const mockCertDefinition = mockCertcacheCertDefinitions
+      .find(({ certName }) => {
+        return (certName === 'poo.example.com')
+      })
+
+    expect(obtainCert).toBeCalledWith(
+      upstream.host,
+      upstream.port,
+      mockCertDefinition.certName,
+      mockCertDefinition.domains,
+      expect.any(Object),
+      path.resolve(certcacheCertDir, mockCertDefinition.certName),
+      {
+        cahKeysDir: config.cahKeysDir,
+        days: config.renewalDays,
+        onChange: mockCertDefinition.onChange
+      }
     )
   }
 )

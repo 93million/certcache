@@ -3,6 +3,9 @@ const yaml = require('yaml')
 
 module.exports = ({ argv, env, file }) => {
   return {
+    binDir: env.CERTCACHE_BIN_DIR ||
+      file.binDir ||
+      defaults.binDir,
     cahKeysDir: argv.cahkeys ||
       env.CERTCACHE_CAH_KEYS_DIR ||
       file.cahKeysDir ||

@@ -4,6 +4,7 @@ const getConfig = require('../getConfig')
 const debug = require('debug')('certcache:obtainCert')
 const setTimeoutPromise = require('../helpers/setTimeoutPromise')
 const getCert = require('../server/actions/getCert')
+const execCommand = require('../execCommand')
 
 module.exports = async (
   host,
@@ -12,7 +13,7 @@ module.exports = async (
   altNames = [],
   meta,
   certDirPath,
-  { cahKeysDir, days }
+  { cahKeysDir, days, onChange }
 ) => {
   const config = await getConfig()
   const domains = Array.from(new Set([commonName, ...altNames]))
@@ -74,9 +75,13 @@ module.exports = async (
   try {
     const { bundle } = (host === '--internal')
       ? await getCert(payload)
-      : (await Promise.race([doRequest(), maxRequestTimePromise]))
+      : await Promise.race([doRequest(), maxRequestTimePromise])
 
     await writeBundle(certDirPath, bundle)
+
+    if (onChange !== undefined) {
+      execCommand(onChange, { CERTCACHE_CHANGED_DIR: certDirPath })
+    }
   } catch (e) {
     let message = `Error renewing certificate ${certDirPath}`
 

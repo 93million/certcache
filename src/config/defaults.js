@@ -1,4 +1,5 @@
 module.exports = {
+  binDir: 'bin',
   cahKeysDir: 'cahkeys',
   certDir: 'certs',
   certs: [],

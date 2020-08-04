@@ -12,6 +12,7 @@ RUN apk update && \
   rm -rf /var/cache/apk/* && \
   npm install --production -g /certcachesrc/
 
+VOLUME /certcache/bin/
 VOLUME /certcache/cache/
 VOLUME /certcache/cahkeys/
 VOLUME /certcache/certs/
