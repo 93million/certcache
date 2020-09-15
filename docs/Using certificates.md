@@ -7,7 +7,7 @@ version: '3.7'
 services:
   certcache:
     container_name: certcache
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     …
     volumes:
       - ./certcache/certs/:/certcache/certs/:rw
