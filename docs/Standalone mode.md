@@ -45,7 +45,7 @@ services:
   certcache:
     container_name: certcache
     restart: unless-stopped
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     ports:
       - '53:53/udp'
       - '53:53/tcp'

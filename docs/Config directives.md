@@ -13,7 +13,7 @@ version: '3.7'
 services:
   certcache:
     container_name: certcache
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     restart: "unless-stopped"
     volumes:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
@@ -42,7 +42,7 @@ version: '3.7'
 services:
   certcache:
     container_name: certcache
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     restart: "unless-stopped"
     volumes:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw

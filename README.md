@@ -61,7 +61,7 @@ version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     restart: unless-stopped
     ports:
       - '53:53/udp'
@@ -93,7 +93,7 @@ version: '3.7'
 services:
   certcache:
     container_name: certcache
-    image: 93million/certcache
+    image: ghcr.io/93million/certcache
     restart: 'unless-stopped'
     volumes:
       - ./certcache/cahkeys/:/certcache/cahkeys/:rw
