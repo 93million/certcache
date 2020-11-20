@@ -1,16 +1,31 @@
-FROM node:12.16.0-alpine3.11
+FROM node:12.16.0-alpine3.11 as deps
 
-WORKDIR /certcache/
+COPY ./docker/requirements.txt /certcache/docker/requirements.txt
+
+RUN apk update && \
+  apk add --no-cache certbot openssl python && \
+  pip3 install -r /certcache/docker/requirements.txt && \
+  rm -rf /var/cache/apk/* && \
+  ln -s /usr/local/lib/node_modules/certcache/src/cli/cli.js \
+  /usr/local/bin/certcache
+
+FROM node:12.16.0-alpine3.11 as build-deps
+
+RUN apk update && apk add g++ make git
+
+FROM build-deps as build
 
 COPY . /certcachesrc/
 
 ENV NODE_ENV=production
 
-RUN apk update && \
-  apk add --no-cache bash certbot openssl python g++ make git && \
-  pip3 install -r /certcachesrc/docker/requirements.txt && \
-  rm -rf /var/cache/apk/* && \
-  npm install --production -g /certcachesrc/
+RUN npm install --production -g /certcachesrc/
+
+FROM deps as dist
+
+WORKDIR /certcache/
+
+COPY --from=build /certcachesrc /usr/local/lib/node_modules/certcache
 
 VOLUME /certcache/bin/
 VOLUME /certcache/cache/
