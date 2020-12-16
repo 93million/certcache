@@ -31,7 +31,7 @@ module.exports = async () => {
   // // create authentication keys
   await execFile(
     cliCmd,
-    ['create-keys', '-n', 'localhost', '--cahkeys', testServerCahkeysDir]
+    ['create-keys', '--cahkeys', testServerCahkeysDir]
   )
 
   // copy client key to certcache client

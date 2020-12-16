@@ -77,7 +77,7 @@ services:
 ```
 
   * Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
-  * Run `docker-compose run --rm certcacheserver create-keys -n <certcache-server>`
+  * Run `docker-compose run --rm certcacheserver create-keys`
   * Run `docker-compose up -d`
 
 See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
