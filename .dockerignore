@@ -3,6 +3,8 @@ cahkeys
 certs
 certbot
 conf
+Dockerfile
 docs
 node_modules
 sit
+venv

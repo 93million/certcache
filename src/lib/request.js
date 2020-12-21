@@ -8,6 +8,7 @@ module.exports = (
 ) => {
   const postData = JSON.stringify({ action, ...payload })
   const options = {
+    cahIgnoreMismatchedHostName: true,
     cahKeysDir,
     headers: { 'Content-Length': Buffer.from(postData).length },
     hostname: host,

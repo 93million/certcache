@@ -8,6 +8,7 @@
 /docker-compose/certcacheclient/certcache/cahkeys
 /docker-compose/certcacheclient/certcache/certs
 /node_modules
+/package-lock.json
 /sit/coverage
 /sit/skel/server/cache/thirdparty/
 /sit/test

@@ -28,8 +28,7 @@ jobs:
       run: sudo apt-get install -y -qq certbot
     - name: Install ngrok
       run: sudo snap install ngrok
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: Run all tests
+    - run: npm i
+    - name: Run tests
       run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org npm test
 

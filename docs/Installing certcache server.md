@@ -79,12 +79,8 @@ services:
 Run the following command from the directory that contans your `docker-compose.yml` file
 
 ```
-docker-compose run --rm certcacheserver create-keys -n <certcache-server>
+docker-compose run --rm certcacheserver create-keys
 ```
-
-> ℹ️ `<certcache-server>` is the DNS name of your certcache server
->
-> eg: `docker-compose run --rm certcacheserver create-keys -n certcache.93million.org`
 
 This will create server and client keys in your `./cahkeys` directory. The client key will be provided to the client to allow it to connect. Protect these keys with your life.
 

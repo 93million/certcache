@@ -10,14 +10,7 @@ module.exports = {
   cmd: 'create-keys',
   desc:
     'Create access keys to allow certcache clients to access certcache server',
-  builder: {
-    cahkeys,
-    name: {
-      alias: 'n',
-      description: 'Certcache server hostname',
-      required: true
-    }
-  },
+  builder: { cahkeys },
   handler: async (argv) => {
     const execScript = path.resolve(
       __dirname,
@@ -32,7 +25,7 @@ module.exports = {
 
     execFile(
       execScript,
-      ['create-key', '--server', '--keydir', cahKeysDir, '--name', argv.name]
+      ['create-key', '--server', '--keydir', cahKeysDir]
     )
       .then(() => {
         execFile(
