@@ -1,7 +1,7 @@
 FROM node:12.16.0-alpine3.11 as deps
 
 RUN apk update && \
-  apk add --no-cache openssl python3 && \
+  apk add --no-cache openssl python3 bash && \
   rm -rf /var/cache/apk/*
 
 FROM deps as certbot-build
