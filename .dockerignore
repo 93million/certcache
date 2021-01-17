@@ -6,5 +6,4 @@ conf
 Dockerfile
 docs
 node_modules
-sit
 venv
