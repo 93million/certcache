@@ -1,5 +1,12 @@
 #! /usr/bin/env sh
 
-. /certbot/venv/bin/activate
+stop() {
+  kill -s TERM $NODE_PID
+}
 
-certcache $@
+trap stop TERM
+
+. /certbot/venv/bin/activate
+certcache $@ &
+NODE_PID=$!
+wait $NODE_PID
