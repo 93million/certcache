@@ -28,13 +28,18 @@ let setup
 let ngrokDomain
 
 beforeAll(async () => {
-  setup = await setupTests()
-  ngrokDomain = setup
-    .ngrok
-    .tunnels
-    .find(({ proto }) => proto === 'http')
-    .public_url
-    .replace('http://', '')
+  try {
+    setup = await setupTests()
+    ngrokDomain = setup
+      .ngrok
+      .tunnels
+      .find(({ proto }) => proto === 'http')
+      .public_url
+      .replace('http://', '')
+  } catch (e) {
+    console.error(e)
+    process.exit(1)
+  }
 })
 
 afterAll(() => setup.cleanup())
