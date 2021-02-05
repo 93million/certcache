@@ -1,7 +1,7 @@
 const childProcess = require('child_process')
 const path = require('path')
 const util = require('util')
-const { cahkeys } = require('./args')
+const { catkeys } = require('./args')
 const getConfig = require('../../lib/getConfig')
 
 const execFile = util.promisify(childProcess.execFile)
@@ -10,7 +10,7 @@ module.exports = {
   cmd: 'create-keys',
   desc:
     'Create access keys to allow certcache clients to access certcache server',
-  builder: { cahkeys },
+  builder: { catkeys },
   handler: async (argv) => {
     const execScript = path.resolve(
       __dirname,
@@ -19,18 +19,18 @@ module.exports = {
       '..',
       'node_modules',
       '.bin',
-      'client-authenticated-https'
+      'catkeys'
     )
-    const { cahKeysDir } = (await getConfig())
+    const { catKeysDir } = (await getConfig())
 
     execFile(
       execScript,
-      ['create-key', '--server', '--keydir', cahKeysDir]
+      ['create-key', '--server', '--keydir', catKeysDir]
     )
       .then(() => {
         execFile(
           execScript,
-          ['create-key', '--keydir', cahKeysDir, '--name', 'client']
+          ['create-key', '--keydir', catKeysDir, '--name', 'client']
         )
       })
       .catch((err) => {

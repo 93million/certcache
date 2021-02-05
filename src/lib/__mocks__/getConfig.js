@@ -4,7 +4,7 @@ const getConfig = jest.fn()
 
 getConfig.mockReturnValue(Promise.resolve({
   binDir: 'bin',
-  cahKeysDir: '/path/to/cahkeys',
+  catKeysDir: '/path/to/catkeys',
   certDir: 'certs',
   certs: [
     { domains: ['test.example.com'], certName: 'filecert1' },

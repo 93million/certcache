@@ -4,7 +4,7 @@ const childProcess = require('child_process')
 const { promisify } = require('util')
 const path = require('path')
 const fs = require('fs')
-const loadKey = require('client-authenticated-https/lib/loadKey')
+const loadKey = require('catkeys/lib/loadKey')
 const {
   Certificate,
   PrivateKey,
@@ -15,7 +15,7 @@ const setupTests = require('./lib/setupTests')
 const {
   cliCmd,
   testClientDir,
-  testServerCahkeysDir,
+  testServerCatkeysDir,
   testStandaloneDir
 } = require('./filepaths')
 const yaml = require('yaml')
@@ -50,12 +50,12 @@ describe(
     test(
       'should have created valid authentication keys',
       async () => {
-        const cahkey = await loadKey(path.resolve(
-          testServerCahkeysDir,
-          'server.cahkey'
+        const catkey = await loadKey(path.resolve(
+          testServerCatkeysDir,
+          'server.catkey'
         ))
 
-        expect(cahkey).toEqual({
+        expect(catkey).toEqual({
           ca: expect.any(Buffer),
           cert: expect.any(Buffer),
           key: expect.any(Buffer)

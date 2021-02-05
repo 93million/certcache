@@ -4,9 +4,9 @@ const fse = require('fs-extra')
 const childProcess = require('child_process')
 const {
   cliCmd,
-  testClientCahkeysDir,
+  testClientCatkeysDir,
   testDir,
-  testServerCahkeysDir,
+  testServerCatkeysDir,
   testServerDir,
   testSkelDir,
   testStandaloneDir
@@ -19,7 +19,7 @@ const execFile = promisify((cmd, a2, a3, a4) => {
 
   childProcess.execFile(cmd, args, (err, stdin, stderr) => {
     if (callback !== undefined) {
-      callback((err || stderr), stdin)
+      callback(err, stdin)
     }
   })
 })
@@ -31,13 +31,13 @@ module.exports = async () => {
   // // create authentication keys
   await execFile(
     cliCmd,
-    ['create-keys', '--cahkeys', testServerCahkeysDir]
+    ['create-keys', '--catkeys', testServerCatkeysDir]
   )
 
   // copy client key to certcache client
   await fse.copy(
-    path.resolve(testServerCahkeysDir, 'client.cahkey'),
-    path.resolve(testClientCahkeysDir, 'client.cahkey')
+    path.resolve(testServerCatkeysDir, 'client.catkey'),
+    path.resolve(testClientCatkeysDir, 'client.catkey')
   )
 
   // create test certs
@@ -86,7 +86,7 @@ module.exports = async () => {
   // start certcache server
   const serveProcess = childProcess.execFile(
     cliCmd,
-    ['serve', '--cahkeys', testServerCahkeysDir],
+    ['serve', '--catkeys', testServerCatkeysDir],
     { cwd: testServerDir }
   )
 

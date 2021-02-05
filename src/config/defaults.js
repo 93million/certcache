@@ -1,6 +1,6 @@
 module.exports = {
   binDir: 'bin',
-  cahKeysDir: 'cahkeys',
+  catKeysDir: 'catkeys',
   certDir: 'certs',
   certs: [],
   httpRequestInterval: 1,

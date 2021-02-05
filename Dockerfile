@@ -80,7 +80,7 @@ RUN ln -s /usr/local/lib/node_modules/certcache/src/cli/cli.js \
 
 VOLUME /certcache/bin/
 VOLUME /certcache/cache/
-VOLUME /certcache/cahkeys/
+VOLUME /certcache/catkeys/
 VOLUME /certcache/certs/
 VOLUME /certcache/conf/
 VOLUME /certcache/credentials/

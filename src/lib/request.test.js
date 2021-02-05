@@ -1,7 +1,7 @@
 /* global jest test expect beforeEach */
 
 const request = require('./request')
-const clientAuthenticatedHttps = require('client-authenticated-https')
+const { https } = require('catkeys')
 const { Readable, Writable } = require('stream')
 
 const host = 'certcache.example.com'
@@ -14,14 +14,14 @@ let requestData
 const mockErrorMessage = '__test error message__'
 let requestStream
 
-jest.mock('client-authenticated-https')
+jest.mock('catkeys')
 
 const setUpRequestMockImplementation = ({
   shouldThrow = false,
   response = mockResponse
 } = {}) => {
-  clientAuthenticatedHttps.request.mockReset()
-  clientAuthenticatedHttps.request.mockImplementation((options, callback) => {
+  https.request.mockReset()
+  https.request.mockImplementation((options, callback) => {
     const requestDataArr = []
     const responseStream = new Readable({ read: () => {} })
     requestStream = new Writable({

@@ -65,7 +65,7 @@ services:
       - '80:80/tcp'
       - '4433:4433/tcp'
     volumes:
-      - ./cahkeys/:/certcache/cahkeys/:rw
+      - ./catkeys/:/certcache/catkeys/:rw
       - ./cache/:/certcache/cache/:rw
     environment:
       CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>
@@ -82,7 +82,7 @@ Run the following command from the directory that contans your `docker-compose.y
 docker-compose run --rm certcacheserver create-keys
 ```
 
-This will create server and client keys in your `./cahkeys` directory. The client key will be provided to the client to allow it to connect. Protect these keys with your life.
+This will create server and client keys in your `./catkeys` directory. The client key will be provided to the client to allow it to connect. Protect these keys with your life.
 
 ## Certbot DNS and HTTP challenges
 

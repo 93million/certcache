@@ -1,7 +1,7 @@
 const childProcess = require('child_process')
 const path = require('path')
 const util = require('util')
-const { cahkeys } = require('./args')
+const { catkeys } = require('./args')
 
 const execFile = util.promisify(childProcess.execFile)
 
@@ -14,7 +14,7 @@ module.exports = {
       describe: 'Name of the client key',
       required: true
     })
-    yargs.option('cahkeys', cahkeys)
+    yargs.option('catkeys', catkeys)
   },
   handler: (argv) => {
     const execScript = path.resolve(
@@ -24,12 +24,12 @@ module.exports = {
       '..',
       'node_modules',
       '.bin',
-      'client-authenticated-https'
+      'catkeys'
     )
 
     execFile(
       execScript,
-      ['create-key', '--keydir', argv.cahkeys, '--name', argv.name]
+      ['create-key', '--keydir', argv.catkeys, '--name', argv.name]
     )
       .catch((err) => {
         console.error(err)

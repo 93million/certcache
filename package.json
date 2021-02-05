@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "client-authenticated-https": "1.1.0",
+    "catkeys": "^1.0.0",
     "debug": "^4.1.1",
     "md5": "^2.2.1",
     "node-rsa": "^1.0.8",

@@ -17,5 +17,5 @@
 #   exit 1
 # fi
 
-# "$DIR/../lib/clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../cahkeys" -n "$SERVER_NAME"
-# "$DIR/../lib/clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../cahkeys" -n "client"
+# "$DIR/../lib/clientAuthenticatedHttps/bin/create-server-key.sh" -k "$DIR/../../catkeys" -n "$SERVER_NAME"
+# "$DIR/../lib/clientAuthenticatedHttps/bin/create-client-key.sh" -k "$DIR/../../catkeys" -n "client"

@@ -6,10 +6,10 @@ module.exports = ({ argv, env, file }) => {
     binDir: env.CERTCACHE_BIN_DIR ||
       file.binDir ||
       defaults.binDir,
-    cahKeysDir: argv.cahkeys ||
+    catKeysDir: argv.catkeys ||
       env.CERTCACHE_CAH_KEYS_DIR ||
-      file.cahKeysDir ||
-      defaults.cahKeysDir,
+      file.catKeysDir ||
+      defaults.catKeysDir,
     certDir: env.CERTCACHE_CERTS_DIR ||
       file.certDir ||
       defaults.certDir,

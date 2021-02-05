@@ -16,7 +16,7 @@ services:
     image: ghcr.io/93million/certcache
     restart: "unless-stopped"
     volumes:
-      - ./certcache/cahkeys/:/certcache/cahkeys/:rw
+      - ./certcache/catkeys/:/certcache/catkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
       CERTCACHE_UPSTREAM: <certcache-server>
@@ -45,7 +45,7 @@ services:
     image: ghcr.io/93million/certcache
     restart: "unless-stopped"
     volumes:
-      - ./certcache/cahkeys/:/certcache/cahkeys/:rw
+      - ./certcache/catkeys/:/certcache/catkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
       - ./certcache/conf/:/certcache/conf/:rw
 ```
@@ -73,7 +73,7 @@ services:
 | ENV variable                  | `conf/settings.json` key | CLI arg               | (Docker) default     | Description                                                                                                                                                                                    |
 | ------------------------------| -------------------------| --------------------- | -------------------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `CERTCACHE_BIN_DIR`           | `binDir`                 | -                     | `/certcache/bin`     | Path to the bin directory that holds script that can be called from hooks                                                                                                                      |
-| `CERTCACHE_CAH_KEYS_DIR`      | `cahKeysDir`             | `--cahkeys`           | `/certcache/cahkeys` | Path to the cahkeys directory that holds authentication keys                                                                                                                                   |
+| `CERTCACHE_CAH_KEYS_DIR`      | `catKeysDir`             | `--catkeys`           | `/certcache/catkeys` | Path to the catkeys directory that holds authentication keys                                                                                                                                   |
 | `CERTCACHE_CERTS_DIR`         | `certDir`                | -                     | `/certcache/certs`   | Path to the `certs` directory where certificates are written                                                                                                                                   |
 | `CERTCACHE_CERTS`             | `certs`                  | - [^1]                | -                    | List of certificates to synchronise to CertCache client. Use YAML in env var.                                                                                                                  |
 | `CERTCACHE_HTTP_REDIRECT_URL` | `httpRedirectUrl`        | `--http-redirect-url` | -                    | URL of CertCache server to redirect HTTP-01 HTTP requests - useful if CertCache client is being run on a container that a DNS points to that doesn't have an HTTP server to handle redircetion |

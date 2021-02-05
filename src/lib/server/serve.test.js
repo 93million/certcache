@@ -1,13 +1,13 @@
 /* global jest test expect beforeEach afterEach */
 
 const serve = require('./serve')
-const clientAuthenticatedHttps = require('client-authenticated-https')
+const { https } = require('catkeys')
 const actions = require('./actions')
 const FeedbackError = require('../FeedbackError')
 const { Readable, Writable } = require('stream')
 const getConfig = require('../getConfig')
 
-jest.mock('client-authenticated-https')
+jest.mock('catkeys')
 jest.mock('./actions')
 
 let action
@@ -26,7 +26,7 @@ listen.mockReturnValue({ close })
 
 console.error = jest.fn()
 
-clientAuthenticatedHttps
+https
   .createServer
   .mockImplementation((options, callback) => {
     const requestBody = JSON.stringify({ action, ...payload })

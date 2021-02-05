@@ -24,7 +24,7 @@ localityName           = Newcastle upon Tyne
 organizationName       = clientAuthenticatedHttps
 organizationalUnitName = clientAuthenticatedHttps
 commonName             = clientAuthenticatedHttps
-emailAddress           = cahkeygen@example.com
+emailAddress           = certcache@example.com
 
 
 [ req_attributes ]

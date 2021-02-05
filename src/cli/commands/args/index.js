@@ -1,8 +1,8 @@
 module.exports = {
-  cahkeys: {
+  catkeys: {
     alias: 'k',
     description:
-      'Path to cahkeys directory. Alternativly use env CERTCACHE_CAH_KEYS_DIR'
+      'Path to catkeys directory. Alternativly use env CERTCACHE_CAH_KEYS_DIR'
   },
   days: {
     description: 'Number of days to renew certificate before expiry'

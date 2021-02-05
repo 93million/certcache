@@ -44,9 +44,9 @@ const getInfo = async () => {
     fields.push(['Server host', host])
     fields.push(['Server port', port])
     try {
-      const { cahKeysDir } = config
+      const { catKeysDir } = config
 
-      const data = await request({ cahKeysDir, host, port }, 'getInfo')
+      const data = await request({ catKeysDir, host, port }, 'getInfo')
 
       fields.push(['Version', data.version])
       fields.push(['Extensions', data.extensions.join(', ')])

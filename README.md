@@ -69,7 +69,7 @@ services:
       - '80:80/tcp'
       - '4433:4433/tcp'
     volumes:
-      - ./cahkeys/:/certcache/cahkeys/:rw
+      - ./catkeys/:/certcache/catkeys/:rw
       - ./cache/:/certcache/cache/:rw
     environment:
       CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>
@@ -96,7 +96,7 @@ services:
     image: ghcr.io/93million/certcache
     restart: 'unless-stopped'
     volumes:
-      - ./certcache/cahkeys/:/certcache/cahkeys/:rw
+      - ./certcache/catkeys/:/certcache/catkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
       CERTCACHE_UPSTREAM: <certcache-server>
@@ -112,7 +112,7 @@ services:
 
   * Change env var `CERTCACHE_UPSTREAM` to contain the domain of your CertCache server
   * Change env var `CERTCACHE_CERTS` to list the certificates you want to synchronise with the server. `<cert-domain-n>` represents a domain you want to generate a cert for. `<cert-name>` represents the name of the certificate directory into which the certificate and key will be written.
-  * Make a directory at `./certcache/cahkeys/` and copy into it the file `client.cahkey` from the `cahkeys` directory on the server
+  * Make a directory at `./certcache/catkeys/` and copy into it the file `client.catkey` from the `catkeys` directory on the server
 
 Do not start the client yet. We need to configure challenges first.
 
