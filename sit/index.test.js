@@ -78,7 +78,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             commonName,
             '--cert-name',
@@ -116,7 +116,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -154,7 +154,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -202,7 +202,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -242,7 +242,7 @@ describe(
             env: {
               ...process.env,
               CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
-              CERTCACHE_UPSTREAM: 'localhost'
+              CERTCACHE_UPSTREAM: '127.0.0.1'
             }
           }
         )
@@ -363,7 +363,7 @@ describe(
             env: {
               ...process.env,
               CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
-              CERTCACHE_UPSTREAM: 'localhost'
+              CERTCACHE_UPSTREAM: '127.0.0.1'
             }
           }
         )
