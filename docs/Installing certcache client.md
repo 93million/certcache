@@ -10,7 +10,7 @@ services:
     image: ghcr.io/93million/certcache
     restart: "unless-stopped"
     volumes:
-      - ./certcache/cahkeys/:/certcache/cahkeys/:rw
+      - ./certcache/catkeys/:/certcache/catkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
       CERTCACHE_UPSTREAM: <certcache-server>
@@ -25,9 +25,9 @@ services:
 
 ## Grant access to the server
 
-Create a directory `certcache/cahkeys`. Copy the file `client.cahkey` from CertCache server's into the client's `cahkeys` directory - this will allow the client to connect to the server.
+Create a directory `certcache/catkeys`. Copy the file `client.catkey` from CertCache server's into the client's `catkeys` directory - this will allow the client to connect to the server.
 
-> ⚠️ `cahkey` files allow CertCache clients to connect to the server - so be careful who you give them to!
+> ⚠️ `catkey` files allow CertCache clients to connect to the server - so be careful who you give them to!
 
 ## Getting certificates
 

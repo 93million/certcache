@@ -34,7 +34,7 @@ const mockCommonName = 'example.com'
 const mockAltNames = ['test.example.com', 'foo.example.com']
 const mockMeta = { isTest: true }
 const mockCertDirPath = '/test/path/certs/example.com'
-const mockCahKeysDir = '/test/path/cahkeys'
+const mockCatKeysDir = '/test/path/catkeys'
 const mockDays = 21
 
 test(
@@ -47,11 +47,11 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
     expect(request).toBeCalledWith(
-      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      { catKeysDir: mockCatKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
       {
         domains: [mockCommonName, ...mockAltNames],
@@ -72,7 +72,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
     expect(writeBundle).toBeCalledWith(
@@ -94,7 +94,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     ))
       .rejects
       .toThrow(/^Error renewing certificate .* Message: 'foo'$/)
@@ -115,7 +115,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     ))
       .rejects
       .toThrow(error)
@@ -132,7 +132,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
     expect(console.log.mock.calls.map((args) => (args.join(' '))).join(' '))
@@ -150,11 +150,11 @@ test(
       undefined,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
     expect(request).toBeCalledWith(
-      { cahKeysDir: mockCahKeysDir, host: mockHost, port: mockPort },
+      { catKeysDir: mockCatKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
       { domains: [mockCommonName], meta: mockMeta, days: mockDays }
     )
@@ -183,7 +183,7 @@ test(
       undefined,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { catKeysDir: mockCatKeysDir }
     ))
       .rejects
       .toThrow('obtainCert() took more than')
@@ -218,7 +218,7 @@ test(
       undefined,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { catKeysDir: mockCatKeysDir }
     )
 
     expect(request).toBeCalledTimes(2)
@@ -242,7 +242,7 @@ test(
       undefined,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir }
+      { catKeysDir: mockCatKeysDir }
     ))
       .rejects
       .toThrow('HOPPLA!')
@@ -258,7 +258,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays }
+      { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
     expect(getCert).toBeCalledWith({
@@ -281,7 +281,7 @@ test(
       mockAltNames,
       mockMeta,
       mockCertDirPath,
-      { cahKeysDir: mockCahKeysDir, days: mockDays, onChange: mockOnWrite }
+      { catKeysDir: mockCatKeysDir, days: mockDays, onChange: mockOnWrite }
     )
 
     expect(execCommand).toBeCalledWith(mockOnWrite, expect.any(Object))

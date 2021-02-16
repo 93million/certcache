@@ -23,7 +23,7 @@ const load = async () => {
   const extensions = await getExtensions()
   const argv = getArgv()
   const env = process.env
-  const mainConfig = config({ argv, env, file: fileConfig })
+  const mainConfig = await config({ argv, env, file: fileConfig })
 
   const extensionConfigs = Object.keys(extensions).reduce(
     (acc, key) => {

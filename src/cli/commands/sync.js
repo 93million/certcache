@@ -1,6 +1,6 @@
 const syncPeriodically = require('../../lib/client/syncPeriodically')
 const {
-  cahkeys,
+  catkeys,
   days,
   upstream,
   httpRedirectUrl,
@@ -12,7 +12,7 @@ module.exports = {
   cmd: 'sync',
   desc: 'Sync certificates with Certcache server',
   builder: {
-    cahkeys,
+    catkeys,
     days,
     forever: {
       description: 'Sync certificates continuously with Certcache server'

@@ -1,6 +1,6 @@
 const getCert = require('../../lib/client/getCert')
 const {
-  cahkeys,
+  catkeys,
   days,
   upstream,
   httpRedirectUrl,
@@ -12,7 +12,7 @@ module.exports = {
   cmd: 'get',
   desc: 'Get a single cert from Certcache server',
   builder: {
-    cahkeys,
+    catkeys,
     'cert-name': {
       description: 'Certificate name (used for certificate directory name)'
     },

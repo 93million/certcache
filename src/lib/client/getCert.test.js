@@ -21,7 +21,7 @@ console.log = jest.fn()
 beforeEach(async () => {
   mockOpts = {
     domains: 'example.com,test.example.com,foo.example.com',
-    cahkeys: '/argv/path/to/cahkeys',
+    catkeys: '/argv/path/to/catkeys',
     'cert-name': 'testcert'
   }
   mockConfig = await getConfig()
@@ -43,7 +43,7 @@ test(
       mockMeta,
       path.resolve(mockConfig.certDir, mockOpts['cert-name']),
       {
-        cahKeysDir: mockConfig.cahKeysDir,
+        catKeysDir: mockConfig.catKeysDir,
         days: mockConfig.renewalDays
       }
     )
@@ -75,7 +75,7 @@ test(
       mockMeta,
       path.resolve(mockConfig.certDir, commonName),
       {
-        cahKeysDir: mockConfig.cahKeysDir,
+        catKeysDir: mockConfig.catKeysDir,
         days: mockConfig.renewalDays
       }
     )
@@ -116,7 +116,7 @@ test(
         mockMeta,
         path.resolve(mockConfig.certDir, mockOpts['cert-name']),
         {
-          cahKeysDir: mockConfig.cahKeysDir,
+          catKeysDir: mockConfig.catKeysDir,
           days: mockConfig.renewalDays
         }
       )

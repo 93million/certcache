@@ -102,7 +102,7 @@ module.exports = async () => {
           altNames,
           meta,
           certDir,
-          { cahKeysDir: config.cahKeysDir, days: renewalDays, onChange }
+          { catKeysDir: config.catKeysDir, days: renewalDays, onChange }
         )
       } catch (e) {
         obtainCertErrors.push(e.message)

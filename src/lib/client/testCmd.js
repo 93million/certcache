@@ -10,8 +10,8 @@ module.exports = async () => {
     console.log('No upstream server. Running in standalone mode')
   } else {
     try {
-      const { cahKeysDir } = config
-      const { version } = await request({ cahKeysDir, host, port }, 'getInfo')
+      const { catKeysDir } = config
+      const { version } = await request({ catKeysDir, host, port }, 'getInfo')
 
       console.log([
         'Connected successfully to server',

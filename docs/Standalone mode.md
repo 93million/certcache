@@ -51,7 +51,7 @@ services:
       - '53:53/tcp'
     volumes:
       - ./certcache/cache:/certcache/cache:rw
-      - ./certcache/cahkeys:/certcache/cahkeys:ro
+      - ./certcache/catkeys:/certcache/catkeys:ro
       - ./certcache/certs:/certcache/certs:rw
     environment:
       CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>
@@ -130,6 +130,6 @@ This is a preconfigured example available in [docker-compose/standalone](../dock
 In the future, if you decide to take advantage of the cache functionality provided by CertCache server (eg. to avoid Let's Encrypt usage limits), you can migrate to CertCache server with relatively little effort:
 
   * [Install CertCache Server](Installing%20certcache%20server.md)
-  * Copy the `client.cahkey` from the server and place in `./cahkeys`
+  * Copy the `client.catkey` from the server and place in `./catkeys`
   * Change the DNS `A` record that points to `certcache.<your-domain>` to point to your CertCache server installation
   * Set the env variable `CERTCACHE_UPSTREAM` in your CertCache container to `certcache.<your-domain>`

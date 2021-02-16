@@ -122,7 +122,7 @@ test(
         mockLocalCert.altNames,
         { certbot: { isTest: expect.any(Boolean) } },
         path.dirname(mockLocalCert.certPath),
-        { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+        { catKeysDir: config.catKeysDir, days: config.renewalDays }
       )
     })
   }
@@ -164,7 +164,7 @@ test(
       mockCert.domains,
       expect.any(Object),
       path.resolve(certcacheCertDir, mockCert.certName),
-      { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+      { catKeysDir: config.catKeysDir, days: config.renewalDays }
     )
   }
 )
@@ -185,7 +185,7 @@ test(
       mockCert.domains,
       expect.any(Object),
       path.resolve(certcacheCertDir, mockCert.certName),
-      { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+      { catKeysDir: config.catKeysDir, days: config.renewalDays }
     )
   }
 )
@@ -206,7 +206,7 @@ test(
       mockCert.domains,
       expect.any(Object),
       path.resolve(certcacheCertDir, mockCert.certName),
-      { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+      { catKeysDir: config.catKeysDir, days: config.renewalDays }
     )
   }
 )
@@ -228,7 +228,7 @@ test(
       mockCert.altNames,
       expect.any(Object),
       path.resolve(path.dirname(mockCert.certPath)),
-      { cahKeysDir: config.cahKeysDir, days: config.renewalDays }
+      { catKeysDir: config.catKeysDir, days: config.renewalDays }
     )
   }
 )
@@ -251,7 +251,7 @@ test(
       expect.any(Object),
       path.resolve(certcacheCertDir, mockCertDefinition.certName),
       {
-        cahKeysDir: config.cahKeysDir,
+        catKeysDir: config.catKeysDir,
         days: config.renewalDays,
         onChange: mockCertDefinition.onChange
       }

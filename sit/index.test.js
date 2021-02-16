@@ -4,7 +4,7 @@ const childProcess = require('child_process')
 const { promisify } = require('util')
 const path = require('path')
 const fs = require('fs')
-const loadKey = require('client-authenticated-https/lib/loadKey')
+const loadKey = require('catkeys/lib/loadKey')
 const {
   Certificate,
   PrivateKey,
@@ -15,7 +15,7 @@ const setupTests = require('./lib/setupTests')
 const {
   cliCmd,
   testClientDir,
-  testServerCahkeysDir,
+  testServerCatkeysDir,
   testStandaloneDir
 } = require('./filepaths')
 const yaml = require('yaml')
@@ -28,13 +28,18 @@ let setup
 let ngrokDomain
 
 beforeAll(async () => {
-  setup = await setupTests()
-  ngrokDomain = setup
-    .ngrok
-    .tunnels
-    .find(({ proto }) => proto === 'http')
-    .public_url
-    .replace('http://', '')
+  try {
+    setup = await setupTests()
+    ngrokDomain = setup
+      .ngrok
+      .tunnels
+      .find(({ proto }) => proto === 'http')
+      .public_url
+      .replace('http://', '')
+  } catch (e) {
+    console.error(e)
+    process.exit(1)
+  }
 })
 
 afterAll(() => setup.cleanup())
@@ -45,12 +50,12 @@ describe(
     test(
       'should have created valid authentication keys',
       async () => {
-        const cahkey = await loadKey(path.resolve(
-          testServerCahkeysDir,
-          'server.cahkey'
+        const catkey = await loadKey(path.resolve(
+          testServerCatkeysDir,
+          'server.catkey'
         ))
 
-        expect(cahkey).toEqual({
+        expect(catkey).toEqual({
           ca: expect.any(Buffer),
           cert: expect.any(Buffer),
           key: expect.any(Buffer)
@@ -73,7 +78,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             commonName,
             '--cert-name',
@@ -111,7 +116,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -149,7 +154,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -197,7 +202,7 @@ describe(
           [
             'get',
             '-u',
-            'localhost',
+            '127.0.0.1',
             '-d',
             ngrokDomain,
             '--cert-name',
@@ -237,7 +242,7 @@ describe(
             env: {
               ...process.env,
               CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
-              CERTCACHE_UPSTREAM: 'localhost'
+              CERTCACHE_UPSTREAM: '127.0.0.1'
             }
           }
         )
@@ -358,7 +363,7 @@ describe(
             env: {
               ...process.env,
               CERTCACHE_CERTS: yaml.stringify(mockCertcacheDomains),
-              CERTCACHE_UPSTREAM: 'localhost'
+              CERTCACHE_UPSTREAM: '127.0.0.1'
             }
           }
         )

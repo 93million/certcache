@@ -1,26 +1,28 @@
 const defaults = require('./defaults')
 const yaml = require('yaml')
 
-module.exports = ({ argv, env, file }) => {
+module.exports = async ({ argv, env, file }) => {
+  const _defaults = await defaults()
+
   return {
     binDir: env.CERTCACHE_BIN_DIR ||
       file.binDir ||
-      defaults.binDir,
-    cahKeysDir: argv.cahkeys ||
+      _defaults.binDir,
+    catKeysDir: argv.catkeys ||
       env.CERTCACHE_CAH_KEYS_DIR ||
-      file.cahKeysDir ||
-      defaults.cahKeysDir,
+      file.catKeysDir ||
+      _defaults.catKeysDir,
     certDir: env.CERTCACHE_CERTS_DIR ||
       file.certDir ||
-      defaults.certDir,
+      _defaults.certDir,
     certs: (env.CERTCACHE_CERTS && yaml.parse(env.CERTCACHE_CERTS)) ||
       file.certs ||
-      defaults.certs,
+      _defaults.certs,
     httpRedirectUrl: argv['http-redirect-url'] ||
       env.CERTCACHE_HTTP_REDIRECT_URL ||
       file.httpRedirectUrl,
     httpRequestInterval: file.httpRequestInterval ||
-      defaults.httpRequestInterval,
+      _defaults.httpRequestInterval,
     maxRequestTime: (
       argv['max-request-time'] &&
       Number(argv['max-request-time'])
@@ -30,16 +32,16 @@ module.exports = ({ argv, env, file }) => {
         Number(env.CERTCACHE_MAX_REQUEST_TIME)
       ) ||
       file.maxRequestTime ||
-      defaults.maxRequestTime,
+      _defaults.maxRequestTime,
     renewalDays: (argv.days && Number(argv.days)) ||
       (env.CERTCACHE_DAYS_RENEWAL && Number(env.CERTCACHE_DAYS_RENEWAL)) ||
       file.renewalDays ||
-      defaults.renewalDays,
+      _defaults.renewalDays,
     server: {
       port: argv.port ||
         env.CERTCACHE_PORT ||
         file.server.port ||
-        defaults.server.port,
+        _defaults.server.port,
       domainAccess: (
         env.CERTCACHE_DOMAIN_ACCESS &&
         yaml.parse(env.CERTCACHE_DOMAIN_ACCESS)
@@ -49,14 +51,14 @@ module.exports = ({ argv, env, file }) => {
     skipFilePerms: argv['skip-file-perms'] ||
       env.CERTCACHE_SKIP_FILE_PERMS === '1' ||
       file.skipFilePerms ||
-      defaults.skipFilePerms,
+      _defaults.skipFilePerms,
     syncInterval: argv.interval ||
       env.CERTCACHE_SYNC_INTERVAL ||
       file.syncInterval ||
-      defaults.syncInterval,
+      _defaults.syncInterval,
     upstream: argv.upstream ||
       env.CERTCACHE_UPSTREAM ||
       file.upstream ||
-      defaults.upstream
+      _defaults.upstream
   }
 }

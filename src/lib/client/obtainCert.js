@@ -13,7 +13,7 @@ module.exports = async (
   altNames = [],
   meta,
   certDirPath,
-  { cahKeysDir, days, onChange }
+  { catKeysDir, days, onChange }
 ) => {
   const config = await getConfig()
   const domains = Array.from(new Set([commonName, ...altNames]))
@@ -39,7 +39,7 @@ module.exports = async (
 
   const doRequest = () => new Promise((resolve, reject) => {
     const req = request(
-      { cahKeysDir, host, port },
+      { catKeysDir, host, port },
       'getCert',
       { days, domains, meta }
     )

@@ -1,15 +1,15 @@
-const clientAuthenticatedHttps = require('client-authenticated-https')
+const { https } = require('catkeys')
 const debug = require('debug')('certcache:request')
 
 module.exports = (
-  { host, port, cahKeysDir },
+  { host, port, catKeysDir },
   action,
   payload = {}
 ) => {
   const postData = JSON.stringify({ action, ...payload })
   const options = {
-    cahIgnoreMismatchedHostName: true,
-    cahKeysDir,
+    catRejectMismatchedHostname: false,
+    catKeysDir: catKeysDir,
     headers: { 'Content-Length': Buffer.from(postData).length },
     hostname: host,
     method: 'POST',
@@ -22,7 +22,7 @@ module.exports = (
   const promise = new Promise((resolve, reject) => {
     const response = []
 
-    return clientAuthenticatedHttps
+    return https
       .request(options, (res) => {
         res.on('data', (data) => response.push(data))
         res.on('end', () => {

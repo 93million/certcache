@@ -9,7 +9,7 @@ services:
       - '53:53/tcp'
     volumes:
       - ./certcache/cache:/certcache/cache:rw
-      - ./certcache/cahkeys:/certcache/cahkeys:ro
+      - ./certcache/catkeys:/certcache/catkeys:ro
       - ./certcache/certs:/certcache/certs:rw
     environment:
       CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>

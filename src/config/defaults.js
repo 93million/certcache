@@ -1,6 +1,8 @@
-module.exports = {
+const fileExists = require('../lib/helpers/fileExists')
+
+module.exports = async () => ({
   binDir: 'bin',
-  cahKeysDir: 'cahkeys',
+  catKeysDir: await fileExists('cahkeys') ? 'cahkeys' : 'catkeys',
   certDir: 'certs',
   certs: [],
   httpRequestInterval: 1,
@@ -9,4 +11,4 @@ module.exports = {
   server: { port: 4433 },
   syncInterval: 60 * 6,
   upstream: '--internal'
-}
+})

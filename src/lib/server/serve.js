@@ -1,12 +1,12 @@
-const clientAuthenticatedHttps = require('client-authenticated-https')
+const { https } = require('catkeys')
 const actions = require('./actions')
 const getConfig = require('../getConfig')
 const createRequestHandler = require('./createRequestHandler')
 
 module.exports = async () => {
   const config = (await getConfig())
-  const server = await clientAuthenticatedHttps.createServer(
-    { cahKeysDir: config.cahKeysDir },
+  const server = await https.createServer(
+    { catKeysDir: config.catKeysDir },
     createRequestHandler({ actions })
   )
 

@@ -70,7 +70,7 @@ services:
   certcacheserver:
     container_name: certcacheserver
     volumes:
-      - ./cahkeys/:/certcache/cahkeys/:rw
+      - ./catkeys/:/certcache/catkeys/:rw
       - ./cache/:/certcache/cache/:rw
       - ./credentials/:/certcache/credentials/:ro
     environment:

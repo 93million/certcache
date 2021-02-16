@@ -5,7 +5,7 @@ services:
     image: ghcr.io/93million/certcache
     restart: 'unless-stopped'
     volumes:
-      - ./certcache/cahkeys/:/certcache/cahkeys/:rw
+      - ./certcache/catkeys/:/certcache/catkeys/:rw
       - ./certcache/certs/:/certcache/certs/:rw
     environment:
       CERTCACHE_UPSTREAM: <certcache-server>

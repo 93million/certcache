@@ -7,48 +7,58 @@ const file = { extensions: {}, server: {} }
 
 test(
   'should parse yaml CERTCACHE_CERTS',
-  () => {
+  async () => {
     const mockCerts = { test: 'item', foo: 123 }
     const env = { CERTCACHE_CERTS: yaml.stringify(mockCerts) }
 
-    expect(config({ argv: {}, env, file }).certs)
-      .toEqual(mockCerts)
+    await expect(config({ argv: {}, env, file }))
+      .resolves
+      .toMatchObject({ certs: mockCerts })
   }
 )
 
 test(
   'should parse yaml CERTCACHE_DOMAIN_ACCESS',
-  () => {
+  async () => {
     const mockCertRestrictions = { test: 'item', bar: 432 }
     const env = {
       CERTCACHE_DOMAIN_ACCESS: yaml.stringify(mockCertRestrictions)
     }
 
-    expect(config({ argv: {}, env, file }).server.domainAccess)
-      .toEqual(mockCertRestrictions)
+    await expect(config({ argv: {}, env, file }))
+      .resolves
+      .toMatchObject({ server: { domainAccess: mockCertRestrictions } })
   }
 )
 
 test(
   'should return renewalDays as a number',
-  () => {
+  async () => {
     const renewalDays = 58008
     const env = { CERTCACHE_DAYS_RENEWAL: String(renewalDays) }
     const argv = { days: String(renewalDays) }
 
-    expect(config({ argv, env: {}, file })).toMatchObject({ renewalDays })
-    expect(config({ argv: {}, env, file })).toMatchObject({ renewalDays })
+    await expect(config({ argv, env: {}, file }))
+      .resolves
+      .toMatchObject({ renewalDays })
+    await expect(config({ argv: {}, env, file }))
+      .resolves
+      .toMatchObject({ renewalDays })
   }
 )
 
 test(
   'should return maxRequestTime as a number',
-  () => {
+  async () => {
     const maxRequestTime = 58008
     const env = { CERTCACHE_MAX_REQUEST_TIME: String(maxRequestTime) }
     const argv = { 'max-request-time': String(maxRequestTime) }
 
-    expect(config({ argv, env: {}, file })).toMatchObject({ maxRequestTime })
-    expect(config({ argv: {}, env, file })).toMatchObject({ maxRequestTime })
+    await expect(config({ argv, env: {}, file }))
+      .resolves
+      .toMatchObject({ maxRequestTime })
+    await expect(config({ argv: {}, env, file }))
+      .resolves
+      .toMatchObject({ maxRequestTime })
   }
 )

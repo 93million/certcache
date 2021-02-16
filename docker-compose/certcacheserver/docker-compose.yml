@@ -10,7 +10,7 @@ services:
       - '80:80/tcp'
       - '4433:4433/tcp'
     volumes:
-      - ./cahkeys/:/certcache/cahkeys/:rw
+      - ./catkeys/:/certcache/catkeys/:rw
       - ./cache/:/certcache/cache/:rw
     environment:
       CERTCACHE_CERTBOT_EMAIL: <your@certbot-email.address>
