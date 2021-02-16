@@ -17,6 +17,9 @@
   },
   "author": "Pommy <tm_certcache@93m.co> (https://93million.org)",
   "license": "MIT",
+  "files": [
+    "/src"
+  ],
   "dependencies": {
     "@fidm/x509": "^1.2.1",
     "catkeys": "^1.0.0",
