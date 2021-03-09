@@ -1,3 +1,8 @@
 module.exports = ({ meta: { isTest } }) => ({ issuerCommonName }) => {
-  return (issuerCommonName.startsWith('Fake LE ') === (isTest === true))
+  const isTestCert = (
+    issuerCommonName.startsWith('Fake LE ') ||
+    issuerCommonName.startsWith('(STAGING)')
+  )
+
+  return (isTestCert === (isTest === true))
 }
