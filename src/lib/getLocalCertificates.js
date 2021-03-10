@@ -1,5 +1,5 @@
 const fs = require('fs')
-const getCertInfo = require('./getCertInfo')
+const getCertInfoFromPath = require('./getCertInfoFromPath')
 const util = require('util')
 const fileExists = require('./helpers/fileExists')
 
@@ -13,7 +13,7 @@ module.exports = async (certDir) => {
   return Promise.all(certPaths
     .filter((certPath, i) => existsArr[i])
     .map(async (certPath) => ({
-      ...await getCertInfo(certPath),
+      ...await getCertInfoFromPath(certPath),
       certPath
     }))
   )

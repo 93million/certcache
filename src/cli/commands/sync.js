@@ -2,10 +2,12 @@ const syncPeriodically = require('../../lib/client/syncPeriodically')
 const {
   catkeys,
   days,
-  upstream,
+  ellipticCurve,
   httpRedirectUrl,
+  keyType,
   maxRequestTime,
-  skipFilePerms
+  skipFilePerms,
+  upstream
 } = require('./args')
 
 module.exports = {
@@ -14,6 +16,7 @@ module.exports = {
   builder: {
     catkeys,
     days,
+    'elliptic-curve': ellipticCurve,
     forever: {
       description: 'Sync certificates continuously with Certcache server'
     },
@@ -21,6 +24,7 @@ module.exports = {
     interval: {
       description: 'Num minutes between polling for certificates'
     },
+    'key-type': keyType,
     'max-request-time': maxRequestTime,
     'skip-file-perms': skipFilePerms,
     upstream

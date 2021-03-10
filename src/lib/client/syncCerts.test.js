@@ -120,7 +120,7 @@ test(
         upstream.port,
         mockLocalCert.commonName,
         mockLocalCert.altNames,
-        { certbot: { isTest: expect.any(Boolean) } },
+        expect.any(Object),
         path.dirname(mockLocalCert.certPath),
         { catKeysDir: config.catKeysDir, days: config.renewalDays }
       )

@@ -155,3 +155,38 @@ test(
     expect(certbotArgs).toEqual(expect.arrayContaining(extraArgs))
   }
 )
+
+test(
+  'should contain key-type if supplied',
+  () => {
+    const keyType = 'testType'
+    const certbotArgs = getCertbotCertonlyArgs(
+      'foo.93million.com',
+      [],
+      certName,
+      { keyType },
+      { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+      extraArgs
+    )
+
+    expect(certbotArgs).toEqual(expect.arrayContaining(['--key-type', keyType]))
+  }
+)
+
+test(
+  'should contain elliptic-curve if supplied',
+  () => {
+    const ellipticCurve = 'secp256r1'
+    const certbotArgs = getCertbotCertonlyArgs(
+      'foo.93million.com',
+      [],
+      certName,
+      { ellipticCurve },
+      { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--elliptic-curve', ellipticCurve]))
+  }
+)

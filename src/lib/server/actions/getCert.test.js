@@ -7,12 +7,14 @@ const clientPermittedAccessToCerts =
 const getExtensionsForDomains = require('../../getExtensionsForDomains')
 const getConfig = require('../../getConfig')
 const FeedbackError = require('../../FeedbackError')
+const metaItemsMatch = require('../../helpers/metaItemsMatch')
 
 jest.mock('../../classes/Certificate')
 jest.mock('../../generateFirstCertInSequence')
 jest.mock('../../clientPermittedAccessToCerts')
 jest.mock('../../getExtensionsForDomains')
 jest.mock('../../getConfig')
+jest.mock('../../helpers/metaItemsMatch')
 
 const domains = ['example.com', 'www.example.com', 'test.example.com']
 const commonName = domains[0]
@@ -20,11 +22,7 @@ const altNames = [domains[0], ...domains.slice(1)]
 const meta = { testExtension1: { isTest: false } }
 const payload = { domains, meta }
 const getLocalCerts = jest.fn()
-const filterCertGetter = jest.fn()
-const filterCert = jest.fn()
-filterCertGetter.mockReturnValue(filterCert)
-
-filterCert.mockReturnValue(true)
+metaItemsMatch.mockReturnValue(true)
 
 const getDate = (daysAway) => {
   const date = new Date()
@@ -40,7 +38,6 @@ const getPeerCertificate = jest.fn()
 getPeerCertificate.mockReturnValue({ subject: { CN: 'foo' } })
 const clientName = 'mockClient'
 const mockExtensions = [{
-  filterCert: filterCertGetter,
   getLocalCerts,
   id: 'testExtension1'
 }]
@@ -68,8 +65,12 @@ test(
 
     await getCert(payload, { clientName })
 
-    expect(generateFirstCertInSequence)
-      .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
+    expect(generateFirstCertInSequence).toBeCalledWith(
+      expect.any(Array),
+      commonName,
+      altNames,
+      expect.objectContaining(meta)
+    )
   }
 )
 
@@ -97,8 +98,12 @@ test(
 
     await getCert(payload, { clientName })
 
-    expect(generateFirstCertInSequence)
-      .toBeCalledWith(expect.any(Array), commonName, altNames, meta)
+    expect(generateFirstCertInSequence).toBeCalledWith(
+      expect.any(Array),
+      commonName,
+      altNames,
+      expect.objectContaining(meta)
+    )
   }
 )
 
@@ -190,55 +195,6 @@ test(
       .toThrow(
         new FeedbackError('Unable to find or generate requested certificate')
       )
-  }
-)
-
-test(
-  'should use extensions filterCert function to filter local certs',
-  async () => {
-    await getCert(payload, { clientName })
-
-    expect(filterCertGetter).toBeCalledWith({
-      commonName: mockCert.commonName,
-      altNames: mockCert.altNames,
-      meta: meta.testExtension1
-    })
-  }
-)
-
-test(
-  'should work with extensions that do not provide a filterCert function',
-  async () => {
-    const {
-      filterCert,
-      ...mockExtensionWithoutFilterCert
-    } = mockExtensions[0]
-
-    getExtensionsForDomains.mockReturnValueOnce(Promise.resolve([
-      { ...mockExtensionWithoutFilterCert }
-    ]))
-
-    const cert = await getCert(payload, { clientName })
-
-    expect(filterCertGetter).not.toBeCalled()
-
-    expect(cert).toEqual({
-      bundle: Buffer.from(mockArchive).toString('base64')
-    })
-  }
-)
-
-test(
-  // eslint-disable-next-line max-len
-  'should pass empty meta object to filterCert when no meta data present for extension',
-  async () => {
-    await getCert({ ...payload, meta: {} }, { clientName })
-
-    expect(filterCertGetter).toBeCalledWith({
-      commonName: mockCert.commonName,
-      altNames: mockCert.altNames,
-      meta: {}
-    })
   }
 )
 

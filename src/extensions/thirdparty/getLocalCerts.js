@@ -2,6 +2,7 @@ const CertFinder = require('./lib/CertFinder')
 const getConfig = require('../../lib/getConfig')
 const Certificate = require('../../lib/classes/Certificate')
 const fileExists = require('../../lib/helpers/fileExists')
+const getCertInfoFromPem = require('../../lib/getCertInfoFromPem')
 
 let handlers
 
@@ -17,19 +18,16 @@ const getLocalCerts = async () => {
   } else {
     const certFinder = new CertFinder(config.certDir)
 
-    return (await certFinder.getCerts())
-      .map((cert) => {
+    return Promise.all(
+      (await certFinder.getCerts()).map(async (cert) => {
         const certInfo = {
-          altNames: cert.dnsNames,
-          certPath: cert.certPath,
-          commonName: cert.subject.commonName,
-          issuerCommonName: cert.issuer.commonName,
-          notAfter: new Date(cert.validTo),
-          notBefore: new Date(cert.validFrom)
+          ...await getCertInfoFromPem(cert.pem),
+          certPath: cert.certPath
         }
 
         return new Certificate(handlers, certInfo)
       })
+    )
   }
 }
 

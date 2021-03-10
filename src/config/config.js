@@ -18,11 +18,19 @@ module.exports = async ({ argv, env, file }) => {
     certs: (env.CERTCACHE_CERTS && yaml.parse(env.CERTCACHE_CERTS)) ||
       file.certs ||
       _defaults.certs,
+    ellipticCurve: argv['elliptic-curve'] ||
+      env.CERTCACHE_ELLIPTIC_CURVE ||
+      file.ellipticCurve ||
+      _defaults.ellipticCurve,
     httpRedirectUrl: argv['http-redirect-url'] ||
       env.CERTCACHE_HTTP_REDIRECT_URL ||
       file.httpRedirectUrl,
     httpRequestInterval: file.httpRequestInterval ||
       _defaults.httpRequestInterval,
+    keyType: argv['key-type'] ||
+      env.CERTCACHE_KEY_TYPE ||
+      file.keyType ||
+      _defaults.keyType,
     maxRequestTime: (
       argv['max-request-time'] &&
       Number(argv['max-request-time'])

@@ -1,11 +1,15 @@
 /* global jest test expect */
 
-const getCertInfo = require('./getCertInfo')
+const getCertInfoFromPath = require('./getCertInfoFromPath')
 const x509 = require('@fidm/x509')
 const fs = require('fs')
+const loadCert = require('./loadCert')
 
 jest.mock('@fidm/x509')
 jest.mock('fs')
+jest.mock('./loadCert')
+
+loadCert.mockReturnValue({})
 
 const mockCert = {
   subject: { commonName: 'test.example.com' },
@@ -28,13 +32,34 @@ fs.readFile.mockImplementation((path, callback) => {
 test(
   'should return information about certificate',
   async () => {
-    await expect(getCertInfo(certPath)).resolves.toEqual({
-      commonName: mockCert.subject.commonName,
+    await expect(getCertInfoFromPath(certPath)).resolves.toEqual({
       altNames: mockCert.dnsNames,
-      issuerCommonName: mockCert.issuer.commonName,
       certPath,
+      commonName: mockCert.subject.commonName,
+      issuerCommonName: mockCert.issuer.commonName,
       notAfter: new Date(mockCert.validTo),
       notBefore: new Date(mockCert.validFrom)
     })
+  }
+)
+
+test(
+  'should include EC curve when present',
+  async () => {
+    const nistCurve = 'mockNistCurve'
+
+    loadCert.mockReturnValueOnce({ nistCurve })
+    await expect(getCertInfoFromPath(certPath))
+      .resolves
+      .toHaveProperty('nistCurve', nistCurve)
+  }
+)
+
+test(
+  'should not include EC curve when not present',
+  async () => {
+    await expect(getCertInfoFromPath(certPath))
+      .resolves
+      .toHaveProperty('nistCurve', undefined)
   }
 )

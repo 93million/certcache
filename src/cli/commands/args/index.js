@@ -7,11 +7,18 @@ module.exports = {
   days: {
     description: 'Number of days to renew certificate before expiry'
   },
+  ellipticCurve: {
+    description:
+      'Curve to use when key type is ecdsa. See RFC 8446 for supported values.'
+  },
   httpRedirectUrl: {
     description: [
       'Address of a Certcache server to redirect challenges to when Certcache',
       'client server is recipient of HTTP-01 ACME challenges'
     ].join(' ')
+  },
+  keyType: {
+    description: 'Type of key to search for (either ecdsa or rsa)'
   },
   maxRequestTime: {
     description:

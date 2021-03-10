@@ -1,12 +1,12 @@
 /* global jest test expect */
 
 const fs = require('fs')
-const getCertInfo = require('./getCertInfo')
+const getCertInfoFromPath = require('./getCertInfoFromPath')
 const fileExists = require('./helpers/fileExists')
 const getLocalCertificates = require('./getLocalCertificates')
 
 jest.mock('fs')
-jest.mock('./getCertInfo')
+jest.mock('./getCertInfoFromPath')
 jest.mock('./helpers/fileExists')
 
 const certDir = '/test/certs'
@@ -29,7 +29,7 @@ fs.readdir.mockImplementation((path, callback) => {
 
 const mockCert = { _test_: 58008 }
 
-getCertInfo.mockReturnValue(Promise.resolve(mockCert))
+getCertInfoFromPath.mockReturnValue(Promise.resolve(mockCert))
 fileExists.mockImplementation((path) => filePaths.includes(path))
 
 test('should get local certificates', async () => {

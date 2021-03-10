@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "catkeys": "^1.0.0",
+    "catkeys": "^1.2.0",
     "debug": "^4.1.1",
     "md5": "^2.2.1",
     "node-rsa": "^1.0.8",

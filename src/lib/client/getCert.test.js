@@ -13,7 +13,9 @@ jest.mock('../getConfig')
 
 let mockOpts
 let mockConfig
-const mockMeta = { certbot: { isTest: expect.any(Boolean) } }
+const mockMeta = {
+  certbot: { isTest: expect.any(Boolean), keyType: expect.any(String) }
+}
 
 console.error = jest.fn()
 console.log = jest.fn()
