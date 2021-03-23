@@ -23,10 +23,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install certbot
       run: >-
-        sudo apt-get install -y -qq python3 &&
+        sudo apt-get install -y -qq python3 unzip &&
         sudo pip3 install -r docker/requirements.txt
     - name: Install ngrok
-      run: sudo snap install ngrok
+      run: sudo unzip sit/deps/ngrok-stable-linux-amd64.zip -d /usr/local/bin
     - run: npm i
     - name: Run tests
       run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org npm test
