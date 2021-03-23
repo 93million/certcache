@@ -11,13 +11,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x, 14.x]
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -25,10 +22,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install certbot
-      run: sudo apt-get install -y -qq certbot
+      run: >-
+        sudo apt-get install -y -qq python3 &&
+        sudo pip3 install -r docker/requirements.txt
     - name: Install ngrok
       run: sudo snap install ngrok
     - run: npm i
     - name: Run tests
       run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org npm test
-
