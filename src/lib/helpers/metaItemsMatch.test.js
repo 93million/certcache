@@ -21,3 +21,13 @@ test(
     expect(metaItemsMatch(meta1, meta2)).toBe(false)
   }
 )
+
+test(
+  'should match items regardless of property order',
+  () => {
+    const meta1 = { test: { item: 'foo', bar: 123 } }
+    const meta2 = { test: { bar: 123, item: 'foo' } }
+
+    expect(metaItemsMatch(meta1, meta2)).toBe(true)
+  }
+)

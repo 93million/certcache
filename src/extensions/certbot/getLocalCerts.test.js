@@ -42,13 +42,13 @@ const expectedHandler = {
   canGenerateDomains: expect.any(Function),
   commandArgs: expect.any(Object),
   config: expect.any(Function),
-  filterCert: expect.any(Function),
   generateCert: expect.any(Function),
   getBundle: expect.any(Function),
   getLocalCerts: expect.any(Function),
   getMetaFromCert: expect.any(Function),
   getMetaFromCertDefinition: expect.any(Function),
-  getMetaFromConfig: expect.any(Function)
+  getMetaFromConfig: expect.any(Function),
+  normalizeMeta: expect.any(Function)
 }
 
 test(

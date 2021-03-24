@@ -1,6 +1,6 @@
 {
   "name": "certcache",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "TLS certificate server that generates, caches and deploys SSL/TLS certificates",
   "main": "index.js",
   "repository": "https://github.com/93million/certcache",
@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@fidm/x509": "^1.2.1",
-    "catkeys": "^1.0.0",
+    "catkeys": "^1.2.0",
     "debug": "^4.1.1",
     "md5": "^2.2.1",
     "node-rsa": "^1.0.8",

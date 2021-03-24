@@ -1,12 +1,12 @@
 /* global jest describe test expect */
 
-const getCertInfo = require('../getCertInfo')
+const getCertInfoFromPath = require('../getCertInfoFromPath')
 const Certificate = require('./Certificate')
 const tar = require('tar-stream')
 const { Readable } = require('stream')
 const zlib = require('zlib')
 
-jest.mock('../getCertInfo')
+jest.mock('../getCertInfoFromPath')
 jest.mock('fs')
 jest.mock('rimraf')
 
@@ -19,7 +19,7 @@ const mockBundle = {
   privkey: Buffer.from('_mockPrivkey__')
 }
 
-getCertInfo.mockReturnValue(Promise.resolve({ testProp }))
+getCertInfoFromPath.mockReturnValue(Promise.resolve({ testProp }))
 mockHandlers.getBundle.mockReturnValue(mockBundle)
 
 describe('creates an archive', () => {
@@ -66,7 +66,7 @@ describe('creates an archive', () => {
 })
 
 test(
-  'makes properties of getCertInfo available to be consumed',
+  'makes properties of getCertInfoFromPath available to be consumed',
   async () => {
     const cert = await Certificate.fromPath(mockHandlers, certPath)
 

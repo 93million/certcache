@@ -10,6 +10,7 @@ getConfig.mockReturnValue(Promise.resolve({
     { domains: ['test.example.com'], certName: 'filecert1' },
     { domains: ['foo.example.com'], certName: 'filecert2' }
   ],
+  ellipticCurve: 'secp256r1',
   extensions: {
     certbot: {
       certbotConfigDir: '/path/to/config/dir',
@@ -31,6 +32,7 @@ getConfig.mockReturnValue(Promise.resolve({
     }
   },
   httpRequestInterval: 1,
+  keyType: 'rsa',
   maxRequestTime: 1234,
   renewalDays: 30,
   syncInterval: 60 * 6,

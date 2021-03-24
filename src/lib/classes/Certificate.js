@@ -1,6 +1,6 @@
 const tar = require('tar-stream')
 const zlib = require('zlib')
-const getCertInfo = require('../getCertInfo')
+const getCertInfoFromPath = require('../getCertInfoFromPath')
 const debug = require('debug')('certcache:certificate')
 
 class Certificate {
@@ -13,7 +13,7 @@ class Certificate {
   }
 
   static async fromPath (handlers, certPath) {
-    const certInfo = await getCertInfo(certPath)
+    const certInfo = await getCertInfoFromPath(certPath)
 
     return new Certificate(handlers, certInfo)
   }

@@ -4,16 +4,16 @@ module.exports = (fnName) => async (syncItem) => {
   const extensions = await getExtensions()
 
   return Object.keys(extensions).reduce(
-    (acc, key) => {
+    async (acc, key) => {
       const extension = extensions[key]
-      const meta = extension[fnName] && extension[fnName](syncItem)
+      const meta = extension[fnName] && await extension[fnName](syncItem)
 
       if (meta !== undefined) {
-        acc[key] = meta
+        (await acc)[key] = meta
       }
 
       return acc
     },
-    {}
+    Promise.resolve({})
   )
 }

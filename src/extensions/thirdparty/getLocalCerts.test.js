@@ -3,11 +3,13 @@ const getLocalCerts = require('./getLocalCerts')
 const CertFinder = require('./lib/CertFinder')
 const Certificate = require('../../lib/classes/Certificate')
 const fileExists = require('../../lib/helpers/fileExists')
+const getCertInfoFromPem = require('../../lib/getCertInfoFromPem')
 
 jest.mock('./lib/CertFinder')
 jest.mock('../../lib/classes/Certificate')
 jest.mock('../../lib/helpers/fileExists')
 jest.mock('../../lib/getConfig')
+jest.mock('../../lib/getCertInfoFromPem')
 
 const commonName = 'foo.example.com'
 const altNames = ['foo.example.com', 'test.example.com']
@@ -35,6 +37,7 @@ const mockBundle = {
 const mockGetCerts = jest.fn()
 
 mockGetCerts.mockReturnValue([cert1])
+getCertInfoFromPem.mockReturnValue(mockBundle)
 
 CertFinder.mockImplementation(() => ({ getCerts: mockGetCerts }))
 Certificate

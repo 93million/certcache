@@ -2,6 +2,8 @@ const getCert = require('../../lib/client/getCert')
 const {
   catkeys,
   days,
+  ellipticCurve,
+  keyType,
   upstream,
   httpRedirectUrl,
   maxRequestTime,
@@ -22,7 +24,9 @@ module.exports = {
       description: 'List of comma-separated domain domains',
       required: true
     },
+    'elliptic-curve': ellipticCurve,
     'http-redirect-url': httpRedirectUrl,
+    'key-type': keyType,
     'max-request-time': maxRequestTime,
     'skip-file-perms': skipFilePerms,
     upstream

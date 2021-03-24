@@ -6,6 +6,10 @@ const clientPermittedAccessToCerts =
 const arrayItemsMatch = require('../../helpers/arrayItemsMatch')
 const getExtensionsForDomains = require('../../getExtensionsForDomains')
 const getConfig = require('../../getConfig')
+const metaItemsMatch = require('../../helpers/metaItemsMatch')
+const normalizeMeta = require('../../normalizeMeta')
+const getMetaFromCert =
+  require('../../getMetaFromExtensionFunction')('getMetaFromCert')
 
 const checkRestrictions = async (clientName, domains) => {
   const config = await getConfig()
@@ -40,37 +44,34 @@ const findLocalCertFromExtensions = async (
   const localCertSearch = await Promise.all(extensions.map(
     async (certLocator) => {
       const localCerts = await certLocator.getLocalCerts()
-      const filterCert = (certLocator.filterCert !== undefined)
-        ? certLocator.filterCert({
-          commonName,
-          altNames,
-          meta: meta[certLocator.id] || {}
-        })
-        : () => true
 
       localCerts.sort((a, b) => {
         return (a.notAfter.getTime() > b.notAfter.getTime()) ? -1 : 1
       })
 
-      const matchingCerts = localCerts.find((cert) => {
-        const {
-          altNames: certAltNames,
-          commonName: certCommonName,
-          notAfter: certNotAfter
-        } = cert
+      const matchingCertsIndex = (
+        await Promise.all(localCerts.map(async (cert) => {
+          const {
+            altNames: certAltNames,
+            commonName: certCommonName,
+            notAfter: certNotAfter
+          } = cert
+          const certMeta = await getMetaFromCert(cert)
 
-        return (
-          certCommonName === commonName &&
-          (
-            arrayItemsMatch(certAltNames, altNames) ||
-            (certAltNames.length === 0 && altNames.length === 1)
-          ) &&
-          certNotAfter.getTime() > certRenewDate.getTime() &&
-          filterCert(cert)
-        )
-      })
+          return (
+            certCommonName === commonName &&
+            (
+              arrayItemsMatch(certAltNames, altNames) ||
+              (certAltNames.length === 0 && altNames.length === 1)
+            ) &&
+            certNotAfter.getTime() > certRenewDate.getTime() &&
+            metaItemsMatch(certMeta[certLocator.id], meta[certLocator.id])
+          )
+        }))
+      )
+        .findIndex((isFound) => isFound)
 
-      return matchingCerts
+      return localCerts[matchingCertsIndex]
     }
   ))
 
@@ -79,7 +80,8 @@ const findLocalCertFromExtensions = async (
 
 module.exports = async (payload, { clientName } = {}) => {
   const config = await getConfig()
-  const { meta, domains, days = config.renewalDays } = payload
+  const { domains, days = config.renewalDays } = payload
+  const meta = await normalizeMeta(payload.meta)
   const commonName = domains[0]
   const altNames = domains
 

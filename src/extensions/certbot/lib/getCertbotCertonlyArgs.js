@@ -2,7 +2,7 @@ module.exports = (
   commonName,
   altNames,
   certName,
-  { isTest },
+  { isTest, keyType, ellipticCurve },
   { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
   extraArgs
 ) => {
@@ -40,6 +40,16 @@ module.exports = (
 
   if (isTest) {
     certbotArgs.push('--test-cert')
+  }
+
+  if (keyType !== undefined) {
+    certbotArgs.push('--key-type')
+    certbotArgs.push(keyType)
+  }
+
+  if (ellipticCurve !== undefined) {
+    certbotArgs.push('--elliptic-curve')
+    certbotArgs.push(ellipticCurve)
   }
 
   return certbotArgs
