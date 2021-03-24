@@ -160,7 +160,7 @@ As shown, CertCache is configured through environment variables. It can also be 
 
 For a list of environment variables and config directives, please see [docs/Config directives.md](docs/Config%20directives.md).
 
-## ECDSA Keys
+## ECDSA Certificates
 
 CertCache supports generating and caching of ECDSA certificates. See [docs/ECDSA Certificates.md](docs/ECDSA%20Certificates.md) for more info.
 
