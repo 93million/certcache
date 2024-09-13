@@ -5,6 +5,7 @@ const getMetaFromConfig = require('./getMetaFromConfig')
 const ellipticCurve = 'testcurve'
 const keyType = 'ecdsa'
 const testCert = true
+const extensions = { certbot: { 'test-cert': testCert } }
 
 test(
   'should return object when supplied with certDefinition',
@@ -12,7 +13,7 @@ test(
     await expect(getMetaFromConfig({
       ellipticCurve,
       keyType,
-      'test-cert': testCert
+      extensions
     }))
       .resolves
       .toEqual({ ellipticCurve, keyType, isTest: testCert })
@@ -26,7 +27,7 @@ test(
     expect(getMetaFromConfig({
       ellipticCurve,
       keyType: 'rsa',
-      'test-cert': testCert
+      extensions
     }))
       .toHaveProperty('ellipticCurve', undefined)
   }

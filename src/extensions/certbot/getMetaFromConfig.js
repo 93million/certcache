@@ -1,6 +1,6 @@
 const getConfig = require('../../lib/getConfig')
 
-module.exports = async ({ ellipticCurve, keyType, 'test-cert': testCert }) => {
+module.exports = async ({ ellipticCurve, keyType, extensions }) => {
   const config = await getConfig()
 
   ellipticCurve = ellipticCurve || config.ellipticCurve
@@ -11,7 +11,11 @@ module.exports = async ({ ellipticCurve, keyType, 'test-cert': testCert }) => {
 
   return {
     ellipticCurve: (keyType === 'ecdsa') ? ellipticCurve : undefined,
-    isTest: testCert === true,
+    isTest: (
+      extensions &&
+      extensions.certbot &&
+      extensions.certbot['test-cert']
+    ) === true,
     keyType: keyType
   }
 }
