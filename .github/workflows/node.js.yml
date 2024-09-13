@@ -26,7 +26,7 @@ jobs:
         sudo apt-get install -y -qq python3 unzip &&
         sudo pip3 install -r docker/requirements.txt
     - name: Install ngrok
-      run: sudo unzip sit/deps/ngrok-stable-linux-amd64.zip -d /usr/local/bin
+      run: sudo unzip sit/deps/ngrok-v3-stable-linux-amd64.tgz -d /usr/local/bin
     - name: Authenticate with ngrok
       run: ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
     - run: npm i
