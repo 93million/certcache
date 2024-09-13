@@ -59,7 +59,7 @@ test(
   async () => {
     await getConfig({ noCache: true })
 
-    expect(mainConfigFn).toBeCalledWith({
+    expect(mainConfigFn).toHaveBeenCalledWith({
       argv: expect.any(Object),
       env: process.env,
       file: mockFileBaseCombined
@@ -74,7 +74,7 @@ test(
 
     await getConfig({ noCache: true })
 
-    expect(mainConfigFn).toBeCalledWith({
+    expect(mainConfigFn).toHaveBeenCalledWith({
       argv: expect.any(Object),
       env: process.env,
       file: baseFileConfig
@@ -87,7 +87,7 @@ test(
   async () => {
     await getConfig({ noCache: true })
 
-    expect(mockExtensionConfigFn).toBeCalledWith({
+    expect(mockExtensionConfigFn).toHaveBeenCalledWith({
       argv: expect.any(Object),
       env: process.env,
       file: {}
@@ -125,7 +125,7 @@ test(
     await getConfig({ noCache: true })
     await getConfig()
 
-    expect(mainConfigFn).toBeCalledTimes(1)
-    expect(mockExtensionConfigFn).toBeCalledTimes(1)
+    expect(mainConfigFn).toHaveBeenCalledTimes(1)
+    expect(mockExtensionConfigFn).toHaveBeenCalledTimes(1)
   }
 )

@@ -1,8 +1,9 @@
 #! /usr/bin/env node
 
-const yargs = require('yargs')
+const yargs = require('yargs')(process.argv.slice(2))
 const commands = require('./commands')
 const getExtensions = require('../lib/getExtensions')
+const { setArgv } = require('../lib/getArgv')
 
 const addCommandGroup = (command, group) => {
   return Object.keys(command).reduce(
@@ -24,7 +25,16 @@ const handleExec = async () => {
     .keys(commands)
     .reduce(
       (acc, key) => {
-        const { cmd, desc, handler } = commands[key]
+        const { cmd, desc } = commands[key]
+        let handler
+
+        if (commands[key].handler) {
+          handler = (argv) => {
+            setArgv(argv)
+            commands[key].handler(argv)
+          }
+        }
+
         let builder = commands[key].builder
 
         Object.keys(extensions).forEach((extension) => {

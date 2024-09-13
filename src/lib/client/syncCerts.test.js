@@ -115,7 +115,7 @@ test(
     await syncCerts()
 
     mockCertsForRenewal.forEach((mockLocalCert, i) => {
-      expect(obtainCert).toBeCalledWith(
+      expect(obtainCert).toHaveBeenCalledWith(
         upstream.host,
         upstream.port,
         mockLocalCert.commonName,
@@ -157,7 +157,7 @@ test(
       return (certName === 'bar.example.com')
     })
 
-    expect(obtainCert).toBeCalledWith(
+    expect(obtainCert).toHaveBeenCalledWith(
       upstream.host,
       upstream.port,
       mockCert.domains[0],
@@ -178,7 +178,7 @@ test(
       return (certName === 'example.com')
     })
 
-    expect(obtainCert).not.toBeCalledWith(
+    expect(obtainCert).not.toHaveBeenCalledWith(
       upstream.host,
       upstream.port,
       mockCert.domains[0],
@@ -199,7 +199,7 @@ test(
       return (certName === 'woo.example.com')
     })
 
-    expect(obtainCert).toBeCalledWith(
+    expect(obtainCert).toHaveBeenCalledWith(
       upstream.host,
       upstream.port,
       mockCert.domains[0],
@@ -221,7 +221,7 @@ test(
       return (commonName === 'boo.example.com')
     })
 
-    expect(obtainCert).not.toBeCalledWith(
+    expect(obtainCert).not.toHaveBeenCalledWith(
       upstream.host,
       upstream.port,
       mockCert.commonName,
@@ -243,7 +243,7 @@ test(
         return (certName === 'poo.example.com')
       })
 
-    expect(obtainCert).toBeCalledWith(
+    expect(obtainCert).toHaveBeenCalledWith(
       upstream.host,
       upstream.port,
       mockCertDefinition.certName,

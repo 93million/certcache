@@ -32,7 +32,7 @@ test(
 
     expect(http.createServer).toHaveBeenCalledTimes(1)
     expect(listen).toHaveBeenCalledTimes(1)
-    expect(listen).toBeCalledWith(80)
+    expect(listen).toHaveBeenCalledWith(80)
   }
 )
 
@@ -43,7 +43,7 @@ test(
     requestHandler({ url: requestPath }, res)
 
     expect(res.writeHead).toHaveBeenCalledTimes(1)
-    expect(res.writeHead).toBeCalledWith(302, {
+    expect(res.writeHead).toHaveBeenCalledWith(302, {
       Location: `${redirectUrl}${requestPath}`
     })
     expect(res.end).toHaveBeenCalledTimes(1)

@@ -15,6 +15,6 @@ test(
   'should generate a certificate using tls.TLSSocket',
   () => {
     loadCert(mockCert)
-    expect(getCertificate).toBeCalledTimes(1)
+    expect(getCertificate).toHaveBeenCalledTimes(1)
   }
 )

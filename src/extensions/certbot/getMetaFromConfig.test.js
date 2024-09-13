@@ -1,10 +1,13 @@
-/* global test expect */
+/* global jest test expect */
 
 const getMetaFromConfig = require('./getMetaFromConfig')
+
+jest.mock('../../lib/getArgv')
 
 const ellipticCurve = 'testcurve'
 const keyType = 'ecdsa'
 const testCert = true
+const extensions = { certbot: { 'test-cert': testCert } }
 
 test(
   'should return object when supplied with certDefinition',
@@ -12,7 +15,7 @@ test(
     await expect(getMetaFromConfig({
       ellipticCurve,
       keyType,
-      'test-cert': testCert
+      extensions
     }))
       .resolves
       .toEqual({ ellipticCurve, keyType, isTest: testCert })
@@ -22,12 +25,13 @@ test(
 test(
   // eslint-disable-next-line max-len
   'should return property ellipticCurve of undefined unless keyType = \'ecdsa\'',
-  () => {
-    expect(getMetaFromConfig({
+  async () => {
+    await expect(getMetaFromConfig({
       ellipticCurve,
       keyType: 'rsa',
-      'test-cert': testCert
+      extensions
     }))
+      .resolves
       .toHaveProperty('ellipticCurve', undefined)
   }
 )

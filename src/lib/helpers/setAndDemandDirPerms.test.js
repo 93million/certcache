@@ -48,7 +48,8 @@ test(
 
     await setAndDemandDirPerms(mockDir, mockOpts)
 
-    expect(fs.chmod).toBeCalledWith(mockDir, mockPerms, expect.any(Function))
+    expect(fs.chmod)
+      .toHaveBeenCalledWith(mockDir, mockPerms, expect.any(Function))
   }
 )
 
@@ -62,7 +63,7 @@ test(
     await setAndDemandDirPerms(mockDir, mockOpts)
 
     expect(fs.chown)
-      .toBeCalledWith(mockDir, mockUid, mockGid, expect.any(Function))
+      .toHaveBeenCalledWith(mockDir, mockUid, mockGid, expect.any(Function))
   }
 )
 

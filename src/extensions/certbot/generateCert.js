@@ -15,7 +15,8 @@ module.exports = async (commonName, altNames, meta) => {
   if (certsInGeneration[certName] === undefined) {
     certsInGeneration[certName] = (async () => {
       const domains = Array.from(new Set([commonName, ...altNames]))
-      const certbotConfig = (await getConfig()).extensions.certbot
+      const config = await getConfig()
+      const certbotConfig = config.extensions.certbot
       const challenge = await getChallengeFromDomains(
         certbotConfig.domains,
         domains,

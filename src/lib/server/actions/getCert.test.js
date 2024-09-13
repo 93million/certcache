@@ -65,7 +65,7 @@ test(
 
     await getCert(payload, { clientName })
 
-    expect(generateFirstCertInSequence).toBeCalledWith(
+    expect(generateFirstCertInSequence).toHaveBeenCalledWith(
       expect.any(Array),
       commonName,
       altNames,
@@ -98,7 +98,7 @@ test(
 
     await getCert(payload, { clientName })
 
-    expect(generateFirstCertInSequence).toBeCalledWith(
+    expect(generateFirstCertInSequence).toHaveBeenCalledWith(
       expect.any(Array),
       commonName,
       altNames,
@@ -117,7 +117,7 @@ test(
 
     await getCert(payload, { clientName })
 
-    expect(generateFirstCertInSequence).not.toBeCalled()
+    expect(generateFirstCertInSequence).not.toHaveBeenCalledWith()
   }
 )
 
@@ -249,6 +249,6 @@ test(
   async () => {
     await getCert(payload)
 
-    expect(clientPermittedAccessToCerts).not.toBeCalled()
+    expect(clientPermittedAccessToCerts).not.toHaveBeenCalledWith()
   }
 )

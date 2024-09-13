@@ -3,7 +3,14 @@ const http = require('http')
 
 module.exports = (args) => {
   return new Promise((resolve) => {
-    const process = childProcess.execFile('ngrok', args)
+    const ngrokProcess = childProcess.execFile(
+      'ngrok',
+      args,
+      { env: process.env },
+      (error, stdout, stderr) => {
+        console.log('exec called with ', error, stdout, stderr)
+      }
+    )
     let tryGetNgrokTunnelTimeout
     const rejectTimeoutSeconds = 10
     const tryGetNgrokTunnel = () => {
@@ -19,10 +26,11 @@ module.exports = (args) => {
                 chunks.push(chunk)
               })
               res.on('end', () => {
-                const tunnels = JSON.parse(chunks.join()).tunnels
+                const response = chunks.join()
+                const tunnels = JSON.parse(response).tunnels
 
-                if (tunnels.length === 2) {
-                  resolve({ info: { tunnels }, process })
+                if (tunnels.find(({ proto }) => proto === 'http')) {
+                  resolve({ info: { tunnels }, ngrokProcess })
                 } else {
                   tryGetNgrokTunnelTimeout = setTimeout(tryGetNgrokTunnel, 300)
                 }

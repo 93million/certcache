@@ -38,7 +38,7 @@ test(
       generateCert(commonName, altNames, meta)
     ])
 
-    expect(childProcess.execFile).toBeCalledTimes(1)
+    expect(childProcess.execFile).toHaveBeenCalledTimes(1)
   }
 )
 
@@ -87,7 +87,7 @@ test(
   async () => {
     await generateCert(commonName, altNames, meta)
 
-    expect(childProcess.execFile).toBeCalledWith(
+    expect(childProcess.execFile).toHaveBeenCalledWith(
       certbotConfig.certbotExec,
       expect.arrayContaining(mockChallenge.args),
       expect.any(Object),
@@ -101,7 +101,7 @@ test(
   async () => {
     await generateCert(commonName, altNames, meta)
 
-    expect(childProcess.execFile).toBeCalledWith(
+    expect(childProcess.execFile).toHaveBeenCalledWith(
       certbotConfig.certbotExec,
       expect.any(Array),
       { env: expect.objectContaining(mockChallenge.environment) },

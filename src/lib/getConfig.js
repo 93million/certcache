@@ -4,7 +4,7 @@ const { promisify } = require('util')
 const config = require('../config/config')
 const getExtensions = require('./getExtensions')
 const fileExists = require('./helpers/fileExists')
-const getArgv = require('./getArgv')
+const { getArgv } = require('./getArgv')
 
 const readFile = promisify(fs.readFile)
 
