@@ -80,7 +80,8 @@ module.exports = async () => {
   // start ngrok
   const { info: ngrok, process: ngrokProcess } = await startNgrok([
     'http',
-    '80'
+    '80',
+    '--scheme=http'
   ])
 
   // start certcache server

@@ -21,7 +21,7 @@ module.exports = (args) => {
               res.on('end', () => {
                 const tunnels = JSON.parse(chunks.join()).tunnels
 
-                if (tunnels.length === 2) {
+                if (tunnels.find(({ proto }) => proto === 'http')) {
                   resolve({ info: { tunnels }, process })
                 } else {
                   tryGetNgrokTunnelTimeout = setTimeout(tryGetNgrokTunnel, 300)

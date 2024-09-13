@@ -3,7 +3,7 @@
     "certbot": {
       "domains": [
         {
-          "domain": "~(.*\\.)?.ngrok.io$",
+          "domain": "~(.*\\.)?\\.ngrok",
           "challenges": ["http-01"]
         }
       ]
