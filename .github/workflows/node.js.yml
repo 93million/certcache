@@ -32,5 +32,5 @@ jobs:
     - run: npm i
     - name: Run tests
       env:
-        CERTCACHE_CERTBOT_EMAIL=${{ secrets.CERTCACHE_CERTBOT_EMAIL }}
+        CERTCACHE_CERTBOT_EMAIL: ${{ secrets.CERTCACHE_CERTBOT_EMAIL }}
       run: sudo npm test
