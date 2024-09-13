@@ -31,6 +31,4 @@ jobs:
       run: ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
     - run: npm i
     - name: Run tests
-      env:
-        CERTCACHE_CERTBOT_EMAIL: ${{ secrets.CERTCACHE_CERTBOT_EMAIL }}
-      run: sudo npm test -- --runInBand --silent=false
+      run: sudo CERTCACHE_CERTBOT_EMAIL=${{ secrets.CERTCACHE_CERTBOT_EMAIL }} npm test -- --runInBand --silent=false
