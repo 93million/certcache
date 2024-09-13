@@ -37,7 +37,7 @@ beforeAll(async () => {
       .public_url
       .replace('http://', '')
   } catch (e) {
-    console.error('beforeAll() failed', e)
+    console.log('beforeAll() failed', e)
     process.exit(1)
   }
 })
