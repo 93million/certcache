@@ -1,3 +1,5 @@
+const { log, error } = require('console')
+
 /* global afterAll beforeAll describe expect test */
 
 const childProcess = require('child_process')
@@ -37,7 +39,7 @@ beforeAll(async () => {
       .public_url
       .replace('http://', '')
   } catch (e) {
-    console.log('beforeAll() failed', e)
+    log('beforeAll() failed', e)
     process.exit(1)
   }
 })
@@ -54,8 +56,8 @@ describe(
           testServerCatkeysDir,
           'server.catkey'
         ))
-        console.log('here is stdout')
-        console.error('here is stderr')
+        log('here is stdout')
+        error('here is stderr')
         expect(catkey).toEqual({
           ca: expect.any(Buffer),
           cert: expect.any(Buffer),
