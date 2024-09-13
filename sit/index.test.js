@@ -54,7 +54,8 @@ describe(
           testServerCatkeysDir,
           'server.catkey'
         ))
-
+        console.log('here is stdout')
+        console.error('here is stderr')
         expect(catkey).toEqual({
           ca: expect.any(Buffer),
           cert: expect.any(Buffer),
