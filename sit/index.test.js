@@ -1,4 +1,4 @@
-const { log, error } = require('console')
+const { log } = require('console')
 
 /* global afterAll beforeAll describe expect test */
 
@@ -56,8 +56,6 @@ describe(
           testServerCatkeysDir,
           'server.catkey'
         ))
-        log('here is stdout')
-        error('here is stderr')
         expect(catkey).toEqual({
           ca: expect.any(Buffer),
           cert: expect.any(Buffer),

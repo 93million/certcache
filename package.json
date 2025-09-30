@@ -13,7 +13,7 @@
     "startdev": "nodemon --inspect src/cli/cli.js serve",
     "test": "jest -c jest.config.all.js --coverage",
     "test:sit": "jest -c jest.config.sit.js",
-    "test:unit": "jest -c jest.config.js --coverage"
+    "test:unit": "node --trace-warnings node_modules/.bin/jest --no-cache -c jest.config.js --coverage"
   },
   "author": "Pommy <tm_certcache@93m.co> (https://93million.org)",
   "license": "MIT",
