@@ -12,3 +12,4 @@ certbot-dns-ovh==5.0.0
 certbot-dns-rfc2136==5.0.0
 certbot-dns-route53==5.0.0
 certbot-dns-standalone==1.2.1
+cryptography==46.0.1

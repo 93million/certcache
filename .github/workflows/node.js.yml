@@ -24,6 +24,7 @@ jobs:
     - name: Install certbot
       run: >-
         sudo apt-get install -y -qq python3 &&
+        sudo apt-get purge -y python3-cryptography &&
         sudo pip3 install -r docker/requirements.txt
     - name: Install ngrok
       run: sudo tar -C /usr/local/bin -zxf sit/deps/ngrok-v3-stable-linux-amd64.tgz
