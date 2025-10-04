@@ -2,6 +2,7 @@ const childProcess = require('child_process')
 const path = require('path')
 const util = require('util')
 const { catkeys } = require('./args')
+const getConfig = require('../../lib/getConfig')
 
 const execFile = util.promisify(childProcess.execFile)
 
@@ -16,7 +17,9 @@ module.exports = {
     })
     yargs.option('catkeys', catkeys)
   },
-  handler: (argv) => {
+  handler: async (argv) => {
+    const { catKeysDir } = (await getConfig())
+
     const execScript = path.resolve(
       __dirname,
       '..',
@@ -29,7 +32,7 @@ module.exports = {
 
     execFile(
       execScript,
-      ['create-key', '--keydir', argv.catkeys, '--name', argv.name]
+      ['create-key', '--keydir', catKeysDir, '--name', argv.name]
     )
       .catch((err) => {
         console.error(err)
