@@ -8,7 +8,8 @@ const defaults = {
   challenges: {},
   defaultChallenge: 'dns-01',
   domains: ['~.'],
-  'test-cert': false
+  'test-cert': false,
+  server: undefined
 }
 
 module.exports = ({ argv, env, file }) => {
@@ -39,9 +40,16 @@ module.exports = ({ argv, env, file }) => {
     ) ||
       file.domains ||
       defaults.domains,
+    eabKid: env.CERTCACHE_CERTBOT_EAB_KID ||
+      file.eabKid,
+    eabHmacKey: env.CERTCACHE_CERTBOT_EAB_HMAC_KEY ||
+      file.eabHmacKey,
     email: argv['certbot-email'] ||
       env.CERTCACHE_CERTBOT_EMAIL ||
       file.email,
+    server: env.CERTCACHE_CERTBOT_SERVER ||
+      file.server ||
+      defaults.server,
     'test-cert': argv['test-cert'] ||
       env.CERTCACHE_TEST_CERT === '1' ||
       file['test-cert'] ||

@@ -190,3 +190,76 @@ test(
       .toEqual(expect.arrayContaining(['--elliptic-curve', ellipticCurve]))
   }
 )
+
+test(
+  'should contain eab kid if supplied',
+  () => {
+    const eabKid = 'eab-kid'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        eabKid
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--eab-kid', eabKid]))
+  }
+)
+
+test(
+  'should contain eab hmac key if supplied',
+  () => {
+    const eabHmacKey = 'eab-hmac-key'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        eabHmacKey
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--eab-hmac-key', eabHmacKey]))
+  }
+)
+
+
+test(
+  'should contain server if supplied',
+  () => {
+    const server = 'server'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        server
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--server', server]))
+  }
+)

@@ -3,7 +3,15 @@ module.exports = (
   altNames,
   certName,
   { isTest, keyType, ellipticCurve },
-  { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+  {
+    certbotConfigDir,
+    certbotLogsDir,
+    certbotWorkDir,
+    eabKid,
+    eabHmacKey,
+    email,
+    server
+  },
   extraArgs
 ) => {
   if (email === undefined) {
@@ -13,6 +21,20 @@ module.exports = (
       'arg --certbot-email or specify in settings.json at',
       'extensions.certbot.email'
     ].join(' '))
+  }
+
+  const conditionalArgs = []
+
+  if (eabKid !== undefined) {
+    conditionalArgs.push('--eab-kid', eabKid)
+  }
+
+  if (eabHmacKey !== undefined) {
+    conditionalArgs.push('--eab-hmac-key', eabHmacKey)
+  }
+
+  if (server !== undefined) {
+    conditionalArgs.push('--server', server)
   }
 
   const domains = Array.from(new Set([commonName, ...altNames]))
@@ -35,6 +57,7 @@ module.exports = (
     `--work-dir`,
     certbotWorkDir,
     '--force-renewal',
+    ...conditionalArgs,
     ...extraArgs
   ]
 
