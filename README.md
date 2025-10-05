@@ -1,5 +1,15 @@
-<div align="right"><img src="./docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" /></div><br />
-<div align="center"><img src="./docs/images/certcache_logo.svg" alt="CertCache logo" height="160" /></div><br />
+<div align="right">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/93million_logo-dark.svg" height="36" />
+    <img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" />
+  </picture>
+</div><br />
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/certcache_logo-dark.svg" height="160" />
+    <img src="docs/images/certcache_logo.svg" alt="CertCache logo" height="160" />
+  </picture>
+</div><br />
 
 ![Node.js CI](https://github.com/93million/certcache/workflows/Node.js%20CI/badge.svg)
 
@@ -201,5 +211,9 @@ Code is released under the [MIT](LICENSE) license
 
 *Copyright 93 Million Ltd. All rights reserved*
 
-<div align="center"><img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="60" /></div>
-
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/93million_logo-dark.svg" height="60" />
+    <img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="60" />
+  </picture>
+</div>

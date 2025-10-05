@@ -4,7 +4,12 @@
 
 DNS challenges are in some ways more flexable than HTTP challenges in that they do not require an HTTP server to redirect challenges to CertCache server.
 
-<div align="center"><img alt="DNS-01 challenge diagram" src="images/dns-01_diagram.svg" width="70%" /></div>
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/dns-01_diagram-dark.svg" width="70%" />
+    <img alt="DNS-01 challenge diagram" src="images/dns-01_diagram.svg" width="70%" />
+  </picture>
+</div>
 
 ### Standalone DNS-01 challenge
 
@@ -109,7 +114,12 @@ When generating a certificate which contains multiple domains, any common challe
 
 For HTTP validation you will need to be running an HTTP server on the domains you want to validate. A redirection rule needs to be set up for each domain to perform HTTP validation.
 
-<div align="center"><img alt="HTTP-01 challenge diagram" src="images/http-01_diagram.svg" width="70%" /></div>
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/http-01_diagram-dark.svg" width="70%" />
+    <img alt="HTTP-01 challenge diagram" src="images/http-01_diagram.svg" width="70%" />
+  </picture>
+</div>
 
 The following example shows how to configure Nginx to validate the domains `93m.co` and `secure.93m.co`, running certcache on `certcache.93million.org`
 
