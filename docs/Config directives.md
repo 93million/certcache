@@ -33,7 +33,7 @@ Steps involved in moving from env vars to `settings.json`:
   * Create a directory `conf` to hold your settings
   * Map the `conf` directory to `/certcache/conf/` in the container
   * Create a `settings.json` file
-  * Create entries in the `settings.json` with the configuration directives that correspond to the `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` env variables (see [Config Directives](#config-directives) for a map of env vars to settings config entries)
+  * Create entries in the `settings.json` with the configuration directives that correspond to the `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` env variables (see [Config Directives](#config-directives-1) for a map of env vars to settings config entries)
 
 The updated `docker-compose.yml` file would look like this:
 
