@@ -101,24 +101,6 @@ test(
 )
 
 test(
-  'should throw an error when called without letsencrypt account email address',
-  () => {
-    const getCertbotCertonlyArgsWithMissingEmail = () => {
-      getCertbotCertonlyArgs(
-        commonName,
-        altNames,
-        certName,
-        { isTest: false },
-        { certbotConfigDir, certbotLogsDir, certbotWorkDir },
-        extraArgs
-      )
-    }
-
-    expect(getCertbotCertonlyArgsWithMissingEmail).toThrow()
-  }
-)
-
-test(
   'should provide a list of unique (not repeating) domain names',
   () => {
     const certbotArgs = getCertbotCertonlyArgs(
@@ -239,7 +221,6 @@ test(
   }
 )
 
-
 test(
   'should contain server if supplied',
   () => {
@@ -259,7 +240,38 @@ test(
       extraArgs
     )
 
+    expect(certbotArgs).toEqual(expect.arrayContaining(['--server', server]))
+  }
+)
+
+test(
+  'should contain email if supplied',
+  () => {
+    expect(certbotArgsArr)
+      .toEqual(expect.arrayContaining(['-m']))
+  }
+)
+
+test(
+  'should not contain email if not supplied',
+  () => {
+    const server = 'server'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        server
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs).not.toEqual(expect.arrayContaining(['-m']))
     expect(certbotArgs)
-      .toEqual(expect.arrayContaining(['--server', server]))
+      .toEqual(expect.arrayContaining(['--register-unsafely-without-email']))
   }
 )
