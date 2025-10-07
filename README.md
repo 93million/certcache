@@ -63,7 +63,6 @@ On your CertCache server instance, perform the following steps:
   * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
-version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver
@@ -95,7 +94,6 @@ On your CertCache client instances, perform the following steps:
   * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache

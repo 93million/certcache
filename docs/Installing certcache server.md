@@ -53,7 +53,6 @@ On your server, create a new dircetory to hold your Docker Compose config
 Create a file named `docker-compose.yml` that contains the following:
 
 ```yaml
-version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver

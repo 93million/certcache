@@ -3,7 +3,6 @@
 Certificates are installed into `/certcache/certs/` in the CertCache client container. Map a Docker volume like so:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache

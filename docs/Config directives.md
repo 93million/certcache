@@ -9,7 +9,6 @@ The sample `docker-compose.yml` examples given throughout the documentation show
 Let's take an example of how to move `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` from `docker-compose.yml` into `settings.json`. Take the following sample `docker-compose.yml` file as an example:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
@@ -38,7 +37,6 @@ Steps involved in moving from env vars to `settings.json`:
 The updated `docker-compose.yml` file would look like this:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache

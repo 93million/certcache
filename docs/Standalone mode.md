@@ -28,7 +28,6 @@ Eg. if `<your-domain>` is `example.com` then add a CNAME record for the host `_a
   * Create a `docker-compose.yml` file and place in a directory on your server instance:
 
 ```yaml
-version: '3.7'
 services:
   nginx:
     container_name: nginx

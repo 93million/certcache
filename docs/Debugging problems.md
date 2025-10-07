@@ -28,7 +28,6 @@ Viewing logs on the server will provide more information. From the server, run `
 By default the server logs are not very verbose. CertCache uses the npm `debug` package. Viewing debug messages will give further information. Set the env var `DEBUG` to `certcache:*` in the `environment` section of the `certcacheserver` container in your `docker-compose.yml` file:
 
 ```yaml
-version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver

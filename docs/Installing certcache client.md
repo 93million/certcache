@@ -3,7 +3,6 @@
 On your CertCache client instance, create a new directory to hold your Docker Compose config. Create a file named `docker-compose.yml` that contains the following:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
