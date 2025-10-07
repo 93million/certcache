@@ -17,9 +17,9 @@
 
 ## What is CertCache?
 
-CertCache is a secure TLS/SSL certificate distribution service. It can do the following things:
+CertCache provides TLS/SSL certificate management for Docker. It can do the following things:
 
-* Securely share TLS certificates between a number of clients
+* Securely share TLS certificates between Docker containers
 * Generate certificates dynamically using Let's Encrypt
 * Avoid Let's Encrypt usage limits by serving certificates from a cache
 * Share manually downloaded TLS certificates from third parties such as Comodo
