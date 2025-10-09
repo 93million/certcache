@@ -70,10 +70,10 @@ services:
 
 You can get ECDSA certificates from the command line using the CLI command `certcache get -d 'cert-domain-1,cert-domain-2' --key-type ecdsa`:
 
-If using docker-compose:
+If using docker compose:
 
 ```
-docker-compose run --rm certcache get -d 'cert-domain-1,cert-domain-2' --key-type ecdsa
+docker compose run --rm certcache get -d 'cert-domain-1,cert-domain-2' --key-type ecdsa
 ```
 
 Curves can optionally be specified using `--elliptic-curve`.

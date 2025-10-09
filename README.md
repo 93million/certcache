@@ -82,8 +82,8 @@ services:
 ```
 
   * Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
-  * Run `docker-compose run --rm certcacheserver create-keys`
-  * Run `docker-compose up -d`
+  * Run `docker compose run --rm certcacheserver create-keys`
+  * Run `docker compose up -d`
 
 See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
 
@@ -151,7 +151,7 @@ See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
 Now the challenges are configured you can start CertCache client. On the CertCache client instance, run:
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 Certificates will be placed in `./certcache/certs`. Map a read-only volume to this path in containers that require access to the certificates.
