@@ -20,7 +20,7 @@
 CertCache provides TLS/SSL certificate management for Docker. It can do the following things:
 
 * Securely share TLS certificates between Docker containers
-* Generate certificates dynamically using Let's Encrypt
+* Generate certificates dynamically using Let's Encrypt (or any other CA that supports ACME protocol through certbot)
 * Avoid Let's Encrypt usage limits by serving certificates from a cache
 * Share manually downloaded TLS certificates from third parties such as Comodo
 * Declaratively define ceritificates within config - either in a JSON config file or in `docker-compose.yml` if using Docker

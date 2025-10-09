@@ -13,9 +13,9 @@ DNS challenges are in some ways more flexable than HTTP challenges in that they 
 
 ### Standalone DNS-01 challenge
 
-CertCache comes with an inbuilt DNS challenge - `dns-01`. This challenge uses a standalone DNS server ([certbot-dns-standalone](https://github.com/siilike/certbot-dns-standalone)) which doesn't require DNS API credentials. This has benefits and drawbacks.
+By default, CertCache generates certificates using Cerbot using a plugin that provides a standalone DNS server ([certbot-dns-standalone](https://github.com/siilike/certbot-dns-standalone)) which doesn't require DNS API credentials. Configuration simply involves creating a CNAME entry for each domain you want to create certificates for
 
-The benefits for the standalone DNS challenge challenge:
+The benefits for the standalone DNS plugin:
 
   * simple - just create a CNAME record to vaildate a domain. No API or Certbot plugins required
   * unified method of validation that works with every DNS provider
@@ -109,6 +109,47 @@ If you want to define that domains use specific challenges, you need to list the
 ```
 
 When generating a certificate which contains multiple domains, any common challenges will used.
+
+### Using certificate authorities other than Let's Encrypt
+
+Certbot can be configured to use other CAs that support the ACME protocol. You can define an ACME server to use with Certbot by setting the env var `CERTCACHE_CERTBOT_SERVER`. If you need to pass an eab kid and eab hmac key you can use env vars `CERTCACHE_CERTBOT_EAB_KID` and `CERTCACHE_CERTBOT_EAB_HMAC_KEY`. For eaxample, to use with [ZeroSSL's free ACME certificates](https://zerossl.com/documentation/acme/):
+
+```yaml
+services:
+  certcacheserver:
+    container_name: certcacheserver
+    volumes:
+      - ./catkeys/:/certcache/catkeys/:rw
+      - ./cache/:/certcache/cache/:rw
+    environment:
+      CERTCACHE_CERTBOT_SERVER: 'https://acme.zerossl.com/v2/DV90'
+      CERTCACHE_CERTBOT_EAB_KID: 'YOUR_EAB_KID'
+      CERTCACHE_CERTBOT_EAB_HMAC_KEY: 'YOUR_EAB_HMAC_KEY'
+```
+
+Alternatively, if you want to use an alternative CA for certificates generated for only some specific domains, this can be achieved by adding the `--server`, `--eab-kid` and `--eab-hmac-key` arguments to the challenge args. Eg: to use ZeroSSL with the standalone DNS plugin:
+
+```yaml
+services:
+  certcacheserver:
+    container_name: certcacheserver
+    volumes:
+      - ./catkeys/:/certcache/catkeys/:rw
+      - ./cache/:/certcache/cache/:rw
+    environment:
+      CERTCACHE_CERTBOT_CHALLENGES: |
+        dns_zero_ssl:
+          args:
+            - '--authenticator'
+            - 'dns-standalone'
+            - '--server'
+            - 'https://acme.zerossl.com/v2/DV90'
+            - '--eab-kid'
+            - 'YOUR_EAB_KID'
+            - '--eab-hmac-key'
+            - 'YOUR_EAB_HMAC_KEY'
+      CERTCACHE_CERTBOT_DEFAULT_CHALLENGE: dns_zero_ssl
+```
 
 ### HTTP challenges
 
