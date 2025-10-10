@@ -82,8 +82,7 @@ services:
       CERTCACHE_CERTBOT_CHALLENGES: |
         dns_route53:
           args:
-            - '--dns-route53-propagation-seconds'
-            - '1000'
+            - '--dns-route53'
           environment:
             AWS_ACCESS_KEY_ID: 'AKIAIOSFODNN7EXAMPLE'
             AWS_SECRET_ACCESS_KEY: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
