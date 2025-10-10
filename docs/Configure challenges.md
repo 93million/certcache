@@ -2,7 +2,7 @@
 
 ## DNS challenges
 
-DNS challenges are in some ways more flexable than HTTP challenges in that they do not require an HTTP server to redirect challenges to CertCache server.
+DNS challenges are more flexable than HTTP challenges in that they do not require an HTTP server to redirect challenges to CertCache server. They can also create wildcard certicates
 
 <div align="center">
   <picture>
@@ -17,15 +17,12 @@ By default, CertCache generates certificates using Cerbot using a plugin that pr
 
 The benefits for the standalone DNS plugin:
 
-  * simple - just create a CNAME record to vaildate a domain. No API or Certbot plugins required
-  * unified method of validation that works with every DNS provider
-  * domain owners can delegate ability to CertCache users to generate certificates without giving away DNS API credentials
+  * can generate wildcard certificates
+  * simple - just create a CNAME record to vaildate a domain
+  * works with every DNS provider - no special certbot plugin required
+  * domain owners can delegate ability to generate certificates for subdomains without giving away DNS API credentials
 
-The drawbacks:
-
-  * you have to create a CNAME entry for each domain you want to create certificates for. This is something that can be done automatically by a Certbot DNS plugin.
-
-The drawback may not be such a hassle - you could generate a wildcards certificate (eg. `*.example.com`) which can be used with unlimited subdomains.
+If you want to create certificates for many different domains without creating CNAME records for each of them, then [using a DNS provider plugin](#other-certbot-dns-plugins) might be a more suited approach
 
 #### Configuring DNS for the standalone DNS-01 challenge
 
@@ -107,7 +104,9 @@ If you want to define that domains use specific challenges, you need to list the
           challenges: ['dns_route53', 'dns-01']
 ```
 
-When generating a certificate which contains multiple domains, any common challenges will used.
+Domains can be defined using a regular expression by prefixing them with a tilde (`~`) eg. `~(^|\.)example\.com$` would match `example.com` plus all subdomains.
+
+When generating a certificate which contains multiple domains, any common challenges will used. If no common challenges can be found between domains then the request will fail.
 
 ### Using certificate authorities other than Let's Encrypt
 
