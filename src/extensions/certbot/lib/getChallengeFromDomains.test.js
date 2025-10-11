@@ -1,7 +1,9 @@
-/* global test expect */
+/* global jest test expect */
 
 const getChallengeFromDomains = require('./getChallengeFromDomains')
 const challenges = require('./challenges')
+
+jest.mock('../../../lib/getArgv')
 
 challenges.mockChallenge1 = 1
 challenges.mockChallenge2 = 2

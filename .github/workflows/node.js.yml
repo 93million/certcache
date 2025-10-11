@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [20.x, 24.x]
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -23,10 +23,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install certbot
       run: >-
-        sudo apt-get install -y -qq python3 unzip &&
+        sudo apt-get install -y -qq python3 &&
+        sudo apt-get purge -y python3-cryptography &&
         sudo pip3 install -r docker/requirements.txt
     - name: Install ngrok
-      run: sudo unzip sit/deps/ngrok-stable-linux-amd64.zip -d /usr/local/bin
+      run: sudo tar -C /usr/local/bin -zxf sit/deps/ngrok-v3-stable-linux-amd64.tgz
+    - name: Authenticate with ngrok
+      run: ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
     - run: npm i
     - name: Run tests
-      run: sudo CERTCACHE_CERTBOT_EMAIL=tm_certcache-sit@93m.org npm test
+      run: sudo npm test -- --runInBand --silent=false

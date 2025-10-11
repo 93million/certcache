@@ -23,12 +23,11 @@ CertCache includes a standalone DNS server ([certbot-dns-standalone](https://git
 
 Eg. if `<your-domain>` is `example.com` then add a CNAME record for the host `_acme-challenge.example.com` that points to `example.com.acme.certcache.example.com`
 
-### 3: Create a docker-compose file
+### 3: Create a Docker compose file
 
   * Create a `docker-compose.yml` file and place in a directory on your server instance:
 
 ```yaml
-version: '3.7'
 services:
   nginx:
     container_name: nginx
@@ -113,7 +112,7 @@ In this guide we will serve static files. A more practicle application would be 
 
 ### 6: Start the container
 
-  * Run `docker-compose up -d`
+  * Run `docker compose up -d`
 
 The first time you run this, CertCache will use Certbot to generate the SSL certificates. After they are present they will be kept up-to-date. Nginx will start once the certificates are on disk.
 

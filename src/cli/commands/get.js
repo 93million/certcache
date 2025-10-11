@@ -31,8 +31,8 @@ module.exports = {
     'skip-file-perms': skipFilePerms,
     upstream
   },
-  handler: (argv) => {
-    getCert(argv).catch((e) => {
+  handler: async (argv) => {
+    getCert(await argv).catch((e) => {
       console.error(e.message)
       process.exit(1)
     })

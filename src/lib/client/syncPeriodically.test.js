@@ -36,7 +36,7 @@ test(
   async () => {
     await syncPeriodically()
 
-    expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
+    expect(httpRedirect.start).toHaveBeenCalledWith(httpRedirectUrl)
   }
 )
 
@@ -49,7 +49,7 @@ test(
 
     await syncPeriodically()
 
-    expect(console.error).toBeCalledWith(err)
+    expect(console.error).toHaveBeenCalledWith(err)
   }
 )
 
@@ -62,7 +62,7 @@ test(
 
     await syncPeriodically(true)
 
-    expect(console.error).toBeCalledWith(new Error('barf!'))
+    expect(console.error).toHaveBeenCalledWith(new Error('barf!'))
   }
 )
 
@@ -75,7 +75,7 @@ test(
 
     await syncPeriodically()
 
-    expect(process.exit).toBeCalledWith(expect.any(Number))
+    expect(process.exit).toHaveBeenCalledWith(expect.any(Number))
   }
 )
 
@@ -91,7 +91,7 @@ test(
 
     await new Promise((resolve, reject) => { setImmediate(resolve) })
     expect(setTimeoutPromise)
-      .toBeCalledWith(expect.any(Function), expect.any(Number))
+      .toHaveBeenCalledWith(expect.any(Function), expect.any(Number))
   }
 )
 
@@ -102,6 +102,6 @@ test(
     syncPeriodically()
     await new Promise((resolve, reject) => { setImmediate(resolve) })
     process.emit('SIGTERM')
-    expect(mockTimeout.clearTimeout).toBeCalledTimes(1)
+    expect(mockTimeout.clearTimeout).toHaveBeenCalledTimes(1)
   }
 )

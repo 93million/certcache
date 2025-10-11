@@ -38,8 +38,8 @@ test(
     setTimeoutPromise(mockCallback, mockTimeoutMs)
 
     expect(global.setTimeout)
-      .toBeCalledWith(expect.any(Function), mockTimeoutMs)
-    expect(mockCallback).toBeCalled()
+      .toHaveBeenCalledWith(expect.any(Function), mockTimeoutMs)
+    expect(mockCallback).toHaveBeenCalledWith()
   }
 )
 
@@ -50,6 +50,6 @@ test(
 
     promise.clearTimeout()
 
-    expect(global.clearTimeout).toBeCalledWith(mockTimeoutId)
+    expect(global.clearTimeout).toHaveBeenCalledWith(mockTimeoutId)
   }
 )

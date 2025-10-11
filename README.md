@@ -1,5 +1,15 @@
-<div align="right"><img src="./docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" /></div><br />
-<div align="center"><img src="./docs/images/certcache_logo.svg" alt="CertCache logo" height="160" /></div><br />
+<div align="right">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/93million_logo-dark.svg" height="36" />
+    <img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="36" />
+  </picture>
+</div><br />
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/certcache_logo-dark.svg" height="160" />
+    <img src="docs/images/certcache_logo.svg" alt="CertCache logo" height="160" />
+  </picture>
+</div><br />
 
 ![Node.js CI](https://github.com/93million/certcache/workflows/Node.js%20CI/badge.svg)
 
@@ -7,10 +17,10 @@
 
 ## What is CertCache?
 
-CertCache is a secure TLS/SSL certificate distribution service. It can do the following things:
+CertCache provides TLS/SSL certificate management for Docker. It can do the following things:
 
-* Securely share TLS certificates between a number of clients
-* Generate certificates dynamically using Let's Encrypt
+* Securely share TLS certificates between Docker containers
+* Generate certificates dynamically using Let's Encrypt (or any other CA that supports ACME protocol through certbot)
 * Avoid Let's Encrypt usage limits by serving certificates from a cache
 * Share manually downloaded TLS certificates from third parties such as Comodo
 * Declaratively define ceritificates within config - either in a JSON config file or in `docker-compose.yml` if using Docker
@@ -53,7 +63,6 @@ On your CertCache server instance, perform the following steps:
   * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
-version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver
@@ -73,8 +82,8 @@ services:
 ```
 
   * Change `CERTCACHE_CERTBOT_EMAIL` to the email address you provide to `certbot` 'for important account notifications'
-  * Run `docker-compose run --rm certcacheserver create-keys`
-  * Run `docker-compose up -d`
+  * Run `docker compose run --rm certcacheserver create-keys`
+  * Run `docker compose up -d`
 
 See [docs/Installing certcache server.md](docs/Installing%20certcache%20server.md) for more info
 
@@ -85,7 +94,6 @@ On your CertCache client instances, perform the following steps:
   * Create a directory with a file named `docker-compose.yml` with these contents:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
@@ -143,7 +151,7 @@ See [docs/Configure challenges.md](docs/Configure%20challenges.md) for more info
 Now the challenges are configured you can start CertCache client. On the CertCache client instance, run:
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 Certificates will be placed in `./certcache/certs`. Map a read-only volume to this path in containers that require access to the certificates.
@@ -201,5 +209,9 @@ Code is released under the [MIT](LICENSE) license
 
 *Copyright 93 Million Ltd. All rights reserved*
 
-<div align="center"><img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="60" /></div>
-
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/93million_logo-dark.svg" height="60" />
+    <img src="docs/images/93million_logo.svg" alt="93 Million Ltd. logo" height="60" />
+  </picture>
+</div>

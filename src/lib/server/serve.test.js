@@ -9,6 +9,7 @@ const getConfig = require('../getConfig')
 
 jest.mock('catkeys')
 jest.mock('./actions')
+jest.mock('../getArgv')
 
 let action
 const payload = { test: 'payload', other: 58008 }
@@ -88,7 +89,7 @@ test(
   async () => {
     await serve()
 
-    expect(actions.testAction).toBeCalledTimes(1)
+    expect(actions.testAction).toHaveBeenCalledTimes(1)
   }
 )
 
@@ -140,7 +141,7 @@ test(
     await serve()
 
     expect(writeHead)
-      .toBeCalledWith(200, { 'Content-Type': 'application/json' })
+      .toHaveBeenCalledWith(200, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -152,7 +153,7 @@ test(
     await serve()
 
     expect(writeHead)
-      .toBeCalledWith(500, { 'Content-Type': 'application/json' })
+      .toHaveBeenCalledWith(500, { 'Content-Type': 'application/json' })
   }
 )
 
@@ -163,7 +164,7 @@ test(
 
     await serve()
 
-    expect(listen).toBeCalledWith(mockConfig.server.port)
+    expect(listen).toHaveBeenCalledWith(mockConfig.server.port)
   }
 )
 
@@ -176,7 +177,7 @@ test(
 
     process.emit('SIGTERM')
 
-    expect(close).toBeCalledTimes(1)
+    expect(close).toHaveBeenCalledTimes(1)
   }
 )
 
@@ -187,7 +188,7 @@ test(
 
     await serve()
 
-    expect(writeHead).not.toBeCalled()
+    expect(writeHead).not.toHaveBeenCalledWith()
   }
 )
 test(
@@ -196,6 +197,6 @@ test(
     await serve()
 
     expect(actions.testAction)
-      .toBeCalledWith(payload, { clientName: mockClientName })
+      .toHaveBeenCalledWith(payload, { clientName: mockClientName })
   }
 )

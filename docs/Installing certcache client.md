@@ -3,7 +3,6 @@
 On your CertCache client instance, create a new directory to hold your Docker Compose config. Create a file named `docker-compose.yml` that contains the following:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
@@ -60,7 +59,7 @@ CERTCACHE_CERTS: |
 If you do not want to list your certificates in `CERTCACHE_CERTS` in the Docker Compose file, you can get certificates from the command line using the command:
 
 ```
-docker-compose run --rm certcache get -t  -d <your-domain-1>,<your-domain-2> --cert-name <cert-name>
+docker compose run --rm certcache get -t  -d <your-domain-1>,<your-domain-2> --cert-name <cert-name>
 ```
 
 > ⚠️ the `-t` arg causes CertBot to generate testing certificates. This is useful when testing a setup. Remove `-t` when you are ready to use valid certs.
@@ -77,14 +76,14 @@ CERTCACHE_HTTP_REDIRECT_URL: 'http://<certcache-server>'
 
 You will also need to add `80:80/tcp` to the list of `ports` in the `certcache` service of your `docker-compose.yml` file.
 
-If you have an HTTP server that already uses port 80 you not be able to bind the same port to both CertCache and the HTTP server. In this instance you will need to run the `sync` command before starting everything with `docker-compose up`. See the section [Containers that depend on certificates in order to start](#containers-that-depend-on-certificates-in-order-to-start)
+If you have an HTTP server that already uses port 80 you not be able to bind the same port to both CertCache and the HTTP server. In this instance you will need to run the `sync` command before starting everything with `docker compose up`. See the section [Containers that depend on certificates in order to start](#containers-that-depend-on-certificates-in-order-to-start)
 
 ## Start the client
 
 Run the following command from the directory that contans your `docker-compose.yml` file on the client
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 If everything worked you should be able to see your certificates in the directory `certcache/certs` in the client.
@@ -96,13 +95,13 @@ Often, containers require certificates in order to start. For example Nginx will
 If this sounds messy and you would prefer not to have logs full of error messages, you can prefetch the certificates using the following command from the CertCache client dir:
 
 ```
-docker-compose run --rm certcache sync
+docker compose run --rm certcache sync
 ```
 
 If you defined a `CERTCACHE_HTTP_REDIRECT_URL`, and you want to start an HTTP redirect server to handle HTTP-01 before Nginx is ready, you can run:
 
 ```
-docker-compose run --rm --ports "80:80/tcp" certcache sync
+docker compose run --rm --ports "80:80/tcp" certcache sync
 ```
 
-After the command has completed successsfully you can run `docker-compose up -d` and the certificates will be present.
+After the command has completed successsfully you can run `docker compose up -d` and the certificates will be present.

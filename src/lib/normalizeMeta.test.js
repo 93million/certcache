@@ -66,7 +66,7 @@ test(
   'should call extension.normalizeMeta with empty object when no correspond object exists in meta',
   async () => {
     await normalizeMeta(mockMeta)
-    expect(mockExtensions.extWithoutMeta.normalizeMeta).toBeCalledWith({})
+    expect(mockExtensions.extWithoutMeta.normalizeMeta).toHaveBeenCalledWith({})
   }
 )
 
@@ -75,6 +75,6 @@ test(
   'should include objects returned from extension.normalizeMeta when no correspond object exists in meta',
   async () => {
     await normalizeMeta(mockMeta)
-    expect(mockExtensions.extWithoutMeta.normalizeMeta).toBeCalledWith({})
+    expect(mockExtensions.extWithoutMeta.normalizeMeta).toHaveBeenCalledWith({})
   }
 )

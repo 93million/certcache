@@ -1,3 +1,6 @@
-const yargs = require('yargs')
+let _argv
 
-module.exports = () => yargs.argv
+module.exports.getArgv = () => _argv
+module.exports.setArgv = (argv) => {
+  _argv = argv
+}

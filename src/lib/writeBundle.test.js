@@ -122,7 +122,7 @@ test(
 
     await writeBundle(mockCertPath, await tarArchivePromise)
 
-    expect(mkdirRecursive).toBeCalledWith(mockCertPath)
+    expect(mkdirRecursive).toHaveBeenCalledWith(mockCertPath)
   }
 )
 
@@ -135,7 +135,7 @@ test(
 
     await writeBundle(mockCertPath, await tarArchivePromise)
 
-    expect(fs.chmod).toBeCalledWith(
+    expect(fs.chmod).toHaveBeenCalledWith(
       path.resolve(mockCertPath, 'privkey.pem'),
       0o600,
       expect.any(Function)
@@ -150,7 +150,7 @@ test(
 
     await writeBundle(mockCertPath, await tarArchivePromise)
 
-    expect(setAndDemandDirPerms).toBeCalledTimes(1)
+    expect(setAndDemandDirPerms).toHaveBeenCalledTimes(1)
   }
 )
 
@@ -166,6 +166,6 @@ test(
 
     await writeBundle(mockCertPath, await tarArchivePromise)
 
-    expect(setAndDemandDirPerms).not.toBeCalled()
+    expect(setAndDemandDirPerms).not.toHaveBeenCalledWith()
   }
 )

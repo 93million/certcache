@@ -101,24 +101,6 @@ test(
 )
 
 test(
-  'should throw an error when called without letsencrypt account email address',
-  () => {
-    const getCertbotCertonlyArgsWithMissingEmail = () => {
-      getCertbotCertonlyArgs(
-        commonName,
-        altNames,
-        certName,
-        { isTest: false },
-        { certbotConfigDir, certbotLogsDir, certbotWorkDir },
-        extraArgs
-      )
-    }
-
-    expect(getCertbotCertonlyArgsWithMissingEmail).toThrow()
-  }
-)
-
-test(
   'should provide a list of unique (not repeating) domain names',
   () => {
     const certbotArgs = getCertbotCertonlyArgs(
@@ -188,5 +170,108 @@ test(
 
     expect(certbotArgs)
       .toEqual(expect.arrayContaining(['--elliptic-curve', ellipticCurve]))
+  }
+)
+
+test(
+  'should contain eab kid if supplied',
+  () => {
+    const eabKid = 'eab-kid'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        eabKid
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--eab-kid', eabKid]))
+  }
+)
+
+test(
+  'should contain eab hmac key if supplied',
+  () => {
+    const eabHmacKey = 'eab-hmac-key'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        eabHmacKey
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--eab-hmac-key', eabHmacKey]))
+  }
+)
+
+test(
+  'should contain server if supplied',
+  () => {
+    const server = 'server'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        email,
+        server
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs).toEqual(expect.arrayContaining(['--server', server]))
+  }
+)
+
+test(
+  'should contain email if supplied',
+  () => {
+    expect(certbotArgsArr)
+      .toEqual(expect.arrayContaining(['-m']))
+  }
+)
+
+test(
+  'should not contain email if not supplied',
+  () => {
+    const server = 'server'
+    const certbotArgs = getCertbotCertonlyArgs(
+      commonName,
+      altNames,
+      certName,
+      { isTest: true },
+      {
+        certbotConfigDir,
+        certbotLogsDir,
+        certbotWorkDir,
+        server
+      },
+      extraArgs
+    )
+
+    expect(certbotArgs).not.toEqual(expect.arrayContaining(['-m']))
+    expect(certbotArgs)
+      .toEqual(expect.arrayContaining(['--register-unsafely-without-email']))
   }
 )

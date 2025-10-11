@@ -53,7 +53,6 @@ On your server, create a new dircetory to hold your Docker Compose config
 Create a file named `docker-compose.yml` that contains the following:
 
 ```yaml
-version: '3.7'
 services:
   certcacheserver:
     container_name: certcacheserver
@@ -79,7 +78,7 @@ services:
 Run the following command from the directory that contans your `docker-compose.yml` file
 
 ```
-docker-compose run --rm certcacheserver create-keys
+docker compose run --rm certcacheserver create-keys
 ```
 
 This will create server and client keys in your `./catkeys` directory. The client key will be provided to the client to allow it to connect. Protect these keys with your life.
@@ -136,5 +135,5 @@ For information about setting up challenges see [Configure challenges.md](Config
 Run the following command from the directory that contans your `docker-compose.yml` file on the server
 
 ```
-docker-compose up -d
+docker compose up -d
 ```

@@ -3,16 +3,50 @@ module.exports = (
   altNames,
   certName,
   { isTest, keyType, ellipticCurve },
-  { certbotConfigDir, certbotLogsDir, certbotWorkDir, email },
+  {
+    certbotConfigDir,
+    certbotLogsDir,
+    certbotWorkDir,
+    eabKid,
+    eabHmacKey,
+    email,
+    server
+  },
   extraArgs
 ) => {
-  if (email === undefined) {
-    throw new Error([
-      'Missing email address to obtain letsencrypt certificates.',
-      'Please provide env CERTCACHE_CERTBOT_EMAIL, pass in using cli',
-      'arg --certbot-email or specify in settings.json at',
-      'extensions.certbot.email'
-    ].join(' '))
+  const conditionalArgs = []
+
+  if (email !== undefined) {
+    conditionalArgs.push('-m')
+    conditionalArgs.push(email)
+  } else {
+    conditionalArgs.push('--register-unsafely-without-email')
+  }
+
+  if (isTest) {
+    conditionalArgs.push('--test-cert')
+  }
+
+  if (keyType !== undefined) {
+    conditionalArgs.push('--key-type')
+    conditionalArgs.push(keyType)
+  }
+
+  if (ellipticCurve !== undefined) {
+    conditionalArgs.push('--elliptic-curve')
+    conditionalArgs.push(ellipticCurve)
+  }
+
+  if (eabKid !== undefined) {
+    conditionalArgs.push('--eab-kid', eabKid)
+  }
+
+  if (eabHmacKey !== undefined) {
+    conditionalArgs.push('--eab-hmac-key', eabHmacKey)
+  }
+
+  if (server !== undefined) {
+    conditionalArgs.push('--server', server)
   }
 
   const domains = Array.from(new Set([commonName, ...altNames]))
@@ -26,8 +60,6 @@ module.exports = (
     domains.join(','),
     `--cert-name`,
     certName,
-    `-m`,
-    email,
     `--config-dir`,
     certbotConfigDir,
     `--logs-dir`,
@@ -35,22 +67,9 @@ module.exports = (
     `--work-dir`,
     certbotWorkDir,
     '--force-renewal',
+    ...conditionalArgs,
     ...extraArgs
   ]
-
-  if (isTest) {
-    certbotArgs.push('--test-cert')
-  }
-
-  if (keyType !== undefined) {
-    certbotArgs.push('--key-type')
-    certbotArgs.push(keyType)
-  }
-
-  if (ellipticCurve !== undefined) {
-    certbotArgs.push('--elliptic-curve')
-    certbotArgs.push(ellipticCurve)
-  }
 
   return certbotArgs
 }

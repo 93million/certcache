@@ -37,7 +37,7 @@ test(
 
     await getCert(mockOpts)
 
-    expect(obtainCert).toBeCalledWith(
+    expect(obtainCert).toHaveBeenCalledWith(
       host,
       port,
       mockDomainsArr[0],
@@ -69,7 +69,7 @@ test(
 
     await getCert(mockOpts)
 
-    expect(obtainCert).toBeCalledWith(
+    expect(obtainCert).toHaveBeenCalledWith(
       host,
       port,
       commonName,
@@ -96,8 +96,8 @@ test(
 
     await getCert(mockOpts)
 
-    expect(httpRedirect.start).toBeCalledWith(httpRedirectUrl)
-    expect(httpRedirect.stop).toBeCalled()
+    expect(httpRedirect.start).toHaveBeenCalledWith(httpRedirectUrl)
+    expect(httpRedirect.stop).toHaveBeenCalledWith()
   }
 )
 
@@ -110,7 +110,7 @@ test(
     const { host, port } = canonicaliseUpstreamConfig(mockConfig.upstream)
 
     expect(obtainCert)
-      .toBeCalledWith(
+      .toHaveBeenCalledWith(
         host,
         port,
         mockDomainsArr[0],

@@ -9,7 +9,6 @@ The sample `docker-compose.yml` examples given throughout the documentation show
 Let's take an example of how to move `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` from `docker-compose.yml` into `settings.json`. Take the following sample `docker-compose.yml` file as an example:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
@@ -33,12 +32,11 @@ Steps involved in moving from env vars to `settings.json`:
   * Create a directory `conf` to hold your settings
   * Map the `conf` directory to `/certcache/conf/` in the container
   * Create a `settings.json` file
-  * Create entries in the `settings.json` with the configuration directives that correspond to the `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` env variables (see [Config Directives](#config-directives) for a map of env vars to settings config entries)
+  * Create entries in the `settings.json` with the configuration directives that correspond to the `CERTCACHE_CERTS` and `CERTCACHE_UPSTREAM` env variables (see [Config Directives](#config-directives-1) for a map of env vars to settings config entries)
 
 The updated `docker-compose.yml` file would look like this:
 
 ```yaml
-version: '3.7'
 services:
   certcache:
     container_name: certcache
@@ -92,16 +90,20 @@ services:
 
 ### Certbot config directives
 
-| ENV variable                          | `conf/settings.json` key              | CLI arg                       |  (Docker) default                  | Description                                                                                                                                          |
-| ------------------------------------- | ------------------------------------- | ----------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CERTCACHE_CERTBOT_CONFIG_DIR`        | `extensions.certbot.certdir`          | -                             | `/certcache/cache/certbot/config`  | Path to certbot config directory                                                                                                                     |
-| `CERTCACHE_CERTBOT_EXEC`              | `extensions.certbot.certbotExec`      | -                             | searches for `certbot` in PATH     | `certbot` command to use to generate certificates using certbot                                                                                      |
-| -                                     | `extensions.certbot.certbotLogsDir`   | -                             | `/certcache/cache/certbot/config`` | Path to certbot logs directory                                                                                                                       |
-| -                                     | `extensions.certbot.certbotWorkDir`   | -                             | `/certcache/cache/certbot/work``   | Path to certbot work directory                                                                                                                       |
-| `CERTCACHE_CERTBOT_DEFAULT_CHALLENGE` | `extensions.certbot.defaultChallenge` | `--certbot-default-challenge` | dns-01                             | default challenge used to generate certificates using certbot                                                                                        |
-| `CERTCACHE_CERTBOT_DOMAINS`           | `extensions.certbot.domains`          | -                             | matches everything                 | Array of domains to match before using certbot to generate certificate. Regexps start with tilde (`~`) eg. `\.93million\.org$`. Use YAML in env var. |
-| `CERTCACHE_CERTBOT_EMAIL`             | `extensions.certbot.email`            | `--certbot-email`             | -                                  | Email address you provide to `certbot` 'for important account notifications'                                                                         |
-| `CERTCACHE_TEST_CERT`                 | `extensions.certbot.test-cert`        | `--test-cert`                 | false                              | Whether to generate a test certificate (useful when testing)                                                                                         |
+| ENV variable                          | `conf/settings.json` key              | CLI arg                       |  (Docker) default                  | Description                                                                                                                                           |
+| ------------------------------------- | ------------------------------------- | ----------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------  |
+| `CERTCACHE_CERTBOT_CHALLENGES`        | `extensions.certbot.challenges`       | -                             | -                                  | Challenges containing Certbot args and env vars as described in [Configure challenges.md][Configure%20challenges.md#other-certbot-dns-plugins].       |
+| `CERTCACHE_CERTBOT_CONFIG_DIR`        | `extensions.certbot.certdir`          | -                             | `/certcache/cache/certbot/config`  | Path to certbot config directory                                                                                                                      |
+| `CERTCACHE_CERTBOT_EAB_KID`           | `extensions.certbot.eabKid`           | -                             | -                                  | EAB KID passed to certbot using arg `--eab-kid`                                                                                                       |
+| `CERTCACHE_CERTBOT_EAB_HMAC_KEY`      | `extensions.certbot.eabHmacKey`       | -                             | -                                  | EAB HMAC key passed to certbot using arg `--eab-hmac-key`                                                                                             |
+| `CERTCACHE_CERTBOT_EXEC`              | `extensions.certbot.certbotExec`      | -                             | searches for `certbot` in PATH     | `certbot` command to use to generate certificates using certbot                                                                                       |
+| -                                     | `extensions.certbot.certbotLogsDir`   | -                             | `/certcache/cache/certbot/config`` | Path to certbot logs directory                                                                                                                        |
+| -                                     | `extensions.certbot.certbotWorkDir`   | -                             | `/certcache/cache/certbot/work``   | Path to certbot work directory                                                                                                                        |
+| `CERTCACHE_CERTBOT_DEFAULT_CHALLENGE` | `extensions.certbot.defaultChallenge` | `--certbot-default-challenge` | dns-01                             | default challenge used to generate certificates using certbot                                                                                         |
+| `CERTCACHE_CERTBOT_DOMAINS`           | `extensions.certbot.domains`          | -                             | matches everything                 | Array of domains to match before using certbot to generate certificate. Regexps start with tilde (`~`) eg. `~\.93million\.org$`. Use YAML in env var. |
+| `CERTCACHE_CERTBOT_EMAIL`             | `extensions.certbot.email`            | `--certbot-email`             | -                                  | Email address you provide to `certbot` 'for important account notifications'                                                                          |
+| `CERTCACHE_CERTBOT_SERVER`            | `extensions.certbot.server`           | -                             | -                                  | ACME server pass to certbot using arg `--server`                                                                                                      |
+| `CERTCACHE_TEST_CERT`                 | `extensions.certbot.test-cert`        | `--test-cert`                 | false                              | Whether to generate a test certificate (useful when testing)                                                                                          |
 
 ### Third party certificate config directives
 

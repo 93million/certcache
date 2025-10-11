@@ -50,7 +50,7 @@ test(
       { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
-    expect(request).toBeCalledWith(
+    expect(request).toHaveBeenCalledWith(
       { catKeysDir: mockCatKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
       {
@@ -75,7 +75,7 @@ test(
       { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
-    expect(writeBundle).toBeCalledWith(
+    expect(writeBundle).toHaveBeenCalledWith(
       mockCertDirPath,
       mockResponse.data.bundle
     )
@@ -153,7 +153,7 @@ test(
       { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
-    expect(request).toBeCalledWith(
+    expect(request).toHaveBeenCalledWith(
       { catKeysDir: mockCatKeysDir, host: mockHost, port: mockPort },
       expect.any(String),
       { domains: [mockCommonName], meta: mockMeta, days: mockDays }
@@ -221,8 +221,8 @@ test(
       { catKeysDir: mockCatKeysDir }
     )
 
-    expect(request).toBeCalledTimes(2)
-    expect(destroy).toBeCalledTimes(1)
+    expect(request).toHaveBeenCalledTimes(2)
+    expect(destroy).toHaveBeenCalledTimes(1)
   }
 )
 
@@ -261,7 +261,7 @@ test(
       { catKeysDir: mockCatKeysDir, days: mockDays }
     )
 
-    expect(getCert).toBeCalledWith({
+    expect(getCert).toHaveBeenCalledWith({
       domains: [mockCommonName, ...mockAltNames],
       meta: mockMeta,
       days: mockDays
@@ -284,6 +284,6 @@ test(
       { catKeysDir: mockCatKeysDir, days: mockDays, onChange: mockOnWrite }
     )
 
-    expect(execCommand).toBeCalledWith(mockOnWrite, expect.any(Object))
+    expect(execCommand).toHaveBeenCalledWith(mockOnWrite, expect.any(Object))
   }
 )

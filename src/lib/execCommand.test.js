@@ -20,7 +20,7 @@ test(
   async () => {
     await execCommand(mockCommand, mockEnv)
 
-    expect(childProcess.exec).toBeCalledWith(
+    expect(childProcess.exec).toHaveBeenCalledWith(
       mockCommand,
       expect.any(Object),
       expect.any(Function)
@@ -33,7 +33,7 @@ test(
   async () => {
     await execCommand(mockCommand, mockEnv)
 
-    expect(childProcess.exec).toBeCalledWith(
+    expect(childProcess.exec).toHaveBeenCalledWith(
       mockCommand,
       { env: { ...process.env, ...mockEnv, PATH: expect.any(String) } },
       expect.any(Function)
@@ -48,7 +48,7 @@ test(
 
     await execCommand(mockCommand, mockEnv)
 
-    expect(childProcess.exec).toBeCalledWith(
+    expect(childProcess.exec).toHaveBeenCalledWith(
       mockCommand,
       {
         env: {

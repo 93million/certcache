@@ -296,6 +296,6 @@ test(
     await certFinder.getCerts()
     await certFinder.getCerts()
 
-    expect(readdirRecursive).toBeCalledTimes(1)
+    expect(readdirRecursive).toHaveBeenCalledTimes(1)
   }
 )

@@ -62,7 +62,7 @@ test(
     ])
 
     expect(count).toBe(3)
-    expect(_catch).toBeCalledTimes(1)
+    expect(_catch).toHaveBeenCalledTimes(1)
   }
 )
 
