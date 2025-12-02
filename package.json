@@ -1,6 +1,6 @@
 {
   "name": "certcache",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TLS certificate server that generates, caches and deploys SSL/TLS certificates",
   "main": "index.js",
   "repository": "https://github.com/93million/certcache",
