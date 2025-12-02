@@ -6,6 +6,6 @@ exports[`should output data to match snapshot 1`] = `
     "certbot",
     "thirdparty",
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
 }
 `;
