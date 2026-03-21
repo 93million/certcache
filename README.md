@@ -11,7 +11,7 @@
   </picture>
 </div><br />
 
-![Node.js CI](https://github.com/93million/certcache/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/93million/certcache/actions/workflows/node.js.yml/badge.svg?branch=master)
 
 # CertCache
 
