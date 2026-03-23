@@ -62,7 +62,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should call extension.normalizeMeta with empty object when no correspond object exists in meta',
   async () => {
     await normalizeMeta(mockMeta)
@@ -71,7 +70,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should include objects returned from extension.normalizeMeta when no correspond object exists in meta',
   async () => {
     await normalizeMeta(mockMeta)

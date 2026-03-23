@@ -23,7 +23,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should return property ellipticCurve of undefined unless keyType = \'ecdsa\'',
   async () => {
     await expect(getMetaFromConfig({

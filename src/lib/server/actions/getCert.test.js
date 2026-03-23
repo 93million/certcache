@@ -139,7 +139,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should not throw error when CERTCACHE_DOMAIN_ACCESS is set but client has permission',
   async () => {
     process.env.CERTCACHE_DOMAIN_ACCESS = ''
@@ -160,7 +159,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should locate the certificate with the longest expiry when multiple certs exist for domain',
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([
@@ -182,7 +180,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should throw a FeedbackError when no extension is able to locate or generate a cert for a domain',
   async () => {
     getLocalCerts.mockReturnValueOnce(Promise.resolve([]))
@@ -200,7 +197,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should match certs with only common name and no alt names when 1 domain provided',
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {
@@ -221,7 +217,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should match certs with only common name and 1 alt name when 1 domain provided',
   async () => {
     generateFirstCertInSequence.mockImplementationOnce(() => {

@@ -352,7 +352,6 @@ describe(
           {
             domains: ['test.example.com'],
             certName: 'envvar3',
-            // eslint-disable-next-line max-len
             onChange: 'cat "$CERTCACHE_CHANGED_DIR/fullchain.pem" "$CERTCACHE_CHANGED_DIR/privkey.pem" | tee "$CERTCACHE_CHANGED_DIR/fullchain-privkey-combined.pem"'
           }
         ]
