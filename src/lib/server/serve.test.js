@@ -33,10 +33,12 @@ https
     const requestBody = JSON.stringify({ action, ...payload })
     const _response = []
     const req = new Readable({ read: () => {} })
-    const res = new Writable({ write: (chunk, encoding, callback) => {
-      _response.push(chunk)
-      callback()
-    } })
+    const res = new Writable({
+      write: (chunk, encoding, callback) => {
+        _response.push(chunk)
+        callback()
+      }
+    })
 
     req.connection = {
       getPeerCertificate: () => ({ subject: { CN: mockClientName } })

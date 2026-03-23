@@ -166,7 +166,8 @@ test(
     getLocalCerts.mockReturnValueOnce(Promise.resolve([
       { ...mockCert, notAfter: getDate(10) },
       { ...mockCert, notAfter: getDate(40) },
-      { ...mockCert,
+      {
+        ...mockCert,
         notAfter: getDate(90),
         getArchive: () => Promise.resolve('latest exrpiry cert')
       },

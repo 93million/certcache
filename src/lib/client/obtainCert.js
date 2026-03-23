@@ -87,7 +87,7 @@ module.exports = async (
 
     message += ` (${domains.join(',')}). Message: '${e.message}'`
 
-    debug(`Error obtaining bundle`, e.message)
+    debug('Error obtaining bundle', e.message)
 
     throw new Error(message)
   } finally {

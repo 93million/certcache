@@ -8,9 +8,9 @@ const getField = ([title, val], maxTitleLength) => {
   return (val === undefined)
     ? `  ${title}`
     : [
-      `  ${title}:`.padEnd(maxTitleLength, ' '),
-      val
-    ].join('')
+        `  ${title}:`.padEnd(maxTitleLength, ' '),
+        val
+      ].join('')
 }
 
 const getSection = ([title, fields], maxTitleLength) => {

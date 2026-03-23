@@ -36,7 +36,7 @@ class Certificate {
           chunks.push(chunk)
         })
         .on('end', () => {
-          debug(`created certificate archive from tar file`)
+          debug('created certificate archive from tar file')
           resolve(Buffer.concat(chunks))
         })
     })
