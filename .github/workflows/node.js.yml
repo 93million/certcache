@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    concurrency:
+      group: tests
+      cancel-in-progress: false
     strategy:
       matrix:
         node-version: [20.x, 24.x]
