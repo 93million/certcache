@@ -14,11 +14,11 @@ fs.stat.mockImplementation((path, callback) => {
     pathExists
       ? null
       : {
-        ...new Error(`ENOENT: no such file or directory, stat '${path}'`),
-        code: 'ENOENT',
-        path,
-        syscall: 'stat'
-      },
+          ...new Error(`ENOENT: no such file or directory, stat '${path}'`),
+          code: 'ENOENT',
+          path,
+          syscall: 'stat'
+        },
     pathExists ? { size: 123 } : undefined
   )
 })

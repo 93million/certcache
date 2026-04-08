@@ -16,6 +16,6 @@ module.exports = async ({ ellipticCurve, keyType, extensions }) => {
       extensions.certbot &&
       extensions.certbot['test-cert']
     ) === true,
-    keyType: keyType
+    keyType
   }
 }

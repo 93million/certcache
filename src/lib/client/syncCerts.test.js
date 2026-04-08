@@ -212,7 +212,6 @@ test(
 )
 
 test(
-  // eslint-disable-next-line max-len
   'should not try and renew expiring certificate when domains do not match cert definition',
   async () => {
     await syncCerts()

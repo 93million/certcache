@@ -9,7 +9,7 @@ module.exports = (
   const postData = JSON.stringify({ action, ...payload })
   const options = {
     catRejectMismatchedHostname: false,
-    catKeysDir: catKeysDir,
+    catKeysDir,
     headers: { 'Content-Length': Buffer.from(postData).length },
     hostname: host,
     method: 'POST',

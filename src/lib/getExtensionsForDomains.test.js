@@ -13,7 +13,7 @@ canGenerateDomains.mockReturnValue(Promise.resolve(true))
 canNotGenerateDomains.mockReturnValue(Promise.resolve(false))
 
 const mockExtensions = {
-  ext1: { id: 'ext1', canGenerateDomains: canGenerateDomains },
+  ext1: { id: 'ext1', canGenerateDomains },
   ext2: { id: 'ext2', canGenerateDomains: canNotGenerateDomains },
   ext3: { id: 'ext3' }
 }

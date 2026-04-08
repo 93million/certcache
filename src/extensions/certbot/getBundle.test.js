@@ -12,9 +12,9 @@ const mockCertObj = { certPath: '/test/path/to/cert.pem' }
 
 fs.readFile.mockImplementation((path, callback) => {
   const fileContentsMap = {
-    [`/test/path/to/cert.pem`]: mockCertContents,
-    [`/test/path/to/chain.pem`]: mockChainContents,
-    [`/test/path/to/privkey.pem`]: mockPrivkeyContents
+    '/test/path/to/cert.pem': mockCertContents,
+    '/test/path/to/chain.pem': mockChainContents,
+    '/test/path/to/privkey.pem': mockPrivkeyContents
   }
 
   callback(null, Promise.resolve(fileContentsMap[path]))
